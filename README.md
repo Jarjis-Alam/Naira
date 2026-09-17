@@ -22,7 +22,7 @@ An industrial-grade placement-preparation platform engineered for engineering st
 [![Build](https://img.shields.io/badge/Build-50%2F50_Routes_Passing-22c55e?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Jarjis-Alam/nexora)
 [![Type_Checking](https://img.shields.io/badge/Type_Safety-Strict_TS-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![ESLint](https://img.shields.io/badge/Linter-ESLint_9-4B32C3?style=flat-square&logo=eslint&logoColor=white)](https://eslint.org/)
-[![Database](https://img.shields.io/badge/Database-17_Migrations_Applied-0284c7?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Database](https://img.shields.io/badge/Database-18_Migrations_Applied-0284c7?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Security](https://img.shields.io/badge/Security-Strict_CSP_&_RBAC-f43f5e?style=flat-square&logo=securityscorecard&logoColor=white)](#-security-model--compliance)
 
 <br />
@@ -290,7 +290,7 @@ nexora/
         │   └── ui/                        # Accessible core primitives (buttons, modals, badges)
         ├── db/                            # Database infrastructure
         │   ├── schema.ts                  # Drizzle ORM schema (31 tables)
-        │   ├── migrations/                # Drizzle migration files (0000 - 0016)
+        │   ├── migrations/                # Drizzle migration files (0000 - 0017)
         │   ├── index.ts                   # PostgreSQL connection pool with fail-fast
         │   ├── bootstrap.ts               # Idempotent canonical seed & admin bootstrapper
         │   └── seed.ts                    # Development demo dataset generator
@@ -342,7 +342,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ### 3. Run Migrations & Bootstrap Data
-Apply all 17 database migrations (`0000_violet_kid_colt` through `0016_phase_20_outcome_intelligence`) and bootstrap canonical reference data:
+Apply all 18 database migrations (`0000_violet_kid_colt` through `0017_phase_17_simulation_schema`) and bootstrap canonical reference data:
 ```bash
 # Execute Drizzle migrations
 npm run db:migrate

@@ -15,6 +15,32 @@ import { getOutcomeDashboardCard } from "@/server/outcome-intelligence";
 import { ResumeHealthCard } from "@/components/resume/resume-health-card";
 import { getGreeting, formatDateTime, getScoreColor, getSkillLevel } from "@/lib/utils";
 
+/**
+ * A single non-critical intelligence widget must never take down the whole
+ * dashboard.
+ *
+ * These reads only feed one card each, so a failure degrades to that card's
+ * empty state instead of aborting the render (a missing relation used to bubble
+ * out of the server component and render the global ERR_500_SYSTEM_FAULT page).
+ * The failure is logged loudly — degraded, never concealed: a silent fallback
+ * would hide a real schema/outage problem.
+ */
+async function degradeOnFailure<T>(
+  label: string,
+  read: Promise<T>,
+  fallback: T
+): Promise<T> {
+  try {
+    return await read;
+  } catch (error) {
+    console.error(
+      `[dashboard] ${label} unavailable — rendering the dashboard without it:`,
+      error
+    );
+    return fallback;
+  }
+}
+
 export default async function DashboardPage() {
   const session = await auth();
   const userId = session?.user?.id;
@@ -46,10 +72,10 @@ export default async function DashboardPage() {
     getStudentPlacementTargets(userId),
     getDailyExecutionPlan(userId),
     getPlacementTargetStrategy(userId),
-    getStudentSimulationHistory(userId),
-    getResumeHealth(userId).catch(() => null),
-    getApplicationDashboardCard(userId).catch(() => null),
-    getOutcomeDashboardCard(userId).catch(() => null),
+    degradeOnFailure("simulation history", getStudentSimulationHistory(userId), []),
+    degradeOnFailure("resume health", getResumeHealth(userId), null),
+    degradeOnFailure("application pipeline", getApplicationDashboardCard(userId), null),
+    degradeOnFailure("outcome intelligence", getOutcomeDashboardCard(userId), null),
   ]);
 
   const latestSimulation = simulationHistory[0] || null;
