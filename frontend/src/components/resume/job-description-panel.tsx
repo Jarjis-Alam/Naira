@@ -50,6 +50,14 @@ export function JobDescriptionPanel({
   }
 
   async function handleRemove() {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "Remove this job description? Target-match analysis and keyword alignment comparisons will be reset."
+      )
+    ) {
+      return;
+    }
     setBusy(true);
     setError(null);
     try {

@@ -16,6 +16,7 @@ export function SimulationRunner({
   const router = useRouter();
   const [simulation, setSimulation] = useState<SimulationDetail>(initialSimulation);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [activeRoundTab, setActiveRoundTab] = useState<number>(
     simulation.status === "completed" ? 1 : simulation.currentRoundOrder
   );
@@ -48,6 +49,7 @@ export function SimulationRunner({
 
   async function handleRoundSubmit(roundNumber: number) {
     setSubmitting(true);
+    setSubmitError(null);
     try {
       let payload: any = { timeTakenSeconds: 900 };
 
@@ -90,8 +92,8 @@ export function SimulationRunner({
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Failed to submit round");
+        const err = await res.json().catch(() => ({}));
+        setSubmitError(err.error || "Failed to submit round");
         return;
       }
 
@@ -103,7 +105,7 @@ export function SimulationRunner({
         setActiveRoundTab(updated.currentRoundOrder);
       }
     } catch (e: any) {
-      alert(e.message || "Network error submitting round");
+      setSubmitError(e.message || "Network error submitting round");
     } finally {
       setSubmitting(false);
     }
@@ -111,6 +113,25 @@ export function SimulationRunner({
 
   return (
     <div className="space-y-8">
+      {/* Accessible Error Banner */}
+      {submitError && (
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-500 text-body-sm flex items-center justify-between gap-3 animate-in fade-in duration-200"
+        >
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">error</span>
+            <span>{submitError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSubmitError(null)}
+            className="text-text-muted hover:text-text-primary text-[11px] font-mono uppercase font-bold tracking-wider"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       {/* Simulation Header */}
       <div className="rounded-2xl border border-border/80 bg-surface/90 p-6 sm:p-8 backdrop-blur-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

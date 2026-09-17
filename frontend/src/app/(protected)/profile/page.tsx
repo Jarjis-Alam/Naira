@@ -17,6 +17,7 @@ import {
 import { getPlacementTargetStrategy } from "@/server/placement-target-strategy";
 import { getStudentSimulationHistory } from "@/server/placement-simulation";
 import { getResumeHealth } from "@/server/resume-intelligence";
+import { Eyebrow } from "@/components/ui/eyebrow";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -77,16 +78,13 @@ export default async function ProfilePage() {
         eq(attempts.status, "submitted")
       )
     )
-    .orderBy(desc(attempts.submittedAt))
+    .orderBy(desc(attempts.submittedAt));
+
   // Fetch Placement Targets and catalog
   const placementTargets = await getStudentPlacementTargets(session.user.id);
   const allRoles = await searchRoles({ includeInactive: true, limit: 100 });
   const allCompanies = await searchCompanies({ includeInactive: true, limit: 100 });
 
-  // Placement profile dimensions. These are deliberately separate measurements:
-  // preparation (measured assessment accuracy), target (Phase 16 requirement
-  // alignment), resume (Phase 18 ATS compatibility), and interview (Phase 17
-  // simulation). The ATS score is never folded into the readiness formula.
   const [targetStrategy, simulationHistory, resumeHealth] = await Promise.all([
     getPlacementTargetStrategy(session.user.id).catch(() => null),
     getStudentSimulationHistory(session.user.id).catch(() => []),
@@ -120,7 +118,7 @@ export default async function ProfilePage() {
       value: resumeHealth?.hasResume ? resumeHealth.atsScore : null,
       href: "/resume",
       note: resumeHealth?.hasResume
-        ? "How reliably an ATS can parse and match your resume. Not a hiring prediction."
+        ? "How reliably an ATS can parse your resume."
         : "Upload a resume to measure ATS compatibility.",
     },
     {
@@ -129,63 +127,70 @@ export default async function ProfilePage() {
       value: completedSimulation?.overallReadinessScore ?? null,
       href: "/simulation",
       note: completedSimulation
-        ? "Latest completed placement simulation verdict."
+        ? "Latest completed placement simulation score."
         : "Complete a placement simulation to measure this.",
     },
   ];
 
-  // Phase 20 — descriptive outcome history (counts only, never a success score).
+  // Phase 20 — descriptive outcome history (counts only).
   const outcomeHistory = await getOutcomeHistorySummary(session.user.id).catch(() => null);
 
   return (
-    <div className="space-y-8 pb-28 pr-28 lg:pr-0">
+    <div className="space-y-8 pb-20">
       {/* Header */}
-      <div className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-2 border-b border-circuit-border/60 pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-headline-lg font-bold text-text-primary">Student Profile</h1>
-          <p className="mt-1 text-label-xs font-mono uppercase text-text-muted">NEXORA / PLACEMENT PROFILE</p>
+          <Eyebrow system="NEXORA" category="STUDENT IDENTITY">
+            PLACEMENT PROFILE
+          </Eyebrow>
+          <h1 className="font-heading text-headline-lg font-semibold text-phosphor-white tracking-tight">
+            Student Placement Profile
+          </h1>
+          <p className="text-body-sm text-sage-60 mt-1">
+            Personal identity, academic benchmarks, target alignment, and multi-dimensional readiness measurements.
+          </p>
         </div>
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Col: Personal & Academic Profile (Span 4) */}
         <div className="lg:col-span-4 space-y-6">
           {/* Identity Card */}
-          <div className="rounded-xl border border-border bg-surface p-6 text-center">
+          <div className="rounded-cards border border-circuit-border bg-ground-iron p-6 text-center shadow-none">
             <div
               role="img"
               aria-label={`${profile.name} profile`}
-              className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 border-primary/30 bg-surface-high bg-cover bg-center text-3xl font-bold font-mono text-primary-text"
-              style={profile.avatarUrl ? { backgroundImage: `url(${profile.avatarUrl})` } : undefined}
+              className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-circuit-border bg-carbon-veil text-2xl font-bold font-mono text-lime-pulse"
+              style={profile.avatarUrl ? { backgroundImage: `url(${profile.avatarUrl})`, backgroundSize: "cover" } : undefined}
             >
               {!profile.avatarUrl && profile.name.charAt(0).toUpperCase()}
             </div>
 
             <div className="mt-4">
-              <h2 className="text-title-md font-bold text-text-primary">{profile.name}</h2>
-              <p className="mt-1 break-all text-body-sm text-text-secondary">{profile.email}</p>
-              <p className="mt-2 text-label-xs font-mono uppercase text-text-muted">
+              <h2 className="font-heading text-title-md font-semibold text-phosphor-white">{profile.name}</h2>
+              <p className="mt-0.5 break-all text-body-sm text-sage-60">{profile.email}</p>
+              <p className="mt-2 text-caption font-mono uppercase text-moss-70">
                 {profile.branch || "Academic details not set"}
               </p>
             </div>
 
-            <div className="mt-5 space-y-2 border-t border-border pt-4 text-left font-mono text-label-xs">
+            <div className="mt-5 space-y-2 border-t border-circuit-border/60 pt-4 text-left font-mono text-caption">
               <div className="flex items-start justify-between gap-4">
-                <span className="uppercase text-text-muted">Institution</span>
-                <span className="max-w-[160px] text-right font-semibold text-text-primary">
+                <span className="uppercase text-sage-40">Institution</span>
+                <span className="max-w-[160px] text-right font-medium text-phosphor-white">
                   {profile.college || "Not set"}
                 </span>
               </div>
               <div className="flex items-start justify-between gap-4">
-                <span className="uppercase text-text-muted">Branch</span>
-                <span className="max-w-[160px] text-right font-semibold text-text-primary">
+                <span className="uppercase text-sage-40">Branch</span>
+                <span className="max-w-[160px] text-right font-medium text-phosphor-white">
                   {profile.branch || "Not set"}
                 </span>
               </div>
               <div className="flex items-start justify-between gap-4">
-                <span className="uppercase text-text-muted">Graduation Year</span>
-                <span className="font-semibold text-text-primary">{profile.graduationYear || "Not set"}</span>
+                <span className="uppercase text-sage-40">Graduation Year</span>
+                <span className="font-medium text-phosphor-white">{profile.graduationYear || "Not set"}</span>
               </div>
             </div>
           </div>
@@ -197,33 +202,33 @@ export default async function ProfilePage() {
         {/* Right Col: Placement Metrics & Preferences (Span 8) */}
         <div className="lg:col-span-8 space-y-6">
           {/* Placement Profile Metrics Banner */}
-          <div className="rounded-xl border border-primary/20 bg-surface p-5 sm:p-6">
-            <div className="flex items-center gap-2 mb-6 text-label-xs text-secondary font-mono uppercase font-bold">
-              <span className="material-symbols-outlined text-[18px]">trending_up</span>
-              Placement Profile
+          <div className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
+            <div className="flex items-center gap-2 mb-4 text-caption text-moss-70 font-mono uppercase font-medium">
+              <span className="material-symbols-outlined text-[18px] text-lime-pulse">analytics</span>
+              <span>Placement Dimensions</span>
             </div>
 
-            {/* Distinct placement dimensions — never merged into one number. */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
+            {/* Distinct placement dimensions — never merged into one number */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {profileDimensions.map((dimension) => (
-                <div key={dimension.id} className="min-w-0">
-                  <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
+                <div key={dimension.id} className="min-w-0 p-3 rounded-md bg-carbon-veil/70 border border-circuit-border/60">
+                  <span className="text-[10px] text-sage-40 uppercase font-mono block mb-1">
                     {dimension.label}
                   </span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold font-mono text-text-primary">
+                    <span className="text-2xl font-bold font-mono text-phosphor-white">
                       {dimension.value !== null ? `${dimension.value}%` : "--"}
                     </span>
                   </div>
-                  <div className="w-full bg-surface-high h-1.5 rounded-full mt-2 overflow-hidden">
-                    <div className="bg-primary h-full" style={{ width: `${dimension.value ?? 0}%` }} />
+                  <div className="w-full bg-ground-iron h-1.5 rounded-full mt-2 overflow-hidden">
+                    <div className="bg-lime-pulse h-full rounded-full" style={{ width: `${dimension.value ?? 0}%` }} />
                   </div>
-                  <p className="mt-2 text-[11px] font-mono text-text-muted leading-relaxed">
+                  <p className="mt-2 text-[11px] font-mono text-sage-40 leading-relaxed">
                     {dimension.note}
                   </p>
                   <Link
                     href={dimension.href}
-                    className="mt-2 inline-flex items-center gap-1 text-[11px] font-mono text-primary-text hover:underline"
+                    className="mt-2 inline-flex items-center gap-1 text-[11px] font-mono text-fern-link hover:text-phosphor-white underline"
                   >
                     <span>Open</span>
                     <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
@@ -232,50 +237,41 @@ export default async function ProfilePage() {
               ))}
             </div>
 
-            <p className="mt-5 text-[11px] font-mono text-text-muted leading-relaxed border-t border-border/60 pt-4">
-              These dimensions measure different things on purpose. Preparation is measured question accuracy, target
-              readiness is requirement alignment, resume ATS compatibility is document readability, and interview
-              readiness is simulation performance. They are reported side by side rather than averaged together.
-            </p>
-
-            {/* Placement Outcome History (Phase 20) — descriptive counts only. */}
+            {/* Placement Outcome History */}
             {outcomeHistory && outcomeHistory.applications > 0 && (
-              <div className="mt-5 border-t border-border/60 pt-4">
-                <div className="flex items-center gap-2 mb-3 text-label-xs text-text-muted font-mono uppercase font-bold">
-                  <span className="material-symbols-outlined text-[15px]">history</span>
-                  Placement Outcome History
+              <div className="mt-5 border-t border-circuit-border/60 pt-4">
+                <div className="flex items-center gap-2 mb-3 text-caption text-moss-70 font-mono uppercase font-medium">
+                  <span className="material-symbols-outlined text-[16px] text-lime-pulse">history</span>
+                  <span>Outcome History (Empirical Counts)</span>
                 </div>
                 <div className="grid grid-cols-4 gap-3 text-center">
-                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
-                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Applications</p>
-                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.applications}</p>
+                  <div className="rounded-md bg-carbon-veil/60 border border-circuit-border/40 px-2 py-2">
+                    <p className="text-[10px] font-mono uppercase text-sage-40 font-medium">Applications</p>
+                    <p className="text-body font-mono font-bold text-phosphor-white mt-0.5">{outcomeHistory.applications}</p>
                   </div>
-                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
-                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Interviews</p>
-                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.interviews}</p>
+                  <div className="rounded-md bg-carbon-veil/60 border border-circuit-border/40 px-2 py-2">
+                    <p className="text-[10px] font-mono uppercase text-sage-40 font-medium">Interviews</p>
+                    <p className="text-body font-mono font-bold text-phosphor-white mt-0.5">{outcomeHistory.interviews}</p>
                   </div>
-                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
-                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Offers</p>
-                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.offers}</p>
+                  <div className="rounded-md bg-carbon-veil/60 border border-circuit-border/40 px-2 py-2">
+                    <p className="text-[10px] font-mono uppercase text-sage-40 font-medium">Offers</p>
+                    <p className="text-body font-mono font-bold text-lime-pulse mt-0.5">{outcomeHistory.offers}</p>
                   </div>
-                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
-                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Rejections</p>
-                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.rejections}</p>
+                  <div className="rounded-md bg-carbon-veil/60 border border-circuit-border/40 px-2 py-2">
+                    <p className="text-[10px] font-mono uppercase text-sage-40 font-medium">Rejections</p>
+                    <p className="text-body font-mono font-bold text-phosphor-white mt-0.5">{outcomeHistory.rejections}</p>
                   </div>
                 </div>
-                <p className="mt-2 text-[10px] font-mono text-text-muted">
-                  Descriptive history of recorded application outcomes — not a success score.
-                </p>
               </div>
             )}
 
-            <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 border-t border-border/60 pt-5">
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 border-t border-circuit-border/60 pt-4">
               <div>
-                <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
+                <span className="text-caption text-sage-40 uppercase font-mono block mb-1">
                   Strongest Skill
                 </span>
-                <div className="text-3xl font-bold font-mono text-primary-text flex items-center gap-2 mt-1">
-                  <span className="material-symbols-outlined text-primary-text text-[24px]">
+                <div className="text-2xl font-bold font-mono text-phosphor-white flex items-center gap-2 mt-1">
+                  <span className="material-symbols-outlined text-lime-pulse text-[20px]">
                     code
                   </span>
                   {strongestSkill || "Not established yet"}
@@ -283,89 +279,17 @@ export default async function ProfilePage() {
               </div>
 
               <div>
-                <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
+                <span className="text-caption text-sage-40 uppercase font-mono block mb-1">
                   Current Focus Area
                 </span>
-                <div className="text-3xl font-bold font-mono text-tertiary flex items-center gap-2 mt-1">
-                  <span className="material-symbols-outlined text-tertiary text-[24px]">
+                <div className="text-2xl font-bold font-mono text-[#ffd37a] flex items-center gap-2 mt-1">
+                  <span className="material-symbols-outlined text-[#ffd37a] text-[20px]">
                     memory
                   </span>
                   {focusArea || "Not established yet"}
                 </div>
               </div>
             </div>
-
-            {resumeHealth?.hasResume && (
-              <div className="mt-5 rounded-lg border border-border/70 bg-surface-high/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
-                    Resume Intelligence
-                  </span>
-                  <span className="text-body-sm text-text-primary">
-                    {resumeHealth.label} · ATS {resumeHealth.atsScore ?? "--"} · Match{" "}
-                    {resumeHealth.matchScore === null ? "--" : `${resumeHealth.matchScore}%`}
-                  </span>
-                </div>
-                <Link
-                  id="profile-view-resume-intelligence-btn"
-                  href="/resume"
-                  className="px-4 py-2 rounded-lg bg-surface-high border border-primary/30 text-primary-text hover:bg-surface-highest text-[12px] font-mono font-medium transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto"
-                >
-                  <span>Open Resume Intelligence</span>
-                  <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Placement Roadmap Entry (Phase 12) */}
-          <div className="rounded-xl border border-border bg-surface p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary flex-shrink-0">
-                <span className="material-symbols-outlined text-[18px]">alt_route</span>
-              </div>
-              <div>
-                <span className="text-body-sm font-semibold text-text-primary block">
-                  Your Placement Roadmap
-                </span>
-                <span className="text-[12px] font-mono text-text-muted block">
-                  Personalized preparation sequence based on your readiness and targets.
-                </span>
-              </div>
-            </div>
-            <Link
-              href="/roadmap"
-              id="profile-view-roadmap-btn"
-              className="px-4 py-2 rounded-lg bg-surface-high border border-primary/30 text-primary-text hover:bg-surface-highest text-[12px] font-mono font-medium transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto flex-shrink-0"
-            >
-              <span>View Roadmap</span>
-              <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-            </Link>
-          </div>
-
-          {/* Target Strategy Entry (Phase 16) */}
-          <div className="rounded-xl border border-primary/30 bg-surface p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
-                <span className="material-symbols-outlined text-[18px]">track_changes</span>
-              </div>
-              <div>
-                <span className="text-body-sm font-semibold text-text-primary block">
-                  Placement Target Strategy
-                </span>
-                <span className="text-[12px] font-mono text-text-muted block">
-                  Requirement matrix, gap analysis, and tailored preparation priorities.
-                </span>
-              </div>
-            </div>
-            <Link
-              href="/target"
-              id="profile-view-target-strategy-btn"
-              className="px-4 py-2 rounded-lg bg-primary text-text-inverse hover:bg-primary-text text-[12px] font-mono font-semibold transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto flex-shrink-0 shadow-sm"
-            >
-              <span>View Target Strategy</span>
-              <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-            </Link>
           </div>
 
           {/* Placement Targets (Phase 11A) */}
@@ -376,15 +300,15 @@ export default async function ProfilePage() {
           />
 
           {/* Environment Preferences */}
-          <div className="space-y-4 rounded-xl border border-border bg-surface p-5 sm:p-6">
-            <div className="flex items-center gap-2 text-label-xs text-text-muted font-mono uppercase">
-              <span className="material-symbols-outlined text-[18px]">tune</span>
-              Environment Preferences
+          <div className="space-y-4 rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
+            <div className="flex items-center gap-2 text-caption text-moss-70 font-mono uppercase font-medium">
+              <span className="material-symbols-outlined text-[16px]">tune</span>
+              <span>Environment Preferences</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <span className="text-label-xs text-text-muted uppercase font-mono block mb-2">
+                <span className="text-caption text-sage-40 uppercase font-mono block mb-2">
                   Primary Language
                 </span>
                 <div className="flex gap-2">
@@ -395,10 +319,10 @@ export default async function ProfilePage() {
                     return (
                       <span
                         key={lang}
-                        className={`rounded border px-3 py-1.5 font-mono text-label-xs font-semibold ${
+                        className={`rounded-buttons border px-3.5 py-1.5 font-mono text-caption font-medium ${
                           isSelected
-                            ? "border-primary bg-primary text-text-inverse"
-                            : "border-border bg-surface-high text-text-muted"
+                            ? "border-lime-pulse bg-ground-iron text-phosphor-white"
+                            : "border-circuit-border bg-carbon-veil text-sage-40"
                         }`}
                       >
                         {lang}
@@ -409,19 +333,19 @@ export default async function ProfilePage() {
               </div>
 
               <div>
-                <span className="text-label-xs text-text-muted uppercase font-mono block mb-2">
+                <span className="text-caption text-sage-40 uppercase font-mono block mb-2">
                   Target Role
                 </span>
-                <div className="rounded border border-border bg-surface-high p-2.5 text-body-sm font-mono text-text-primary">
+                <div className="rounded-buttons border border-circuit-border bg-carbon-veil p-2.5 text-body-sm font-mono text-phosphor-white">
                   {placementTargets.primaryRole ? (
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">{placementTargets.primaryRole.name}</span>
-                      <span className="text-[10px] text-primary uppercase font-mono px-1.5 py-0.5 rounded bg-primary/10">
+                      <span className="text-[10px] text-lime-pulse uppercase font-mono px-1.5 py-0.5 rounded-pills bg-lime-pulse/10 border border-lime-pulse/30">
                         Configured
                       </span>
                     </div>
                   ) : (
-                    <span className="text-text-muted">Not set</span>
+                    <span className="text-sage-40">Not set</span>
                   )}
                 </div>
               </div>
@@ -429,16 +353,16 @@ export default async function ProfilePage() {
           </div>
 
           {/* Recent Assessments */}
-          <div className="rounded-xl border border-border bg-surface p-5 sm:p-6">
+          <div className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h3 className="text-title-md font-semibold text-text-primary">
+              <h3 className="font-heading text-title-md font-semibold text-phosphor-white">
                 Recent Assessments
               </h3>
-              <span className="text-label-xs font-mono uppercase text-text-muted">{recentAttempts.length} recorded</span>
+              <span className="text-caption font-mono uppercase text-sage-40">{recentAttempts.length} recorded</span>
             </div>
 
             {recentAttempts.length > 0 ? (
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-circuit-border/60">
                 {recentAttempts.map((att) => {
                   const score = att.score ?? 0;
                   return (
@@ -447,23 +371,23 @@ export default async function ProfilePage() {
                       className="flex items-center justify-between gap-4 py-3 text-body-sm"
                     >
                       <div className="truncate mr-4">
-                        <span className="text-text-primary font-medium block truncate">
+                        <span className="text-phosphor-white font-medium block truncate">
                           {att.testTitle}
                         </span>
-                        <span className="text-label-xs text-text-muted font-mono">
+                        <span className="text-caption text-sage-40 font-mono">
                           {att.submittedAt ? formatDate(att.submittedAt) : "Recently"}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-4 font-mono text-label-xs flex-shrink-0">
-                        <span className="font-bold text-text-primary">
+                      <div className="flex items-center gap-4 font-mono text-caption shrink-0">
+                        <span className="font-bold text-phosphor-white">
                           {score}/100
                         </span>
                         <span
-                          className={`rounded border px-2 py-0.5 font-bold ${
+                          className={`rounded-pills border px-2 py-0.5 font-bold ${
                             score >= 70
-                              ? "border-secondary/20 bg-secondary/10 text-secondary"
-                              : "border-tertiary/20 bg-tertiary/10 text-tertiary"
+                              ? "border-lime-pulse/30 bg-lime-pulse/10 text-lime-pulse"
+                              : "border-circuit-border bg-carbon-veil text-sage-40"
                           }`}
                         >
                           {score >= 70 ? "PASSED" : "REVIEW"}
@@ -474,7 +398,7 @@ export default async function ProfilePage() {
                 })}
               </div>
             ) : (
-              <p className="text-body-sm text-text-muted py-4 text-center font-mono">
+              <p className="text-body-sm text-sage-40 py-4 text-center font-mono">
                 No assessments completed yet. Start your baseline assessment to begin tracking readiness.
               </p>
             )}

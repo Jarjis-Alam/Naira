@@ -13,6 +13,7 @@ import { getResumeHealth } from "@/server/resume-intelligence";
 import { getApplicationDashboardCard } from "@/server/application-intelligence";
 import { getOutcomeDashboardCard } from "@/server/outcome-intelligence";
 import { ResumeHealthCard } from "@/components/resume/resume-health-card";
+import { Eyebrow } from "@/components/ui/eyebrow";
 import { getGreeting, formatDateTime, getScoreColor, getSkillLevel } from "@/lib/utils";
 
 /**
@@ -145,28 +146,23 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8 pb-16">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border/60">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-circuit-border">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-            <span className="text-[11px] font-mono font-medium text-text-muted uppercase tracking-wider">
-              Nexora • Active Session
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+          <Eyebrow system="NEXORA" category="COMMAND CENTER">ACTIVE SESSION</Eyebrow>
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-phosphor-white">
             {getGreeting()}, {userName.split(" ")[0]}
           </h1>
-          <p className="text-body-sm text-text-secondary mt-1 max-w-2xl leading-relaxed">
+          <p className="text-body-sm text-sage-60 mt-1 max-w-2xl leading-relaxed">
             Your personalized placement command center. Actionable intelligence, deterministic readiness drivers, and prioritized next steps.
           </p>
         </div>
 
         {/* Quick Header Badge */}
-        <div className="flex items-center gap-2.5 self-start md:self-auto px-3.5 py-2 rounded-lg bg-surface/90 border border-border">
-          <span className="material-symbols-outlined text-[18px] text-primary">verified</span>
+        <div className="flex items-center gap-2.5 self-start md:self-auto px-3.5 py-2 rounded-cards bg-ground-iron border border-circuit-border">
+          <span className="material-symbols-outlined text-[18px] text-lime-pulse">verified</span>
           <div className="flex flex-col text-left">
-            <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider leading-none">Curriculum</span>
-            <span className="text-[12px] font-mono font-semibold text-text-primary mt-1 leading-none">7 Subjects • 160 Questions</span>
+            <span className="text-[10px] font-mono text-moss-70 uppercase tracking-wider leading-none">Curriculum</span>
+            <span className="text-[12px] font-mono font-semibold text-phosphor-white mt-1 leading-none">7 Subjects • 160 Questions</span>
           </div>
         </div>
       </header>
@@ -176,7 +172,7 @@ export default async function DashboardPage() {
         {/* Left Column (Span 8) */}
         <div className="lg:col-span-8 space-y-8">
           {/* 1. Placement Readiness Card & Readiness Contributors */}
-          <section className="bg-surface/90 border border-border/80 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-sm">
+          <section className="bg-ground-iron border border-circuit-border rounded-cards p-6 sm:p-8 relative overflow-hidden">
             <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8">
               {/* Circular Progress Ring or Clean Uncalibrated Gauge */}
               <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex-shrink-0">
@@ -186,11 +182,11 @@ export default async function DashboardPage() {
                     cy="60"
                     fill="none"
                     r={radius}
-                    stroke="#1A1A1A"
+                    stroke="#1f2a33"
                     strokeWidth="8"
                   />
                   <circle
-                    className="text-primary circle-progress"
+                    className="text-lime-pulse circle-progress"
                     cx="60"
                     cy="60"
                     fill="none"
@@ -206,14 +202,14 @@ export default async function DashboardPage() {
                   {dataSufficiency.hasCompletedBaseline ? (
                     <>
                       <div className="flex items-baseline justify-center font-mono">
-                        <span className="text-3xl sm:text-4xl font-bold text-text-primary leading-none tracking-tight">
+                        <span className="text-3xl sm:text-4xl font-bold text-phosphor-white leading-none tracking-tight">
                           {readiness.score}
                         </span>
-                        <span className="text-xs sm:text-sm text-text-muted ml-0.5">/ 100</span>
+                        <span className="text-xs sm:text-sm text-sage-40 ml-0.5">/ 100</span>
                       </div>
                       <span
                         className={`text-label-xs font-semibold mt-1.5 uppercase tracking-wider font-mono ${
-                          readiness.level?.color || "text-primary-text"
+                          readiness.level?.color || "text-lime-pulse"
                         }`}
                       >
                         {readiness.level?.label || "COMPETITIVE"}
@@ -222,12 +218,12 @@ export default async function DashboardPage() {
                   ) : (
                     <>
                       <div className="flex items-baseline justify-center font-mono">
-                        <span className="text-3xl sm:text-4xl font-bold text-text-muted leading-none tracking-wider">
+                        <span className="text-3xl sm:text-4xl font-bold text-sage-40 leading-none tracking-wider">
                           --
                         </span>
-                        <span className="text-xs sm:text-sm text-text-muted ml-0.5">/ 100</span>
+                        <span className="text-xs sm:text-sm text-sage-40 ml-0.5">/ 100</span>
                       </div>
-                      <span className="text-[10px] font-mono text-text-muted mt-1.5 uppercase tracking-widest">
+                      <span className="text-[10px] font-mono text-sage-40 mt-1.5 uppercase tracking-widest">
                         NOT ASSESSED
                       </span>
                     </>
@@ -237,10 +233,10 @@ export default async function DashboardPage() {
 
               {/* Card Content & CTAs */}
               <div className="flex-1 text-center md:text-left z-10">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-high border border-border/80 text-[11px] font-mono text-text-muted mb-2">
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-pills bg-carbon-veil border border-circuit-border text-[11px] font-mono text-moss-70 mb-2">
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      dataSufficiency.hasCompletedBaseline ? "bg-secondary" : "bg-primary"
+                      dataSufficiency.hasCompletedBaseline ? "bg-lime-pulse animate-pulse" : "bg-sage-40"
                     }`}
                   />
                   <span>
@@ -250,11 +246,11 @@ export default async function DashboardPage() {
                   </span>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-phosphor-white tracking-tight mb-2">
                   Placement Readiness Score
                 </h2>
 
-                <p className="text-body-sm text-text-secondary mb-5 leading-relaxed max-w-xl">
+                <p className="text-body-sm text-sage-60 mb-5 leading-relaxed max-w-xl">
                   {dataSufficiency.hasCompletedBaseline
                     ? "Calculated dynamically across Core CS fundamentals, problem-solving proficiency, and interview speed indexing against standard placement benchmarks."
                     : "Complete your baseline assessment to establish your starting benchmark across all 7 placement domains."}
@@ -265,14 +261,14 @@ export default async function DashboardPage() {
                     <>
                       <Link
                         href="/tests"
-                        className="bg-primary text-text-inverse font-medium text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-colors flex items-center gap-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="bg-lime-pulse text-void-black font-mono font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-lime-pulse/90 transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
                       >
                         <span className="material-symbols-outlined text-[18px]">play_arrow</span>
                         Take Mock Test
                       </Link>
                       <Link
                         href="/analytics"
-                        className="bg-surface-high border border-border text-text-primary font-medium text-body-sm px-6 py-2.5 rounded-lg hover:bg-surface-highest transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-border"
+                        className="bg-carbon-veil border border-circuit-border text-phosphor-white font-mono font-medium text-body-sm px-6 py-2.5 rounded-buttons hover:bg-circuit-border/40 transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-circuit-border"
                       >
                         <span className="material-symbols-outlined text-[18px]">insights</span>
                         View Detailed Report
@@ -281,7 +277,7 @@ export default async function DashboardPage() {
                   ) : (
                     <Link
                       href={baselineTestId ? `/tests/${baselineTestId}` : "/assessment"}
-                      className="bg-primary text-text-inverse font-medium text-body-sm px-7 py-3 rounded-lg hover:bg-primary-text transition-all flex items-center gap-2.5 shadow-md shadow-primary/10 hover:shadow-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 text-base"
+                      className="bg-lime-pulse text-void-black font-mono font-semibold text-body-sm px-7 py-3 rounded-buttons hover:bg-lime-pulse/90 transition-all flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50 text-base"
                     >
                       <span className="material-symbols-outlined text-[20px]">play_circle</span>
                       Start Baseline Assessment
@@ -293,21 +289,21 @@ export default async function DashboardPage() {
 
             {/* 2. Readiness Drivers (Contributors Analysis) */}
             {dataSufficiency.hasCompletedBaseline && (
-              <div className="mt-8 pt-6 border-t border-border/80">
+              <div className="mt-8 pt-6 border-t border-circuit-border">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-body-sm font-semibold text-text-primary flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-primary">swap_vert</span>
+                  <h3 className="text-body-sm font-semibold text-phosphor-white flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-lime-pulse">swap_vert</span>
                     Readiness Contributors
                   </h3>
-                  <span className="text-[11px] font-mono text-text-muted">
+                  <span className="text-[11px] font-mono text-moss-70">
                     Deterministic Impact Breakdown
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Positive Contributors (Helping) */}
-                  <div className="p-3.5 rounded-xl bg-surface-high/60 border border-secondary/20">
-                    <div className="flex items-center gap-2 mb-2 text-label-xs font-mono font-semibold text-secondary uppercase">
+                  <div className="p-3.5 rounded-cards bg-carbon-veil border border-circuit-border">
+                    <div className="flex items-center gap-2 mb-2 text-label-xs font-mono font-semibold text-lime-pulse uppercase">
                       <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
                       Helping Your Readiness
                     </div>
@@ -316,25 +312,25 @@ export default async function DashboardPage() {
                         {readiness.positiveContributors.slice(0, 2).map((c) => (
                           <div
                             key={c.code}
-                            className="flex items-center justify-between text-body-sm bg-surface/80 p-2 rounded-lg border border-border/60"
+                            className="flex items-center justify-between text-body-sm bg-ground-iron p-2 rounded-cards border border-circuit-border"
                           >
-                            <span className="text-text-primary font-medium">{c.name}</span>
-                            <span className="font-mono text-secondary font-semibold">
+                            <span className="text-phosphor-white font-medium">{c.name}</span>
+                            <span className="font-mono text-lime-pulse font-semibold">
                               +{c.score}%
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-[12px] font-mono text-text-muted">
+                      <p className="text-[12px] font-mono text-sage-40">
                         Take more tests to establish strong benchmark areas.
                       </p>
                     )}
                   </div>
 
                   {/* Negative Contributors (Holding it back) */}
-                  <div className="p-3.5 rounded-xl bg-surface-high/60 border border-error/20">
-                    <div className="flex items-center gap-2 mb-2 text-label-xs font-mono font-semibold text-error uppercase">
+                  <div className="p-3.5 rounded-cards bg-carbon-veil border border-rose-500/30">
+                    <div className="flex items-center gap-2 mb-2 text-label-xs font-mono font-semibold text-rose-400 uppercase">
                       <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
                       Holding It Back
                     </div>
@@ -343,17 +339,17 @@ export default async function DashboardPage() {
                         {readiness.negativeContributors.slice(0, 2).map((c) => (
                           <div
                             key={c.code}
-                            className="flex items-center justify-between text-body-sm bg-surface/80 p-2 rounded-lg border border-border/60"
+                            className="flex items-center justify-between text-body-sm bg-ground-iron p-2 rounded-cards border border-rose-500/20"
                           >
-                            <span className="text-text-primary font-medium">{c.name}</span>
-                            <span className="font-mono text-error font-semibold">
+                            <span className="text-phosphor-white font-medium">{c.name}</span>
+                            <span className="font-mono text-rose-400 font-semibold">
                               {c.score}%
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-[12px] font-mono text-secondary">
+                      <p className="text-[12px] font-mono text-lime-pulse">
                         No critical deficits holding your score back.
                       </p>
                     )}
@@ -367,20 +363,20 @@ export default async function DashboardPage() {
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-primary font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-lime-pulse font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-pulse" />
                   <span>Execution OS • Your Next Actions</span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight mt-0.5">
+                <h2 className="text-xl sm:text-2xl font-bold text-phosphor-white tracking-tight mt-0.5">
                   WHAT SHOULD I DO TODAY?
                 </h2>
-                <p className="text-body-sm text-text-secondary mt-0.5">
+                <p className="text-body-sm text-sage-60 mt-0.5">
                   Your Next Actions: Daily prioritized execution plan derived from your verified test performance
                 </p>
               </div>
               <Link
                 href="/roadmap"
-                className="text-primary-text font-mono text-[12px] hover:text-primary transition-colors flex items-center gap-1 font-medium"
+                className="text-lime-pulse font-mono text-[12px] hover:underline transition-colors flex items-center gap-1 font-medium"
               >
                 <span>View Roadmap</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -389,25 +385,25 @@ export default async function DashboardPage() {
 
             {/* Zero-Data / Empty Experience */}
             {!dailyPlan.hasEnoughData ? (
-              <div className="p-6 sm:p-8 rounded-2xl bg-surface/90 border border-border/80 text-center flex flex-col items-center justify-center space-y-4">
-                <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-1">
+              <div className="p-6 sm:p-8 rounded-cards bg-ground-iron border border-circuit-border text-center flex flex-col items-center justify-center space-y-4">
+                <div className="w-14 h-14 rounded-full bg-carbon-veil border border-circuit-border flex items-center justify-center text-lime-pulse mb-1">
                   <span className="material-symbols-outlined text-[28px]">flag</span>
                 </div>
                 <div className="max-w-md">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-primary font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-pulse font-bold">
                     CALIBRATION REQUIRED
                   </span>
-                  <h3 className="text-title-md font-bold text-text-primary mt-1 mb-1.5">
+                  <h3 className="text-title-md font-bold text-phosphor-white mt-1 mb-1.5">
                     BUILD YOUR BASELINE
                   </h3>
-                  <p className="text-body-sm text-text-secondary leading-relaxed">
+                  <p className="text-body-sm text-sage-60 leading-relaxed">
                     Complete an assessment to unlock your personalized preparation plan. Nexora analyzes your verified responses across 7 core placement domains.
                   </p>
                 </div>
 
                 <Link
                   href={baselineTestId ? `/tests/${baselineTestId}` : "/assessment"}
-                  className="bg-primary text-text-inverse font-medium text-body-sm px-7 py-3 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm"
+                  className="bg-lime-pulse text-void-black font-mono font-semibold text-body-sm px-7 py-3 rounded-buttons hover:bg-lime-pulse/90 transition-all inline-flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-[18px]">play_circle</span>
                   Start Assessment
@@ -417,21 +413,21 @@ export default async function DashboardPage() {
               <div className="space-y-4">
                 {/* Partial-Data State Banner */}
                 {dailyPlan.isPartialData && (
-                  <div className="p-4 rounded-xl bg-surface-high/80 border border-tertiary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="p-4 rounded-cards bg-carbon-veil border border-circuit-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-[22px] text-tertiary">info</span>
+                      <span className="material-symbols-outlined text-[22px] text-amber-400">info</span>
                       <div>
-                        <h4 className="text-body-sm font-bold text-text-primary">
+                        <h4 className="text-body-sm font-bold text-phosphor-white">
                           KEEP BUILDING YOUR BASELINE
                         </h4>
-                        <p className="text-[12px] font-mono text-text-muted mt-0.5">
+                        <p className="text-[12px] font-mono text-sage-40 mt-0.5">
                           You have enough data for an initial recommendation, but more practice will make your plan more precise.
                         </p>
                       </div>
                     </div>
                     <Link
                       href="/tests"
-                      className="text-primary-text font-mono text-[12px] font-semibold hover:underline whitespace-nowrap"
+                      className="text-lime-pulse font-mono text-[12px] font-semibold hover:underline whitespace-nowrap"
                     >
                       CONTINUE PRACTICE →
                     </Link>
@@ -439,35 +435,35 @@ export default async function DashboardPage() {
                 )}
 
                 {/* Compact Execution Progress Component */}
-                <div className="p-5 sm:p-6 rounded-2xl bg-surface/90 border border-border/80 space-y-3">
+                <div className="p-5 sm:p-6 rounded-cards bg-ground-iron border border-circuit-border space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-primary text-[20px]">task_alt</span>
-                      <h3 className="text-title-md font-bold text-text-primary">
+                      <span className="material-symbols-outlined text-lime-pulse text-[20px]">task_alt</span>
+                      <h3 className="text-title-md font-bold text-phosphor-white">
                         TODAY&apos;S PROGRESS
                       </h3>
                     </div>
                     <div className="flex items-baseline gap-2 font-mono">
-                      <span className="text-2xl font-bold text-text-primary">
+                      <span className="text-2xl font-bold text-phosphor-white">
                         {dailyPlan.completedCount} / {dailyPlan.totalCount}
                       </span>
-                      <span className="text-[12px] text-text-muted">actions complete</span>
+                      <span className="text-[12px] text-sage-40">actions complete</span>
                     </div>
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="w-full bg-surface-highest h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#1f2a33] h-2 rounded-pills overflow-hidden">
                     <div
-                      className="h-full bg-primary transition-all duration-500 rounded-full"
+                      className="h-full bg-lime-pulse transition-all duration-500 rounded-pills"
                       style={{ width: `${dailyPlan.progressPercent}%` }}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-mono text-text-muted">
-                    <span className="text-secondary font-semibold">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-moss-70">
+                    <span className="text-lime-pulse font-semibold">
                       {dailyPlan.completedCount} completed
                     </span>
-                    <span className="font-semibold text-text-primary">
+                    <span className="font-semibold text-phosphor-white">
                       {dailyPlan.progressPercent}%
                     </span>
                     <span>
@@ -486,36 +482,36 @@ export default async function DashboardPage() {
                   return (
                     <div
                       key={action.id}
-                      className={`p-5 sm:p-6 rounded-2xl border transition-all relative overflow-hidden shadow-sm ${
+                      className={`p-5 sm:p-6 rounded-cards border transition-all relative overflow-hidden ${
                         isCompleted
-                          ? "bg-surface/50 border-secondary/30 opacity-90"
+                          ? "bg-ground-iron/60 border-circuit-border opacity-80"
                           : isInProgress
-                          ? "bg-surface border-primary/50 shadow-md ring-1 ring-primary/20"
+                          ? "bg-carbon-veil border-lime-pulse/50 shadow-sm"
                           : isPartiallyCompleted
-                          ? "bg-surface border-tertiary/50 shadow-md ring-1 ring-tertiary/20"
+                          ? "bg-carbon-veil border-amber-400/40"
                           : action.order === 1
-                          ? "bg-surface border-primary/30"
-                          : "bg-surface/90 border-border/80 hover:border-border-variant"
+                          ? "bg-ground-iron border-lime-pulse/40"
+                          : "bg-ground-iron border-circuit-border hover:border-moss-70/40"
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl font-bold font-mono text-primary-text">
+                          <span className="text-2xl font-bold font-mono text-lime-pulse">
                             {orderStr}
                           </span>
                           <div className="flex items-center gap-2">
                             <span
-                              className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
+                              className={`text-[10px] font-mono px-2 py-0.5 rounded-pills font-bold uppercase tracking-wider ${
                                 action.type === "FIX"
-                                  ? "bg-error/20 text-error border border-error/30"
+                                  ? "bg-rose-950/60 text-rose-400 border border-rose-800/40"
                                   : action.type === "REINFORCE"
-                                  ? "bg-tertiary/20 text-tertiary border border-tertiary/30"
-                                  : "bg-secondary/20 text-secondary border border-secondary/30"
+                                  ? "bg-amber-950/60 text-amber-300 border border-amber-800/40"
+                                  : "bg-carbon-veil text-moss-80 border border-circuit-border"
                               }`}
                             >
                               {action.type}
                             </span>
-                            <span className="text-[11px] font-mono text-text-muted uppercase">
+                            <span className="text-[11px] font-mono text-sage-40 uppercase">
                               {action.impact}
                             </span>
                           </div>
@@ -523,46 +519,46 @@ export default async function DashboardPage() {
 
                         <div className="flex items-center gap-2 self-start sm:self-auto">
                           {isCompleted ? (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded bg-secondary/15 text-secondary border border-secondary/30 flex items-center gap-1">
+                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 flex items-center gap-1">
                               <span className="material-symbols-outlined text-[14px]">check_circle</span>
                               COMPLETED
                             </span>
                           ) : isPartiallyCompleted ? (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded bg-tertiary/15 text-tertiary border border-tertiary/30 flex items-center gap-1">
+                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-amber-400/15 text-amber-300 border border-amber-400/30 flex items-center gap-1">
                               <span className="material-symbols-outlined text-[14px]">pending</span>
                               PARTIAL PROGRESS
                             </span>
                           ) : isInProgress ? (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded bg-primary/15 text-primary-text border border-primary/30 flex items-center gap-1 animate-pulse">
+                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 flex items-center gap-1 animate-pulse">
                               <span className="material-symbols-outlined text-[14px]">autorenew</span>
                               IN PROGRESS
                             </span>
                           ) : (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded bg-surface-high text-text-muted border border-border">
+                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-carbon-veil text-sage-40 border border-circuit-border">
                               PENDING
                             </span>
                           )}
-                          <span className="text-label-xs font-mono text-secondary font-semibold bg-surface-high px-2.5 py-1 rounded-md border border-border">
+                          <span className="text-label-xs font-mono text-lime-pulse font-semibold bg-carbon-veil px-2.5 py-1 rounded-pills border border-circuit-border">
                             {action.accuracy}% ACCURACY
                           </span>
                           {action.targetFocus && (
-                            <span className="text-[10px] font-mono text-primary-text bg-primary/10 border border-primary/25 px-2 py-0.5 rounded">
+                            <span className="text-[10px] font-mono text-lime-pulse bg-lime-pulse/10 border border-lime-pulse/30 px-2 py-0.5 rounded-pills">
                               TARGET FOCUS
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <h3 className="text-lg sm:text-xl font-bold text-text-primary tracking-tight mb-2">
+                      <h3 className="text-lg sm:text-xl font-bold text-phosphor-white tracking-tight mb-2">
                         {isCompleted && (
-                          <span className="text-secondary mr-2">✓</span>
+                          <span className="text-lime-pulse mr-2">✓</span>
                         )}
                         {action.domain} → {action.topic}
                       </h3>
 
                       <div className="space-y-2 mb-5 max-w-3xl">
-                        <div className="flex items-center gap-3 text-[12px] font-mono text-text-muted">
-                          <span className="text-text-primary font-semibold">
+                        <div className="flex items-center gap-3 text-[12px] font-mono text-sage-40">
+                          <span className="text-phosphor-white font-semibold">
                             {action.completedQuestionsCount !== undefined && action.completedQuestionsCount > 0
                               ? `${action.completedQuestionsCount} / ${action.targetCount} questions answered`
                               : `${action.targetCount} targeted questions`}
@@ -572,43 +568,43 @@ export default async function DashboardPage() {
                         </div>
 
                         <div>
-                          <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
+                          <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
                             Why:
                           </span>
-                          <p className="text-body-sm text-text-secondary leading-relaxed">
+                          <p className="text-body-sm text-sage-60 leading-relaxed">
                             {action.reason}
                           </p>
                         </div>
 
                         <div>
-                          <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
+                          <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
                             Evidence:
                           </span>
-                          <p className="text-[12px] font-mono text-text-muted leading-relaxed">
+                          <p className="text-[12px] font-mono text-sage-40 leading-relaxed">
                             {action.evidence}
                           </p>
                         </div>
 
                         <div>
-                          <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
+                          <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
                             Action:
                           </span>
-                          <p className="text-body-sm text-text-primary font-medium leading-relaxed">
+                          <p className="text-body-sm text-phosphor-white font-medium leading-relaxed">
                             {action.action}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border/60">
+                      <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-circuit-border">
                         {isCompleted ? (
                           <div className="flex items-center gap-3">
-                            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-secondary/10 border border-secondary/30 text-secondary text-body-sm font-semibold font-mono">
+                            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-buttons bg-lime-pulse/10 border border-lime-pulse/30 text-lime-pulse text-body-sm font-semibold font-mono">
                               <span className="material-symbols-outlined text-[16px]">check</span>
                               Completed Today
                             </span>
                             <Link
                               href={action.ctaHref}
-                              className="text-text-muted hover:text-text-primary text-[12px] font-mono underline transition-colors"
+                              className="text-sage-40 hover:text-phosphor-white text-[12px] font-mono underline transition-colors"
                             >
                               Practice again
                             </Link>
@@ -616,7 +612,7 @@ export default async function DashboardPage() {
                         ) : isPartiallyCompleted || isInProgress ? (
                           <Link
                             href={action.ctaHref}
-                            className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-colors inline-flex items-center gap-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className="bg-lime-pulse text-void-black font-semibold font-mono text-body-sm px-6 py-2.5 rounded-buttons hover:bg-lime-pulse/90 transition-colors inline-flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
                           >
                             <span>CONTINUE</span>
                             <span className="material-symbols-outlined text-[18px]">play_arrow</span>
@@ -624,7 +620,7 @@ export default async function DashboardPage() {
                         ) : (
                           <Link
                             href={action.ctaHref}
-                            className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-colors inline-flex items-center gap-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className="bg-lime-pulse text-void-black font-semibold font-mono text-body-sm px-6 py-2.5 rounded-buttons hover:bg-lime-pulse/90 transition-colors inline-flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
                           >
                             <span>
                               {action.type === "REVIEW"
@@ -638,8 +634,8 @@ export default async function DashboardPage() {
                             </span>
                           </Link>
                         )}
-                        <span className="text-[12px] font-mono text-text-muted">
-                          Direct Practice: <span className="text-text-primary">{action.domain}</span>
+                        <span className="text-[12px] font-mono text-sage-40">
+                          Direct Practice: <span className="text-phosphor-white">{action.domain}</span>
                         </span>
                       </div>
                     </div>
@@ -651,42 +647,42 @@ export default async function DashboardPage() {
                     student to add evidence they already have, and an ALIGN action is only
                     raised when Preparation OS independently measured the weakness. */}
                 {dailyPlan.resumeActions && dailyPlan.resumeActions.length > 0 && (
-                  <div className="p-4 rounded-xl bg-surface/80 border border-border/80 space-y-2.5">
+                  <div className="p-4 rounded-cards bg-carbon-veil border border-circuit-border space-y-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-semibold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-moss-70 font-semibold">
                         RESUME-ALIGNED ACTIONS
                       </span>
-                      <Link href="/resume" className="text-[11px] font-mono text-primary-text hover:underline">
+                      <Link href="/resume" className="text-[11px] font-mono text-lime-pulse hover:underline">
                         Open Resume Intelligence
                       </Link>
                     </div>
                     {dailyPlan.resumeActions.slice(0, 3).map((action) => (
                       <div
                         key={action.id}
-                        className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-t border-border/60 pt-2.5 first:border-t-0 first:pt-0"
+                        className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-t border-circuit-border pt-2.5 first:border-t-0 first:pt-0"
                       >
                         <div className="min-w-0">
                           <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded-pills font-bold uppercase tracking-wider ${
                               action.type === "RESUME"
-                                ? "bg-primary/15 text-primary-text border border-primary/30"
-                                : "bg-tertiary/20 text-tertiary border border-tertiary/30"
+                                ? "bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30"
+                                : "bg-amber-400/15 text-amber-300 border border-amber-400/30"
                             }`}
                           >
                             {action.type === "RESUME" ? "RESUME" : "ALIGN"}
                           </span>
-                          <p className="text-body-sm text-text-primary mt-1.5">{action.title}</p>
-                          <p className="text-[11px] font-mono text-text-secondary leading-relaxed mt-1">
+                          <p className="text-body-sm text-phosphor-white mt-1.5">{action.title}</p>
+                          <p className="text-[11px] font-mono text-sage-60 leading-relaxed mt-1">
                             {action.reason}
                           </p>
-                          <p className="text-[11px] font-mono text-text-muted mt-1">
+                          <p className="text-[11px] font-mono text-sage-40 mt-1">
                             Evidence: {action.evidence}
                           </p>
                         </div>
                         {action.ctaHref && (
                           <Link
                             href={action.ctaHref}
-                            className="shrink-0 text-[11px] font-mono px-3 py-1.5 rounded-md border border-border bg-surface-high text-text-secondary hover:text-text-primary transition-colors self-start"
+                            className="shrink-0 text-[11px] font-mono px-3 py-1.5 rounded-buttons border border-circuit-border bg-ground-iron text-moss-80 hover:text-phosphor-white transition-colors self-start"
                           >
                             {action.ctaLabel}
                           </Link>
@@ -698,12 +694,12 @@ export default async function DashboardPage() {
 
                 {/* Preparation History (Optional View) */}
                 {dailyPlan.history && dailyPlan.history.length > 0 && (
-                  <div className="p-4 rounded-xl bg-surface/80 border border-border/80 space-y-2.5">
+                  <div className="p-4 rounded-cards bg-carbon-veil border border-circuit-border space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-semibold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-moss-70 font-semibold">
                         PREPARATION HISTORY
                       </span>
-                      <span className="text-[10px] font-mono text-text-muted">
+                      <span className="text-[10px] font-mono text-sage-40">
                         Verified Daily Completion
                       </span>
                     </div>
@@ -711,18 +707,18 @@ export default async function DashboardPage() {
                       {dailyPlan.history.map((h) => (
                         <div
                           key={h.date}
-                          className="p-2 rounded-lg bg-surface-high border border-border/60 flex flex-col items-center text-center"
+                          className="p-2 rounded-cards bg-ground-iron border border-circuit-border flex flex-col items-center text-center"
                         >
-                          <span className="text-text-muted text-[10px]">
+                          <span className="text-sage-40 text-[10px]">
                             {new Date(h.date + "T00:00:00").toLocaleDateString(undefined, {
                               month: "short",
                               day: "numeric",
                             })}
                           </span>
-                          <span className="font-bold text-text-primary mt-0.5">
+                          <span className="font-bold text-phosphor-white mt-0.5">
                             {h.completedCount} / {h.totalCount}
                           </span>
-                          <span className="text-[10px] text-secondary">
+                          <span className="text-[10px] text-lime-pulse">
                             {h.percent}%
                           </span>
                         </div>
@@ -738,16 +734,16 @@ export default async function DashboardPage() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-title-md font-semibold text-text-primary">
+                <h2 className="text-title-md font-semibold text-phosphor-white">
                   Subject Performance
                 </h2>
-                <p className="text-label-xs text-text-muted mt-0.5">
+                <p className="text-label-xs text-moss-70 mt-0.5">
                   Performance across 7 placement domains
                 </p>
               </div>
               <Link
                 href="/analytics"
-                className="text-primary-text font-mono text-[12px] hover:text-primary transition-colors flex items-center gap-1 font-medium"
+                className="text-lime-pulse font-mono text-[12px] hover:underline transition-colors flex items-center gap-1 font-medium"
               >
                 <span>Full Analytics</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -779,27 +775,27 @@ export default async function DashboardPage() {
                 return (
                   <div
                     key={subj.subjectId}
-                    className="bg-surface/90 border border-border/80 rounded-xl p-4 flex min-w-0 flex-col justify-between gap-3 hover:border-border-variant hover:bg-surface-high transition-all"
+                    className="bg-ground-iron border border-circuit-border rounded-cards p-4 flex min-w-0 flex-col justify-between gap-3 hover:border-moss-70/40 hover:bg-carbon-veil transition-all"
                   >
                     <div className="flex min-w-0 items-start justify-between gap-3">
-                      <span className="min-w-0 text-body-sm font-semibold text-text-primary" title={subj.name}>
+                      <span className="min-w-0 text-body-sm font-semibold text-phosphor-white" title={subj.name}>
                         {displayName}
                       </span>
                     </div>
 
                     <div>
-                      <div className="text-2xl font-bold font-mono text-text-primary tracking-tight">
+                      <div className="text-2xl font-bold font-mono text-phosphor-white tracking-tight">
                         {isTested ? (
                           `${subj.score}%`
                         ) : (
-                          <span className="text-text-muted">—</span>
+                          <span className="text-sage-40">—</span>
                         )}
                       </div>
                       <span
-                        className={`mt-1 inline-flex text-[9px] font-mono px-1.5 py-0.5 rounded font-semibold tracking-wider ${
+                        className={`mt-1 inline-flex text-[9px] font-mono px-1.5 py-0.5 rounded-pills font-semibold tracking-wider ${
                           isTested
                             ? `${skillLevel.bgClass} ${skillLevel.colorClass}`
-                            : "bg-surface-highest/60 text-text-muted"
+                            : "bg-carbon-veil text-sage-40 border border-circuit-border"
                         }`}
                       >
                         {isTested ? subj.status : "NOT TESTED"}
@@ -807,10 +803,10 @@ export default async function DashboardPage() {
                     </div>
 
                     {/* Progress indicator */}
-                    <div className="w-full bg-surface-highest h-1 rounded-full overflow-hidden">
+                    <div className="w-full bg-[#1f2a33] h-1 rounded-pills overflow-hidden">
                       <div
-                        className={`h-full transition-all duration-500 ${
-                          isTested ? "bg-primary" : "bg-transparent"
+                        className={`h-full transition-all duration-500 rounded-pills ${
+                          isTested ? "bg-lime-pulse" : "bg-transparent"
                         }`}
                         style={{
                           width: isTested ? `${subj.score}%` : "0%",
@@ -826,12 +822,12 @@ export default async function DashboardPage() {
           {/* 5. Critical Focus Areas (Weak Topics) */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-title-md font-semibold text-text-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-error">track_changes</span>
+              <h2 className="text-title-md font-semibold text-phosphor-white flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-rose-400">track_changes</span>
                 Critical Focus Areas
               </h2>
               {intelligence.weakAreas.length > 0 && (
-                <span className="text-[11px] font-mono text-text-muted">
+                <span className="text-[11px] font-mono text-moss-70">
                   {intelligence.weakAreas.length}{" "}
                   {intelligence.weakAreas.length === 1 ? "TOPIC" : "TOPICS"} DETECTED
                 </span>
@@ -843,14 +839,14 @@ export default async function DashboardPage() {
                 {intelligence.weakAreas.slice(0, 4).map((wa) => (
                   <div
                     key={wa.topicId}
-                    className="bg-surface/90 border border-border/80 rounded-xl p-4 flex items-center justify-between hover:border-border-variant transition-colors group"
+                    className="bg-ground-iron border border-circuit-border rounded-cards p-4 flex items-center justify-between hover:border-moss-70/40 transition-colors group"
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center border ${
+                        className={`w-10 h-10 rounded-cards flex items-center justify-center border ${
                           wa.priority === "CRITICAL"
-                            ? "bg-error/10 text-error border-error/20"
-                            : "bg-tertiary/10 text-tertiary border-tertiary/20"
+                            ? "bg-rose-950/40 text-rose-400 border-rose-800/40"
+                            : "bg-amber-950/40 text-amber-300 border-amber-800/40"
                         }`}
                       >
                         <span className="material-symbols-outlined text-[20px]">
@@ -864,10 +860,10 @@ export default async function DashboardPage() {
                         </span>
                       </div>
                       <div>
-                        <h3 className="text-body-sm text-text-primary font-medium">
+                        <h3 className="text-body-sm text-phosphor-white font-medium">
                           {wa.topicName}
                         </h3>
-                        <p className="text-label-xs text-text-muted mt-0.5 font-mono">
+                        <p className="text-label-xs text-sage-40 mt-0.5 font-mono">
                           {wa.subjectCode} • {wa.accuracy}% accuracy ({wa.totalAttempts} questions)
                           {wa.trend === "declining" && " • declining trend"}
                         </p>
@@ -876,7 +872,7 @@ export default async function DashboardPage() {
 
                     <Link
                       href="/tests"
-                      className="text-primary-text font-mono text-[12px] uppercase hover:bg-primary/10 px-3 py-1.5 rounded-md transition-colors hidden sm:flex items-center gap-1 font-semibold"
+                      className="text-lime-pulse font-mono text-[12px] uppercase hover:bg-carbon-veil px-3 py-1.5 rounded-buttons transition-colors hidden sm:flex items-center gap-1 font-semibold"
                     >
                       <span>Practice Topic</span>
                       <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -885,14 +881,14 @@ export default async function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="p-6 rounded-xl bg-surface/90 border border-border/80 text-center flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary mb-3">
+              <div className="p-6 rounded-cards bg-ground-iron border border-circuit-border text-center flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-carbon-veil border border-circuit-border flex items-center justify-center text-lime-pulse mb-3">
                   <span className="material-symbols-outlined text-[20px]">verified</span>
                 </div>
-                <h3 className="text-body-sm font-semibold text-text-primary mb-1">
+                <h3 className="text-body-sm font-semibold text-phosphor-white mb-1">
                   {dataSufficiency.hasCompletedBaseline ? "No Critical Weaknesses" : "Awaiting Evaluation"}
                 </h3>
-                <p className="text-label-xs text-text-muted max-w-md leading-relaxed">
+                <p className="text-label-xs text-sage-60 max-w-md leading-relaxed">
                   {dataSufficiency.hasCompletedBaseline
                     ? "Great performance! No topics are currently below the accuracy threshold. Keep taking mock tests to maintain consistency."
                     : "Focus areas will appear here after your baseline assessment provides real performance data."}
@@ -905,15 +901,15 @@ export default async function DashboardPage() {
         {/* Right Column (Span 4) */}
         <div className="lg:col-span-4 space-y-6">
           {/* Placement Target & Preparation Roadmap Card (Section 4 Hierarchy) */}
-          <section className="bg-surface/90 border border-primary/30 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
+          <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-primary font-bold flex items-center gap-1.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[16px]">target</span>
                 Placement Target
               </span>
               <Link
                 href="/profile"
-                className="text-primary-text hover:text-primary text-[11px] font-mono font-medium underline transition-colors"
+                className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
               >
                 {placementTargets.configured ? "Manage Targets" : "Set Targets"}
               </Link>
@@ -923,15 +919,15 @@ export default async function DashboardPage() {
               <div className="space-y-3.5">
                 {/* Primary Target Role & Company */}
                 <div>
-                  <h3 className="text-xl font-bold text-text-primary tracking-tight">
+                  <h3 className="text-xl font-bold text-phosphor-white tracking-tight">
                     {placementTargets.primaryRole?.name || "Target Role Not Selected"}
                   </h3>
                   {placementTargets.primaryCompany && (
-                    <p className="text-body-md font-semibold text-primary-text mt-0.5">
+                    <p className="text-body-md font-semibold text-lime-pulse mt-0.5">
                       {placementTargets.primaryCompany.name}
                     </p>
                   )}
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-text-muted mt-1.5">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-sage-40 mt-1.5">
                     <span>
                       {placementTargets.targetCount}{" "}
                       {placementTargets.targetCount === 1 ? "target company" : "target companies"}
@@ -945,32 +941,32 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Preparation Focus */}
-                <div className="pt-3 border-t border-border/60 space-y-1">
+                <div className="pt-3 border-t border-circuit-border space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
+                    <span className="text-[10px] font-mono uppercase text-moss-70 font-bold block">
                       Preparation Focus
                     </span>
                     {prepFocus.score !== null && (
-                      <span className="text-[11px] font-mono font-bold text-error">
+                      <span className="text-[11px] font-mono font-bold text-rose-400">
                         {prepFocus.score}%
                       </span>
                     )}
                   </div>
-                  <div className="text-body-sm font-bold text-text-primary">
+                  <div className="text-body-sm font-bold text-phosphor-white">
                     {prepFocus.label}
                   </div>
-                  <p className="text-[12px] font-mono text-text-secondary leading-relaxed">
+                  <p className="text-[12px] font-mono text-sage-60 leading-relaxed">
                     {prepFocus.detail}
                   </p>
                 </div>
 
                 {/* Highest-Priority Next Action */}
                 {dataSufficiency.hasCompletedBaseline && topAction && (
-                  <div className="pt-3 border-t border-border/60 space-y-1">
-                    <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
+                  <div className="pt-3 border-t border-circuit-border space-y-1">
+                    <span className="text-[10px] font-mono uppercase text-moss-70 font-bold block">
                       Next Action
                     </span>
-                    <p className="text-[12px] font-medium text-primary-text truncate">
+                    <p className="text-[12px] font-medium text-lime-pulse truncate">
                       {topAction.title}
                     </p>
                   </div>
@@ -978,20 +974,20 @@ export default async function DashboardPage() {
 
                 {/* Target Strategy Alignment (Phase 16) */}
                 {dataSufficiency.hasCompletedBaseline && targetStrategy.readiness.targetScore !== null && (
-                  <div className="pt-3 border-t border-border/60 space-y-1.5">
+                  <div className="pt-3 border-t border-circuit-border space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
+                      <span className="text-[10px] font-mono uppercase text-moss-70 font-bold block">
                         Target Readiness
                       </span>
-                      <span className="text-[10px] font-mono font-bold uppercase text-secondary">
+                      <span className="text-[10px] font-mono font-bold uppercase text-lime-pulse">
                         {targetStrategy.readiness.targetLevel || "ON TRACK"}
                       </span>
                     </div>
                     <div className="flex items-baseline justify-between">
-                      <span className="text-2xl font-bold font-mono text-primary-text">
+                      <span className="text-2xl font-bold font-mono text-lime-pulse">
                         {targetStrategy.readiness.targetScore}%
                       </span>
-                      <span className="text-[11px] font-mono text-tertiary">
+                      <span className="text-[11px] font-mono text-amber-300">
                         {targetStrategy.gaps.length} {targetStrategy.gaps.length === 1 ? "priority gap" : "priority gaps"}
                       </span>
                     </div>
@@ -1002,7 +998,7 @@ export default async function DashboardPage() {
                   <Link
                     href="/target"
                     id="dashboard-view-target-strategy-btn"
-                    className="flex-1 bg-surface-high border border-primary/30 text-primary-text font-medium text-[12px] py-2.5 px-3 rounded-lg hover:bg-surface-highest transition-colors flex items-center justify-center gap-1.5 font-mono shadow-sm"
+                    className="flex-1 bg-carbon-veil border border-circuit-border text-phosphor-white font-medium text-[12px] py-2.5 px-3 rounded-buttons hover:bg-circuit-border/40 transition-colors flex items-center justify-center gap-1.5 font-mono"
                   >
                     <span className="material-symbols-outlined text-[15px]">track_changes</span>
                     <span>View Target Strategy</span>
@@ -1010,7 +1006,7 @@ export default async function DashboardPage() {
                   <Link
                     href="/roadmap"
                     id="dashboard-view-roadmap-btn"
-                    className="bg-primary text-text-inverse font-semibold text-[12px] py-2.5 px-4 rounded-lg hover:bg-primary-text transition-colors flex items-center justify-center gap-1.5 shadow-sm font-mono"
+                    className="bg-lime-pulse text-void-black font-semibold text-[12px] py-2.5 px-4 rounded-buttons hover:bg-lime-pulse/90 transition-colors flex items-center justify-center gap-1.5 font-mono"
                   >
                     <span>View Roadmap</span>
                     <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
@@ -1019,27 +1015,27 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3 py-1">
-                <p className="text-body-sm text-text-muted font-mono text-[12px]">
+                <p className="text-body-sm text-sage-40 font-mono text-[12px]">
                   No target role or company selected. Set placement targets to focus your preparation roadmap.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Link
                     href="/profile"
-                    className="flex-1 py-2 px-3 rounded-lg border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary-text text-[12px] font-medium transition-colors inline-flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2 px-3 rounded-buttons border border-lime-pulse/40 bg-lime-pulse/10 hover:bg-lime-pulse/20 text-lime-pulse text-[12px] font-medium font-mono transition-colors inline-flex items-center justify-center gap-1.5"
                   >
                     <span className="material-symbols-outlined text-[15px]">add_circle</span>
                     <span>Set Targets</span>
                   </Link>
                   <Link
                     href="/target"
-                    className="py-2 px-3 rounded-lg border border-border bg-surface-high hover:bg-surface-highest text-text-secondary text-[12px] font-mono transition-colors inline-flex items-center justify-center gap-1"
+                    className="py-2 px-3 rounded-buttons border border-circuit-border bg-carbon-veil hover:bg-circuit-border/40 text-sage-60 text-[12px] font-mono transition-colors inline-flex items-center justify-center gap-1"
                   >
                     <span>Strategy</span>
                     <span className="material-symbols-outlined text-[15px]">track_changes</span>
                   </Link>
                   <Link
                     href="/roadmap"
-                    className="py-2 px-3 rounded-lg border border-border bg-surface-high hover:bg-surface-highest text-text-primary text-[12px] font-mono transition-colors inline-flex items-center justify-center gap-1"
+                    className="py-2 px-3 rounded-buttons border border-circuit-border bg-carbon-veil hover:bg-circuit-border/40 text-phosphor-white text-[12px] font-mono transition-colors inline-flex items-center justify-center gap-1"
                   >
                     <span>View Roadmap</span>
                     <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
@@ -1056,49 +1052,49 @@ export default async function DashboardPage() {
           {/* Application Pipeline Card (Phase 19) — compact by design; only counts and
               the next real deadline. Full history lives in /applications. */}
           {applicationCard && applicationCard.show && (
-            <section className="bg-surface/90 border border-primary/20 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
+            <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-primary font-bold flex items-center gap-1.5">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">work</span>
                   Application Pipeline
                 </span>
                 <Link
                   href={applicationCard.ctaHref}
-                  className="text-primary-text hover:text-primary text-[11px] font-mono font-medium underline transition-colors"
+                  className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
                 >
                   {applicationCard.ctaLabel}
                 </Link>
               </div>
 
-              <p className="text-headline-md font-bold text-text-primary tracking-tight">
+              <p className="text-headline-md font-bold text-phosphor-white tracking-tight">
                 {applicationCard.activeApplications}{" "}
                 {applicationCard.activeApplications === 1 ? "Active Application" : "Active Applications"}
               </p>
 
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-lg bg-surface-high/60 px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-text-muted font-bold">Interviews</p>
-                  <p className="text-body-md font-bold text-text-primary">{applicationCard.interviews}</p>
+                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
+                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Interviews</p>
+                  <p className="text-body-md font-bold text-phosphor-white">{applicationCard.interviews}</p>
                 </div>
-                <div className="rounded-lg bg-surface-high/60 px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-text-muted font-bold">Assessments</p>
-                  <p className="text-body-md font-bold text-text-primary">{applicationCard.assessments}</p>
+                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
+                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Assessments</p>
+                  <p className="text-body-md font-bold text-phosphor-white">{applicationCard.assessments}</p>
                 </div>
-                <div className="rounded-lg bg-surface-high/60 px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-text-muted font-bold">Offers</p>
-                  <p className="text-body-md font-bold text-text-primary">{applicationCard.offers}</p>
+                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
+                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Offers</p>
+                  <p className="text-body-md font-bold text-phosphor-white">{applicationCard.offers}</p>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-border/60 flex items-center justify-between">
-                <span className="text-[11px] font-mono text-text-muted">
+              <div className="pt-3 border-t border-circuit-border flex items-center justify-between">
+                <span className="text-[11px] font-mono text-sage-40">
                   {applicationCard.nextDeadline
                     ? `Next deadline: ${applicationCard.nextDeadline.companyName} — ${new Date(applicationCard.nextDeadline.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
                     : "No upcoming deadlines"}
                 </span>
                 <Link
                   href={applicationCard.ctaHref}
-                  className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-primary-text hover:underline"
+                  className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-lime-pulse hover:underline"
                 >
                   <span>Track</span>
                   <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -1110,64 +1106,64 @@ export default async function DashboardPage() {
           {/* Placement Outcomes Card (Phase 20) — compact, descriptive only.
               Counts and the most recent recorded outcome; no success score. */}
           {outcomeCard && outcomeCard.show && (
-            <section className="bg-surface/90 border border-secondary/20 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
+            <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-primary font-bold flex items-center gap-1.5">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">insights</span>
                   Placement Outcomes
                 </span>
                 <Link
                   href={outcomeCard.ctaHref}
-                  className="text-primary-text hover:text-primary text-[11px] font-mono font-medium underline transition-colors"
+                  className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
                 >
                   {outcomeCard.ctaLabel}
                 </Link>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-lg bg-surface-high/60 px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-text-muted font-bold">Applications</p>
-                  <p className="text-body-md font-bold text-text-primary">{outcomeCard.applications}</p>
+                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
+                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Applications</p>
+                  <p className="text-body-md font-bold text-phosphor-white">{outcomeCard.applications}</p>
                 </div>
-                <div className="rounded-lg bg-surface-high/60 px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-text-muted font-bold">Interviews</p>
-                  <p className="text-body-md font-bold text-text-primary">{outcomeCard.interviews}</p>
+                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
+                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Interviews</p>
+                  <p className="text-body-md font-bold text-phosphor-white">{outcomeCard.interviews}</p>
                 </div>
-                <div className="rounded-lg bg-surface-high/60 px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-text-muted font-bold">Offers</p>
-                  <p className="text-body-md font-bold text-text-primary">{outcomeCard.offers}</p>
+                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
+                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Offers</p>
+                  <p className="text-body-md font-bold text-phosphor-white">{outcomeCard.offers}</p>
                 </div>
               </div>
 
               {outcomeCard.recentOutcome && (
-                <div className="pt-3 border-t border-border/60">
-                  <p className="text-[10px] font-mono uppercase text-text-muted font-bold">Recent outcome</p>
-                  <p className="text-body-sm font-semibold text-text-primary mt-1">
+                <div className="pt-3 border-t border-circuit-border">
+                  <p className="text-[10px] font-mono uppercase text-moss-70 font-bold">Recent outcome</p>
+                  <p className="text-body-sm font-semibold text-phosphor-white mt-1">
                     {outcomeCard.recentOutcome.companyName}
                   </p>
-                  <p className="text-[11px] font-mono text-text-muted">{outcomeCard.recentOutcome.label}</p>
+                  <p className="text-[11px] font-mono text-sage-40">{outcomeCard.recentOutcome.label}</p>
                   {outcomeCard.observedFocus.length > 0 && (
-                    <p className="text-[11px] text-text-secondary mt-1.5">
+                    <p className="text-[11px] text-sage-60 mt-1.5 font-mono">
                       Observed focus: {outcomeCard.observedFocus.join(" · ")}
                     </p>
                   )}
                 </div>
               )}
 
-              <p className="text-[10px] text-text-muted">{outcomeCard.disclaimer}</p>
+              <p className="text-[10px] text-sage-40 font-mono">{outcomeCard.disclaimer}</p>
             </section>
           )}
 
           {/* Placement Simulation Card (Phase 17) */}
-          <section className="bg-surface/90 border border-primary/20 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
+          <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-primary font-bold flex items-center gap-1.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-[16px]">terminal</span>
                 Placement Simulation
               </span>
               <Link
                 href="/simulation"
-                className="text-primary-text hover:text-primary text-[11px] font-mono font-medium underline transition-colors"
+                className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
               >
                 {latestSimulation ? "Simulation Hub" : "Launch"}
               </Link>
@@ -1177,35 +1173,35 @@ export default async function DashboardPage() {
               <div className="space-y-3.5">
                 <div>
                   <div className="flex items-center justify-between">
-                    <h3 className="text-body-md font-bold text-text-primary tracking-tight">
+                    <h3 className="text-body-md font-bold text-phosphor-white tracking-tight">
                       {latestSimulation.companyName ? `${latestSimulation.companyName} — ` : ""}{latestSimulation.roleName}
                     </h3>
                     <span
-                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded border ${
+                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-pills border ${
                         latestSimulation.status === "completed"
-                          ? "bg-secondary/10 border-secondary/30 text-secondary"
-                          : "bg-primary/10 border-primary/30 text-primary"
+                          ? "bg-lime-pulse/10 border-lime-pulse/30 text-lime-pulse"
+                          : "bg-carbon-veil border-circuit-border text-moss-80"
                       }`}
                     >
                       {latestSimulation.status === "completed" ? "COMPLETED" : `ROUND ${latestSimulation.currentRoundOrder}/5`}
                     </span>
                   </div>
-                  <p className="text-[12px] font-mono text-text-muted mt-0.5">
+                  <p className="text-[12px] font-mono text-sage-40 mt-0.5">
                     {latestSimulation.status === "completed"
                       ? `Simulation Readiness: ${latestSimulation.overallReadinessScore}%`
                       : "Simulation in progress"}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-border/60 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-text-muted">
+                <div className="pt-3 border-t border-circuit-border flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-sage-40">
                     {latestSimulation.status === "completed"
                       ? `Verdict: ${latestSimulation.readinessLevel || "Evaluated"}`
                       : `Next: Round ${latestSimulation.currentRoundOrder}`}
                   </span>
                   <Link
                     href={`/simulation/${latestSimulation.id}`}
-                    className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-primary-text hover:underline"
+                    className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-lime-pulse hover:underline"
                   >
                     <span>{latestSimulation.status === "completed" ? "View Report" : "Resume"}</span>
                     <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -1214,12 +1210,12 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3 py-1">
-                <p className="text-body-sm text-text-muted font-mono text-[12px]">
+                <p className="text-body-sm text-sage-40 font-mono text-[12px]">
                   Simulate your target company&apos;s full 5-round hiring process: Screening, Coding, Debugging, AI Tech &amp; HR.
                 </p>
                 <Link
                   href="/simulation"
-                  className="w-full py-2 px-3 rounded-lg border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary-text text-[12px] font-medium transition-colors inline-flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 rounded-buttons border border-lime-pulse/40 bg-lime-pulse/10 hover:bg-lime-pulse/20 text-lime-pulse text-[12px] font-medium font-mono transition-colors inline-flex items-center justify-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-[15px]">play_circle</span>
                   <span>Start Placement Simulation</span>
@@ -1229,16 +1225,16 @@ export default async function DashboardPage() {
           </section>
 
           {/* Quick Actions */}
-          <section className="bg-surface/90 border border-border/80 rounded-2xl p-6">
-            <h2 className="text-title-md font-semibold text-text-primary mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-primary">bolt</span>
+          <section className="bg-ground-iron border border-circuit-border rounded-cards p-6">
+            <h2 className="text-title-md font-semibold text-phosphor-white mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px] text-lime-pulse">bolt</span>
               Quick Actions
             </h2>
             <div className="flex flex-col gap-3">
               {/* PRIMARY ACTION */}
               <Link
                 href="/simulation"
-                className="w-full h-11 bg-primary text-text-inverse font-semibold text-body-sm px-4 rounded-lg hover:bg-primary-text transition-all flex items-center justify-between group shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full h-11 bg-lime-pulse text-void-black font-semibold font-mono text-body-sm px-4 rounded-buttons hover:bg-lime-pulse/90 transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
               >
                 <span className="flex items-center gap-2.5">
                   <span className="material-symbols-outlined text-[20px]">terminal</span>
@@ -1252,10 +1248,10 @@ export default async function DashboardPage() {
               {/* SECONDARY ACTION 1 */}
               <Link
                 href="/tests"
-                className="w-full h-11 bg-surface-high border border-border text-text-secondary hover:text-text-primary font-medium text-body-sm px-4 rounded-lg hover:border-border-variant hover:bg-surface-highest transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-border"
+                className="w-full h-11 bg-carbon-veil border border-circuit-border text-phosphor-white hover:bg-circuit-border/40 font-medium font-mono text-body-sm px-4 rounded-buttons transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-circuit-border"
               >
                 <span className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px] text-text-muted group-hover:text-text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[20px] text-moss-70 group-hover:text-phosphor-white transition-colors">
                     quiz
                   </span>
                   Take Mock Test
@@ -1268,10 +1264,10 @@ export default async function DashboardPage() {
               {/* SECONDARY ACTION 2 */}
               <Link
                 href="/analytics"
-                className="w-full h-11 bg-surface-high border border-border text-text-secondary hover:text-text-primary font-medium text-body-sm px-4 rounded-lg hover:border-border-variant hover:bg-surface-highest transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-border"
+                className="w-full h-11 bg-carbon-veil border border-circuit-border text-phosphor-white hover:bg-circuit-border/40 font-medium font-mono text-body-sm px-4 rounded-buttons transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-circuit-border"
               >
                 <span className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px] text-text-muted group-hover:text-text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[20px] text-moss-70 group-hover:text-phosphor-white transition-colors">
                     insights
                   </span>
                   View Intelligence & Analytics
@@ -1287,23 +1283,23 @@ export default async function DashboardPage() {
           {dataSufficiency.hasCompletedBaseline &&
             (intelligence.discipline.hasNegativeMarkingIssue ||
               intelligence.discipline.hasUnansweredIssue) && (
-              <section className="bg-surface/90 border border-tertiary/30 rounded-2xl p-5">
-                <h3 className="text-body-sm font-semibold text-tertiary mb-3 flex items-center gap-2">
+              <section className="bg-ground-iron border border-amber-500/30 rounded-cards p-5">
+                <h3 className="text-body-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">warning</span>
                   Exam Strategy Optimization
                 </h3>
                 <div className="space-y-2.5 text-label-xs font-mono">
                   {intelligence.discipline.hasNegativeMarkingIssue && (
-                    <div className="p-2.5 rounded bg-surface-high border border-border text-text-secondary leading-relaxed">
-                      <span className="text-text-primary font-bold block mb-0.5">
+                    <div className="p-2.5 rounded-cards bg-carbon-veil border border-circuit-border text-sage-60 leading-relaxed">
+                      <span className="text-phosphor-white font-bold block mb-0.5">
                         Negative Marking Penalty
                       </span>
                       Losing ~{intelligence.discipline.negativeMarkingLossAvg.toFixed(1)} marks per test to incorrect answers. Reduce guessing.
                     </div>
                   )}
                   {intelligence.discipline.hasUnansweredIssue && (
-                    <div className="p-2.5 rounded bg-surface-high border border-border text-text-secondary leading-relaxed">
-                      <span className="text-text-primary font-bold block mb-0.5">
+                    <div className="p-2.5 rounded-cards bg-carbon-veil border border-circuit-border text-sage-60 leading-relaxed">
+                      <span className="text-phosphor-white font-bold block mb-0.5">
                         Unanswered Questions
                       </span>
                       {intelligence.discipline.unansweredRate}% of questions left blank ({intelligence.discipline.unansweredCount} questions). Improve test pacing.
@@ -1314,39 +1310,39 @@ export default async function DashboardPage() {
             )}
 
           {/* Recent Activity Timeline */}
-          <section className="bg-surface/90 border border-border/80 rounded-2xl p-6 flex-1">
-            <h2 className="text-title-md font-semibold text-text-primary mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-text-muted">schedule</span>
+          <section className="bg-ground-iron border border-circuit-border rounded-cards p-6 flex-1">
+            <h2 className="text-title-md font-semibold text-phosphor-white mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px] text-moss-70">schedule</span>
               Recent Activity
             </h2>
 
             {recentActivity.length > 0 ? (
-              <div className="relative border-l border-border/80 ml-3 space-y-5 pb-2">
+              <div className="relative border-l border-circuit-border ml-3 space-y-5 pb-2">
                 {recentActivity.map((act) => {
                   const score = act.score ?? 0;
                   const dotColor =
                     score >= 75
-                      ? "bg-secondary"
+                      ? "bg-lime-pulse"
                       : score >= 50
-                      ? "bg-primary-text"
-                      : "bg-error";
+                      ? "bg-amber-300"
+                      : "bg-rose-400";
 
                   return (
                     <div key={act.id} className="relative pl-5">
                       <div
-                        className={`absolute w-2.5 h-2.5 ${dotColor} rounded-full -left-[5.5px] top-1.5 ring-4 ring-surface`}
+                        className={`absolute w-2.5 h-2.5 ${dotColor} rounded-full -left-[5.5px] top-1.5 ring-4 ring-ground-iron`}
                       />
                       <div className="flex flex-col">
-                        <span className="text-[11px] text-text-muted font-mono mb-0.5">
+                        <span className="text-[11px] text-sage-40 font-mono mb-0.5">
                           {act.submittedAt ? formatDateTime(act.submittedAt) : "Recently"}
                         </span>
                         <Link
                           href={`/tests/${act.testId}/result?attemptId=${act.id}`}
-                          className="text-body-sm text-text-primary hover:text-primary-text font-medium transition-colors"
+                          className="text-body-sm text-phosphor-white hover:text-lime-pulse font-medium transition-colors"
                         >
                           {act.testTitle}
                         </Link>
-                        <span className="text-[12px] font-mono mt-1 text-text-secondary">
+                        <span className="text-[12px] font-mono mt-1 text-sage-60">
                           Score:{" "}
                           <span className={getScoreColor(score)}>
                             {score}/100
@@ -1359,14 +1355,14 @@ export default async function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="p-6 rounded-xl bg-surface-high/40 border border-border/60 text-center flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-surface-highest/60 flex items-center justify-center text-text-muted mb-3">
+              <div className="p-6 rounded-cards bg-carbon-veil border border-circuit-border text-center flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-ground-iron border border-circuit-border flex items-center justify-center text-moss-70 mb-3">
                   <span className="material-symbols-outlined text-[20px]">history</span>
                 </div>
-                <h3 className="text-body-sm font-semibold text-text-primary mb-1">
+                <h3 className="text-body-sm font-semibold text-phosphor-white mb-1">
                   No activity yet
                 </h3>
-                <p className="text-label-xs text-text-muted max-w-xs leading-relaxed">
+                <p className="text-label-xs text-sage-60 max-w-xs leading-relaxed font-mono">
                   Complete your baseline assessment to start building your placement profile and test history.
                 </p>
               </div>

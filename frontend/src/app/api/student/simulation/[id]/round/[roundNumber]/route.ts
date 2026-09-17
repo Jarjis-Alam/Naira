@@ -39,6 +39,7 @@ export async function POST(
     if (msg.includes("not found")) {
       return NextResponse.json({ error: msg }, { status: 404 });
     }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error(`[simulation-api] POST /api/student/simulation/${id}/round/${roundNumber} failed:`, error);
+    return NextResponse.json({ error: "Failed to submit simulation round" }, { status: 500 });
   }
 }

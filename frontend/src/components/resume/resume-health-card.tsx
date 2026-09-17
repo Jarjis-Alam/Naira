@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { ResumeHealth } from "@/server/resume-intelligence";
 
 const SIGNAL_TONE: Record<string, string> = {
-  ok: "text-secondary",
-  warn: "text-tertiary",
-  info: "text-text-muted",
+  ok: "text-lime-pulse",
+  warn: "text-[#ffd37a]",
+  info: "text-sage-40",
 };
 
 const SIGNAL_ICON: Record<string, string> = {
@@ -17,15 +17,18 @@ export function ResumeHealthCard({ health }: { health: ResumeHealth }) {
   return (
     <section
       id="dashboard-resume-health"
-      className="bg-surface/90 border border-border rounded-2xl p-5 shadow-sm space-y-4"
+      className="bg-ground-iron border border-circuit-border rounded-cards p-6 space-y-4 shadow-none"
     >
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-bold flex items-center gap-1.5">
-          <span className="material-symbols-outlined text-[16px]">description</span>
-          Resume Health
+        <span className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[16px] text-lime-pulse">description</span>
+          Resume Intelligence
         </span>
-        <Link href={health.ctaHref} className="text-primary-text hover:text-primary text-[11px] font-mono underline">
-          {health.hasResume ? "Improve Resume" : "Add Resume"}
+        <Link
+          href={health.ctaHref}
+          className="text-fern-link hover:text-phosphor-white text-caption font-mono underline transition-colors"
+        >
+          {health.hasResume ? "Open Workspace" : "Add Resume"}
         </Link>
       </div>
 
@@ -33,34 +36,34 @@ export function ResumeHealthCard({ health }: { health: ResumeHealth }) {
         <>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="text-[10px] font-mono uppercase text-text-muted block">ATS Score</span>
-              <span className="text-2xl font-bold font-mono text-text-primary">{health.atsScore ?? "--"}</span>
+              <span className="text-[10px] font-mono uppercase text-sage-40 block">ATS Score</span>
+              <span className="text-2xl font-bold font-mono text-phosphor-white">{health.atsScore ?? "--"}</span>
             </div>
-            <div className="border-l border-border/60 pl-4">
-              <span className="text-[10px] font-mono uppercase text-text-muted block">Target Match</span>
-              <span className="text-2xl font-bold font-mono text-primary-text">
+            <div className="border-l border-circuit-border/60 pl-4">
+              <span className="text-[10px] font-mono uppercase text-sage-40 block">Target Match</span>
+              <span className="text-2xl font-bold font-mono text-lime-pulse">
                 {health.matchScore === null ? "--" : `${health.matchScore}%`}
               </span>
             </div>
           </div>
 
           {health.targetLabel && (
-            <div className="text-[11px] font-mono text-text-muted truncate">
-              Target: <span className="text-text-secondary">{health.targetLabel}</span>
-              {health.level && <span className="ml-2 text-primary-text uppercase font-bold">{health.level}</span>}
+            <div className="text-[11px] font-mono text-sage-40 truncate">
+              Target: <span className="text-sage-60">{health.targetLabel}</span>
+              {health.level && <span className="ml-2 text-moss-80 uppercase font-semibold">{health.level}</span>}
             </div>
           )}
 
           {health.signals.length > 0 && (
-            <ul className="space-y-1 pt-2 border-t border-border/60">
+            <ul className="space-y-1 pt-2 border-t border-circuit-border/60">
               {health.signals.map((signal) => (
                 <li key={signal.id} className="flex items-start gap-2 text-[11px] font-mono">
                   <span className={`material-symbols-outlined text-[15px] shrink-0 ${SIGNAL_TONE[signal.status]}`}>
                     {SIGNAL_ICON[signal.status]}
                   </span>
-                  <span className="text-text-secondary">
-                    <span className="text-text-primary">{signal.label}</span>
-                    <span className="text-text-muted"> — {signal.detail}</span>
+                  <span className="text-sage-60">
+                    <span className="text-phosphor-white">{signal.label}</span>
+                    <span className="text-sage-40"> — {signal.detail}</span>
                   </span>
                 </li>
               ))}
@@ -68,10 +71,12 @@ export function ResumeHealthCard({ health }: { health: ResumeHealth }) {
           )}
 
           {health.topRecommendations.length > 0 && (
-            <div className="pt-2 border-t border-border/60 space-y-1.5">
-              <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">Next improvements</span>
+            <div className="pt-2 border-t border-circuit-border/60 space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-moss-70 font-medium block">
+                Next improvements
+              </span>
               {health.topRecommendations.slice(0, 2).map((recommendation) => (
-                <p key={recommendation.id} className="text-[11px] font-mono text-text-secondary truncate" title={recommendation.why}>
+                <p key={recommendation.id} className="text-[11px] font-mono text-sage-60 truncate" title={recommendation.why}>
                   • {recommendation.title}
                 </p>
               ))}
@@ -79,7 +84,7 @@ export function ResumeHealthCard({ health }: { health: ResumeHealth }) {
           )}
         </>
       ) : (
-        <p className="text-[12px] font-mono text-text-secondary">
+        <p className="text-body-sm font-sans text-sage-60">
           {health.signals[0]?.detail ?? "Upload your resume to measure ATS compatibility and target match."}
         </p>
       )}
@@ -87,9 +92,9 @@ export function ResumeHealthCard({ health }: { health: ResumeHealth }) {
       <Link
         id="dashboard-resume-health-cta"
         href={health.ctaHref}
-        className="w-full bg-surface-high border border-primary/30 text-primary-text font-medium text-[12px] py-2.5 px-3 rounded-lg hover:bg-surface-highest transition-colors flex items-center justify-center gap-1.5 font-mono"
+        className="w-full bg-carbon-veil border border-circuit-border hover:border-lime-pulse text-phosphor-white font-medium text-body-sm py-2.5 px-3 rounded-buttons transition-all flex items-center justify-center gap-1.5 font-sans"
       >
-        <span className="material-symbols-outlined text-[15px]">auto_fix_high</span>
+        <span className="material-symbols-outlined text-[16px] text-lime-pulse">auto_fix_high</span>
         <span>{health.ctaLabel}</span>
       </Link>
     </section>

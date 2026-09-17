@@ -83,6 +83,7 @@ if (!fs.existsSync(schemaPath)) fail([`  schema.ts not found at ${schemaPath}`])
 const schemaSource = readFile(schemaPath);
 const schemaTables = [...new Set(matchAll(schemaSource, /pgTable\(\s*"([a-z0-9_]+)"/i))].sort();
 const schemaEnums = [...new Set(matchAll(schemaSource, /pgEnum\(\s*"([a-z0-9_]+)"/i))].sort();
+const schemaIndexes = [...new Set(matchAll(schemaSource, /(?:uniqueIndex|index)\(\s*"([a-z0-9_]+)"/i))].sort();
 
 if (schemaTables.length === 0) fail(["  parsed 0 tables from schema.ts — parser or schema format changed"]);
 
@@ -94,6 +95,7 @@ const migrationFiles = fs
 /** object name -> migration file that creates it */
 const tableSource = new Map();
 const enumSource = new Map();
+const indexSource = new Map();
 
 for (const file of migrationFiles) {
   const sql = readFile(path.join(migrationsDir, file));
@@ -103,17 +105,21 @@ for (const file of migrationFiles) {
   for (const name of matchAll(sql, /CREATE TYPE(?:\s+IF NOT EXISTS)?\s+(?:(?:"[a-z0-9_]+"|[a-z0-9_]+)\.)?"?([a-z0-9_]+)"?/i)) {
     if (!enumSource.has(name)) enumSource.set(name, file);
   }
+  for (const name of matchAll(sql, /CREATE\s+(?:UNIQUE\s+)?INDEX(?:\s+IF NOT EXISTS)?\s+(?:(?:"[a-z0-9_]+"|[a-z0-9_]+)\.)?"?([a-z0-9_]+)"?/i)) {
+    if (!indexSource.has(name)) indexSource.set(name, file);
+  }
 }
 
-console.log(`${DIM}[schema-gate]${RESET} schema.ts: ${schemaTables.length} tables, ${schemaEnums.length} enum types · ${migrationFiles.length} migration files`);
+console.log(`${DIM}[schema-gate]${RESET} schema.ts: ${schemaTables.length} tables, ${schemaEnums.length} enum types, ${schemaIndexes.length} indexes · ${migrationFiles.length} migration files`);
 
 // ---------------------------------------------------------------------------
 // 1. Static parity — anything declared must be creatable from migrations alone.
 // ---------------------------------------------------------------------------
 const tablesWithoutMigration = schemaTables.filter((t) => !tableSource.has(t));
 const enumsWithoutMigration = schemaEnums.filter((e) => !enumSource.has(e));
+const indexesWithoutMigration = schemaIndexes.filter((i) => !indexSource.has(i));
 
-if (tablesWithoutMigration.length > 0 || enumsWithoutMigration.length > 0) {
+if (tablesWithoutMigration.length > 0 || enumsWithoutMigration.length > 0 || indexesWithoutMigration.length > 0) {
   const lines = [
     "",
     "  These objects are declared in src/db/schema.ts but NO migration file creates them,",
@@ -122,10 +128,11 @@ if (tablesWithoutMigration.length > 0 || enumsWithoutMigration.length > 0) {
   ];
   for (const t of tablesWithoutMigration) lines.push(`    table: ${t}`);
   for (const e of enumsWithoutMigration) lines.push(`    type:  ${e}`);
+  for (const i of indexesWithoutMigration) lines.push(`    index: ${i}`);
   lines.push(
     "",
     "  Fix: add a new, idempotent migration (CREATE TABLE IF NOT EXISTS / CREATE TYPE guarded",
-    "  with a duplicate_object exception) that creates them, register it in",
+    "  with a duplicate_object exception / CREATE INDEX IF NOT EXISTS) that creates them, register it in",
     "  src/db/migrations/meta/_journal.json, and apply it to every environment.",
     ""
   );
@@ -145,21 +152,24 @@ if (!connectionString) {
 const pool = new pg.Pool({ connectionString, connectionTimeoutMillis: 8000, max: 2 });
 
 try {
-  const [tablesResult, enumsResult] = await Promise.all([
+  const [tablesResult, enumsResult, indexesResult] = await Promise.all([
     pool.query("select tablename from pg_tables where schemaname = 'public'"),
     pool.query(
       "select t.typname as name from pg_type t where t.typtype = 'e' and exists (select 1 from pg_enum e where e.enumtypid = t.oid)"
     ),
+    pool.query("select indexname from pg_indexes where schemaname = 'public'"),
   ]);
 
   const liveTables = new Set(tablesResult.rows.map((r) => r.tablename));
   const liveEnums = new Set(enumsResult.rows.map((r) => r.name));
+  const liveIndexes = new Set(indexesResult.rows.map((r) => r.indexname));
 
   const missingTables = schemaTables.filter((t) => !liveTables.has(t));
   const missingEnums = schemaEnums.filter((e) => !liveEnums.has(e));
+  const missingIndexes = schemaIndexes.filter((i) => !liveIndexes.has(i));
   const unreproducible = [...liveTables].filter((t) => !tableSource.has(t)).sort();
 
-  if (missingTables.length > 0 || missingEnums.length > 0 || unreproducible.length > 0) {
+  if (missingTables.length > 0 || missingEnums.length > 0 || missingIndexes.length > 0 || unreproducible.length > 0) {
     const neededMigrations = new Set();
     const lines = ["", "  The DATABASE_URL this build can reach does not match the deployed code:", ""];
 
@@ -171,6 +181,11 @@ try {
     for (const e of missingEnums) {
       const src = enumSource.get(e);
       lines.push(`    missing type:  ${e}${src ? `  ← created by src/db/migrations/${src}` : ""}`);
+      if (src) neededMigrations.add(src);
+    }
+    for (const i of missingIndexes) {
+      const src = indexSource.get(i);
+      lines.push(`    missing index: ${i}${src ? `  ← created by src/db/migrations/${src}` : ""}`);
       if (src) neededMigrations.add(src);
     }
     for (const t of unreproducible) {
@@ -187,7 +202,7 @@ try {
   }
 
   console.log(
-    `${GREEN}✓ schema gate passed${RESET} — ${schemaTables.length}/${schemaTables.length} tables and ${schemaEnums.length}/${schemaEnums.length} enum types present in the database\n`
+    `${GREEN}✓ schema gate passed${RESET} — ${schemaTables.length}/${schemaTables.length} tables, ${schemaEnums.length}/${schemaEnums.length} enum types, and ${schemaIndexes.length}/${schemaIndexes.length} indexes present in the database\n`
   );
 } catch (error) {
   // A database this build cannot reach is NOT evidence of drift: warn, don't block.

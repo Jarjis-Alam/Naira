@@ -19,6 +19,7 @@ import { ResumeUploadPanel } from "@/components/resume/resume-upload-panel";
 import { VariantsPanel } from "@/components/resume/variants-panel";
 import { VersionHistory } from "@/components/resume/version-history";
 import { ResumeTargetSelector } from "@/components/resume/resume-target-selector";
+import { Eyebrow } from "@/components/ui/eyebrow";
 
 export default async function ResumeIntelligencePage({
   searchParams,
@@ -64,58 +65,57 @@ export default async function ResumeIntelligencePage({
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-border/80 pb-6">
+      <header className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-circuit-border/60 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-label-xs font-mono uppercase tracking-widest text-primary mb-1">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span>NEXORA</span>
-            <span className="text-text-muted">/</span>
-            <span className="text-text-secondary">ATS RESUME INTELLIGENCE</span>
-          </div>
-          <h1 className="text-headline-lg font-bold text-text-primary tracking-tight">Resume Intelligence</h1>
-          <p className="text-body-sm text-text-secondary mt-1">
-            How well does your resume match the company and role you are targeting, and what should you improve?
+          <Eyebrow system="NEXORA" category="ATS RESUME INTELLIGENCE">
+            WORKSPACE & SCORING
+          </Eyebrow>
+          <h1 className="font-heading text-headline-lg font-semibold text-phosphor-white tracking-tight">
+            Resume Intelligence
+          </h1>
+          <p className="text-body-sm text-sage-60 mt-1 max-w-2xl">
+            ATS parsing compatibility, target role and job description alignment, and truth-verified suggestions.
           </p>
         </div>
         {activeVariant && (
           <Link
             href={`/resume/builder?variantId=${activeVariant.id}`}
-            className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm self-start"
+            className="bg-ground-iron text-phosphor-white font-medium text-body-sm px-6 py-2.5 rounded-buttons border border-circuit-border hover:border-lime-pulse transition-all inline-flex items-center gap-2 shadow-none self-start"
           >
-            <span>Improve Resume</span>
-            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            <span className="material-symbols-outlined text-[18px] text-lime-pulse">auto_fix_high</span>
+            <span>Open Builder</span>
           </Link>
         )}
       </header>
 
-      {/* Target banner */}
+      {/* Target Banner */}
       {activeVariant && (
-        <section className="rounded-2xl border border-primary/30 bg-surface/90 p-5 space-y-3">
+        <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 space-y-4 shadow-none">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-bold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]">target</span>
-                Target
+              <span className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-lime-pulse">track_changes</span>
+                Target Alignment
               </span>
-              <h2 className="text-title-lg font-bold text-text-primary mt-1">
+              <h2 className="font-heading text-title-md font-semibold text-phosphor-white mt-1">
                 {targetLabel || "No target configured"}
               </h2>
-              <p className="text-[11px] font-mono text-text-muted mt-1">
+              <p className="text-caption font-mono text-sage-40 mt-1">
                 {workspace.targets.configured
-                  ? "Defaulting to your Phase 16 primary target. Variants keep their own target."
-                  : "Set a target in Profile to align the analysis with a company and role."}
+                  ? "Inheriting your Phase 16 primary target. Variants preserve independent targets."
+                  : "Set a target in Profile to align ATS analysis with a specific company and role."}
                 {" · "}
-                <Link href="/profile" className="text-primary-text hover:underline">
+                <Link href="/profile" className="text-fern-link hover:text-phosphor-white underline">
                   Profile
                 </Link>
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-surface-high text-text-muted font-bold">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-pills bg-carbon-veil text-sage-60 border border-circuit-border font-medium">
                 {activeVariant.label}
               </span>
               {activeVariant.isPrimary && (
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-secondary/15 text-secondary font-bold">
+                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-pills bg-lime-pulse/15 text-phosphor-white border border-lime-pulse/40 font-semibold">
                   Primary
                 </span>
               )}
@@ -134,22 +134,23 @@ export default async function ResumeIntelligencePage({
         </section>
       )}
 
-      {/* Empty state */}
+      {/* Zero-State */}
       {!activeVariant && (
-        <section className="rounded-2xl border border-border bg-surface p-6 space-y-4">
-          <h2 className="text-title-lg font-bold text-text-primary">Turn your resume into a targeted placement asset</h2>
-          <p className="text-body-sm text-text-secondary max-w-3xl">
-            Placement OS reads your document, scores how reliably an ATS can interpret it, compares it against your
-            target role and job description, and tells you exactly what to improve — with every change verified against
-            your own words.
+        <section className="rounded-cards border border-dashed border-circuit-border bg-ground-iron/40 p-8 sm:p-10 space-y-4">
+          <h2 className="font-heading text-title-md font-semibold text-phosphor-white">
+            Turn your resume into a targeted placement asset
+          </h2>
+          <p className="text-body-sm text-sage-60 max-w-3xl leading-relaxed">
+            Nexora ATS parses your document, scores machine readability, benchmarks against target job descriptions,
+            and surfaces truth-verified improvements with factual-scope protections.
           </p>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[12px] font-mono text-text-secondary">
-            <li>• ATS compatibility score with a full breakdown</li>
-            <li>• Resume ↔ job description keyword and skill match</li>
-            <li>• Resume gap vs preparation gap, kept separate</li>
-            <li>• Truth-preserving suggestions with before/after</li>
-            <li>• ATS-safe builder with printable export</li>
-            <li>• Targeted variants and version history</li>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-caption font-mono text-sage-40">
+            <li>• Deterministic ATS score with complete breakdown</li>
+            <li>• Keyword and required skill coverage comparison</li>
+            <li>• Resume gaps kept strictly separate from preparation gaps</li>
+            <li>• Truth-preserving suggestions with exact source quotes</li>
+            <li>• ATS-safe builder with raw plain text and semantic export</li>
+            <li>• Role-targeted variants and version history snapshots</li>
           </ul>
         </section>
       )}
@@ -162,23 +163,27 @@ export default async function ResumeIntelligencePage({
             analysis={analysis}
           />
 
-          {/* Recommendations digest (numbered, evidence-linked) */}
+          {/* Recommendations Digest */}
           {recommendations.length > 0 && (
-            <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6 space-y-3">
-              <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
-                Highest-priority findings
+            <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 space-y-3 shadow-none">
+              <span className="text-caption font-mono uppercase text-moss-70 font-medium block">
+                Highest-Priority Findings
               </span>
               <ol className="space-y-3">
                 {recommendations.map((finding, index) => (
                   <li key={finding.id} className="flex gap-3">
-                    <span className="text-body-sm font-bold font-mono text-primary-text shrink-0">
+                    <span className="text-body-sm font-bold font-mono text-lime-pulse shrink-0">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <span className="text-body-sm font-semibold text-text-primary block">{finding.title}</span>
-                      <span className="text-[12px] font-mono text-text-secondary block mt-0.5">{finding.detail}</span>
+                      <span className="text-body-sm font-semibold text-phosphor-white block">
+                        {finding.title}
+                      </span>
+                      <span className="text-caption font-mono text-sage-60 block mt-0.5">
+                        {finding.detail}
+                      </span>
                       {finding.evidence && (
-                        <span className="text-[11px] font-mono text-text-muted block mt-0.5">
+                        <span className="text-[11px] font-mono text-sage-40 block mt-0.5">
                           Evidence: {finding.evidence}
                         </span>
                       )}
@@ -209,13 +214,15 @@ export default async function ResumeIntelligencePage({
           <VersionHistory variantId={activeVariant.id} versions={activeVariant.versions} />
 
           {activeVariant.sourceFile && (
-            <section className="rounded-2xl border border-border bg-surface p-5 flex flex-wrap items-center justify-between gap-3">
+            <section className="rounded-cards border border-circuit-border bg-ground-iron p-5 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
-                  Original document
+                <span className="text-caption font-mono uppercase text-moss-70 font-medium block">
+                  Original Source Document
                 </span>
-                <span className="text-body-sm text-text-primary">{activeVariant.sourceFile.fileName}</span>
-                <span className="text-[11px] font-mono text-text-muted block">
+                <span className="text-body-sm font-medium text-phosphor-white">
+                  {activeVariant.sourceFile.fileName}
+                </span>
+                <span className="text-[11px] font-mono text-sage-40 block mt-0.5">
                   {activeVariant.sourceFile.wordCount} words ·{" "}
                   {activeVariant.sourceFile.pageCount ? `${activeVariant.sourceFile.pageCount} page(s) · ` : ""}
                   stored privately, owner-only download
@@ -223,9 +230,9 @@ export default async function ResumeIntelligencePage({
               </div>
               <a
                 href={`/api/student/resume/files/${activeVariant.sourceFile.id}`}
-                className="text-[12px] font-mono px-4 py-2 rounded-lg border border-border bg-surface-high text-text-secondary hover:text-text-primary transition-colors"
+                className="text-caption font-mono px-4 py-2 rounded-buttons border border-circuit-border bg-carbon-veil text-sage-60 hover:text-phosphor-white hover:border-lime-pulse transition-colors"
               >
-                Download my upload
+                Download Uploaded File
               </a>
             </section>
           )}

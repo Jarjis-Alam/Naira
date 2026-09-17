@@ -77,7 +77,12 @@ export function ApplicationsNewDialog({
         initialStatus,
       };
       if (source) payload.source = source;
-      if (deadline) payload.deadline = new Date(`${deadline}T12:00:00`).toISOString();
+      if (deadline) {
+        const d = new Date(`${deadline}T12:00:00`);
+        if (!isNaN(d.getTime())) {
+          payload.deadline = d.toISOString();
+        }
+      }
       if (location.trim()) payload.location = location.trim();
       if (employmentType.trim()) payload.employmentType = employmentType.trim();
       if (packageText.trim()) payload.packageText = packageText.trim();

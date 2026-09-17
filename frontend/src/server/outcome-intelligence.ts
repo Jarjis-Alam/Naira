@@ -297,10 +297,16 @@ const SOURCE_BASIS: Record<string, string> = {
   application_status: "Application timeline",
 };
 
+export interface UserPreloadedContext {
+  intelligence?: Awaited<ReturnType<typeof getPlacementIntelligence>>;
+  simulations?: (typeof placementSimulations.$inferSelect)[];
+}
+
 async function assembleEvidence(
   userId: string,
   app: typeof applications.$inferSelect,
-  outcome: DerivedOutcome
+  outcome: DerivedOutcome,
+  preloaded?: UserPreloadedContext
 ): Promise<EvidenceBundle> {
   const evidence: OutcomeEvidence[] = [];
   const observations: OutcomeObservation[] = [];
@@ -317,7 +323,9 @@ async function assembleEvidence(
   // --- Phase 14 preparation performance: reuse its own priority list.
   let prepPriorities: Awaited<ReturnType<typeof getPlacementIntelligence>>["priorities"] = [];
   try {
-    const intelligence = await getPlacementIntelligence(userId);
+    const intelligence = preloaded?.intelligence !== undefined
+      ? preloaded.intelligence
+      : await getPlacementIntelligence(userId);
     prepPriorities = intelligence.priorities.filter(
       (p) => p.category === "FIX" || p.category === "REINFORCE"
     );
@@ -336,12 +344,14 @@ async function assembleEvidence(
   }
 
   // --- Phase 17 simulation results (most recent).
-  const sims = await db
-    .select()
-    .from(placementSimulations)
-    .where(eq(placementSimulations.userId, userId))
-    .orderBy(desc(placementSimulations.createdAt))
-    .limit(3);
+  const sims = preloaded?.simulations !== undefined
+    ? preloaded.simulations
+    : await db
+        .select()
+        .from(placementSimulations)
+        .where(eq(placementSimulations.userId, userId))
+        .orderBy(desc(placementSimulations.createdAt))
+        .limit(3);
   const latestSim = sims[0] ?? null;
   if (latestSim?.overallReadinessScore !== null && latestSim?.overallReadinessScore !== undefined) {
     evidence.push({
@@ -538,7 +548,8 @@ async function assembleEvidence(
 
 export async function getOutcomeAnalysis(
   userId: string,
-  applicationId: string
+  applicationId: string,
+  preloaded?: UserPreloadedContext
 ): Promise<ApplicationOutcomeDetail> {
   const app = await loadApplication(applicationId, userId);
 
@@ -572,7 +583,7 @@ export async function getOutcomeAnalysis(
     deriveOfferDecision(app.status as ApplicationStatus, reflection)
   );
 
-  const bundle = await assembleEvidence(userId, app, outcome);
+  const bundle = await assembleEvidence(userId, app, outcome, preloaded);
 
   const analysis: OutcomeAnalysis = {
     applicationId: app.id,
@@ -607,7 +618,10 @@ export async function getOutcomeAnalysis(
 // Cross-application analytics
 // ============================================================================
 
-export async function getOutcomeAnalytics(userId: string): Promise<OutcomeAnalytics> {
+export async function getOutcomeAnalytics(
+  userId: string,
+  preloaded?: UserPreloadedContext
+): Promise<OutcomeAnalytics> {
   const apps = await db
     .select()
     .from(applications)
@@ -618,11 +632,34 @@ export async function getOutcomeAnalytics(userId: string): Promise<OutcomeAnalyt
     ["REJECTED", "WITHDRAWN", "OFFER", "CLOSED"].includes(a.status)
   );
 
+  // Preload user-level context once for all outcome applications if not provided
+  let context = preloaded;
+  if (!context && outcomeApps.length > 0) {
+    let preloadedIntelligence: Awaited<ReturnType<typeof getPlacementIntelligence>> | undefined;
+    try {
+      preloadedIntelligence = await getPlacementIntelligence(userId);
+    } catch {
+      // Uncalibrated student
+    }
+
+    const preloadedSims = await db
+      .select()
+      .from(placementSimulations)
+      .where(eq(placementSimulations.userId, userId))
+      .orderBy(desc(placementSimulations.createdAt))
+      .limit(3);
+
+    context = {
+      intelligence: preloadedIntelligence,
+      simulations: preloadedSims,
+    };
+  }
+
   const perApplication: { applicationId: string; outcome: DerivedOutcome; gaps: GapEvidenceInput[] }[] = [];
   const recentOutcomes: OutcomeAnalytics["recentOutcomes"] = [];
 
   for (const app of outcomeApps.slice(0, 20)) {
-    const detail = await getOutcomeAnalysis(userId, app.id);
+    const detail = await getOutcomeAnalysis(userId, app.id, context);
     perApplication.push({
       applicationId: app.id,
       outcome: detail.summary.outcome,
@@ -772,8 +809,11 @@ export interface OutcomeDashboardCard {
   disclaimer: string;
 }
 
-export async function getOutcomeDashboardCard(userId: string): Promise<OutcomeDashboardCard> {
-  const analytics = await getOutcomeAnalytics(userId);
+export async function getOutcomeDashboardCard(
+  userId: string,
+  preloaded?: UserPreloadedContext
+): Promise<OutcomeDashboardCard> {
+  const analytics = await getOutcomeAnalytics(userId, preloaded);
   const recent = analytics.recentOutcomes[0] ?? null;
 
   return {

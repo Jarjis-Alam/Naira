@@ -6,7 +6,7 @@ import { getDailyExecutionPlan } from "@/server/placement-execution";
 import { getStudentSimulationHistory } from "@/server/placement-simulation";
 import { getUpcomingApplicationEvents } from "@/server/application-intelligence";
 import { getOutcomePlanContext } from "@/server/outcome-intelligence";
-import { getScoreColor } from "@/lib/utils";
+import { Eyebrow } from "@/components/ui/eyebrow";
 
 export default async function RoadmapPage() {
   const session = await auth();
@@ -31,33 +31,30 @@ export default async function RoadmapPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-16">
       {/* 1. Page Header */}
-      <header className="flex flex-col gap-2 border-b border-border/80 pb-6">
-        <div className="flex items-center gap-2 text-label-xs font-mono uppercase tracking-widest text-primary">
-          <span className="w-2 h-2 rounded-full bg-primary" />
-          <span>NEXORA</span>
-          <span className="text-text-muted">/</span>
-          <span className="text-text-secondary">PLACEMENT ROADMAP</span>
-        </div>
+      <header className="flex flex-col gap-2 border-b border-circuit-border/60 pb-6">
+        <Eyebrow system="NEXORA" category="PLACEMENT ROADMAP">
+          PREPARATION LOOP & SEQUENCING
+        </Eyebrow>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
           <div>
-            <h1 className="text-headline-lg font-bold text-text-primary tracking-tight">
+            <h1 className="font-heading text-headline-lg font-semibold text-phosphor-white tracking-tight">
               Placement Roadmap
             </h1>
-            <p className="text-body-sm text-text-secondary mt-1">
-              Your personalized preparation plan.
+            <p className="text-body-sm text-sage-60 mt-1">
+              Your deterministic preparation trajectory, calibrated continuously by verified assessment results.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium border ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-pills text-caption font-mono font-medium border ${
                 roadmap.hasBaseline
-                  ? "bg-secondary/10 border-secondary/30 text-secondary"
-                  : "bg-surface-high border-border text-text-muted"
+                  ? "bg-lime-pulse/15 border-lime-pulse/40 text-phosphor-white font-semibold"
+                  : "bg-carbon-veil border-circuit-border text-sage-40"
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  roadmap.hasBaseline ? "bg-secondary" : "bg-text-muted"
+                  roadmap.hasBaseline ? "bg-lime-pulse" : "bg-circuit-border"
                 }`}
               />
               {roadmap.hasBaseline ? "CALIBRATED" : "ZERO DATA"}
@@ -67,8 +64,8 @@ export default async function RoadmapPage() {
       </header>
 
       {/* Progression Loop Indicator */}
-      <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 rounded-xl border border-border/80 bg-surface/60 font-mono text-label-xs">
-        <span className="text-text-muted uppercase tracking-wider text-[10px] mr-1">Progression:</span>
+      <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 rounded-cards border border-circuit-border bg-ground-iron font-mono text-caption">
+        <span className="text-moss-70 uppercase tracking-wider text-[10px] mr-1 font-semibold">Progression:</span>
         {[
           { step: "01", label: "Current State", active: roadmap.hasBaseline },
           { step: "02", label: "Weakness", active: roadmap.preparationFocus.items.length > 0 },
@@ -80,89 +77,83 @@ export default async function RoadmapPage() {
             <span
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[11px] ${
                 item.active
-                  ? "border-primary/30 bg-primary/10 text-primary-text font-semibold"
-                  : "border-border/60 bg-surface text-text-muted"
+                  ? "border-circuit-border bg-carbon-veil text-phosphor-white font-semibold"
+                  : "border-circuit-border/40 bg-ground-iron/40 text-sage-40"
               }`}
             >
-              <span className="text-[10px] opacity-70">{item.step}</span>
+              <span className="text-[10px] opacity-70 text-lime-pulse">{item.step}</span>
               <span>{item.label}</span>
             </span>
             {idx < arr.length - 1 && (
-              <span className="text-text-muted text-[11px]">→</span>
+              <span className="text-circuit-border text-[11px]">→</span>
             )}
           </div>
         ))}
       </div>
 
-      {/* 2. Zero-Data Experience Banner (if baseline uncompleted) */}
+      {/* Zero-Data Experience Banner */}
       {!roadmap.hasBaseline && (
         <section
           aria-labelledby="zero-data-heading"
-          className="p-6 sm:p-8 rounded-2xl bg-surface border border-primary/30 relative overflow-hidden"
+          className="p-6 sm:p-8 rounded-cards bg-ground-iron border border-circuit-border relative overflow-hidden"
         >
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-start gap-4 max-w-2xl">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary flex-shrink-0">
-                <span className="material-symbols-outlined text-[26px]">
-                  flag
-                </span>
+              <div className="w-12 h-12 rounded-lg bg-carbon-veil border border-circuit-border flex items-center justify-center text-lime-pulse shrink-0">
+                <span className="material-symbols-outlined text-[24px]">flag</span>
               </div>
               <div>
                 <h2
                   id="zero-data-heading"
-                  className="text-title-md font-bold text-text-primary"
+                  className="font-heading text-title-md font-semibold text-phosphor-white"
                 >
-                  Your roadmap will appear after your baseline assessment.
+                  Your roadmap will calibrate following your baseline assessment.
                 </h2>
-                <p className="text-body-sm text-text-secondary mt-1.5 leading-relaxed">
-                  Complete your baseline assessment so Nexora can understand your
-                  current readiness and identify where to focus.
+                <p className="text-body-sm text-sage-60 mt-1.5 leading-relaxed">
+                  Complete your baseline diagnostic so Nexora can evaluate your current readiness profile across Core CS domains.
                 </p>
               </div>
             </div>
             <Link
               href={baselineHref}
               id="start-baseline-assessment-btn"
-              className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-3 rounded-lg hover:bg-primary-text transition-colors flex items-center gap-2 shadow-sm whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="bg-lime-pulse text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-pills hover:bg-[#6edc54] transition-all flex items-center gap-2 whitespace-nowrap shadow-none"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                play_arrow
-              </span>
-              Take Baseline Assessment
+              <span className="material-symbols-outlined text-[18px]">play_arrow</span>
+              <span>Take Baseline Assessment</span>
             </Link>
           </div>
         </section>
       )}
 
-      {/* Application-driven preparation strip (Phase 19) — reuses the Phase 15
-          execution actions; it never creates a second preparation engine. */}
+      {/* Upcoming Application Focus */}
       {nextApplicationEvent && dailyPlan.actions.length > 0 && (
-        <section className="p-4 sm:p-5 rounded-2xl border border-primary/25 bg-primary/5 space-y-2">
+        <section className="p-4 sm:p-5 rounded-cards border border-circuit-border bg-carbon-veil/60 space-y-2">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-body-sm font-semibold text-text-primary">
+            <p className="text-body-sm font-semibold text-phosphor-white">
               {nextApplicationEvent.companyName} {nextApplicationEvent.label.toLowerCase()} in{" "}
-              {nextApplicationEvent.daysRemaining !== null ? `${nextApplicationEvent.daysRemaining} day${nextApplicationEvent.daysRemaining === 1 ? "" : "s"}` : "soon"}.
+              {nextApplicationEvent.daysRemaining !== null ? `${nextApplicationEvent.daysRemaining} day${nextApplicationEvent.daysRemaining === 1 ? "" : "s"}` : "upcoming timeline"}.
             </p>
             <Link
               href={`/applications/${nextApplicationEvent.applicationId}`}
-              className="text-[11px] font-mono text-primary-text hover:underline"
+              className="text-caption font-mono text-fern-link hover:text-phosphor-white underline"
             >
               Open application
             </Link>
           </div>
-          <p className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-bold">
-            Recommended focus (from your Phase 15 plan)
+          <p className="text-caption font-mono uppercase tracking-wider text-moss-70 font-semibold">
+            Recommended focus (Phase 15 execution core)
           </p>
           <ul className="space-y-1.5">
             {dailyPlan.actions.slice(0, 3).map((action) => (
               <li key={action.id} className="flex items-center justify-between gap-3">
-                <span className="text-body-sm text-text-secondary">
-                  <span className="font-mono text-[10px] font-bold text-primary">{action.type}</span>{" "}
+                <span className="text-body-sm text-sage-60">
+                  <span className="font-mono text-[10px] font-bold text-lime-pulse mr-1">[{action.type}]</span>{" "}
                   {action.title}
                 </span>
                 <Link
                   href={action.ctaHref}
-                  className="text-[11px] font-mono font-semibold text-primary-text hover:underline whitespace-nowrap"
+                  className="text-caption font-mono font-semibold text-fern-link hover:text-phosphor-white underline whitespace-nowrap"
                 >
                   Practice Now →
                 </Link>
@@ -172,58 +163,27 @@ export default async function RoadmapPage() {
         </section>
       )}
 
-      {/* Outcome-driven preparation feedback (Phase 20) — only when the
-          recorded outcomes surface an evidence-backed gap. Practice links
-          reuse the existing Phase 15 flow. */}
-      {outcomePlanContext && dailyPlan.actions.length > 0 && (
-        <section className="p-4 sm:p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 space-y-2">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-bold">
-            Recent application feedback
-          </p>
-          <p className="text-body-sm text-text-secondary">{outcomePlanContext.headline}</p>
-          <ul className="space-y-1.5">
-            {outcomePlanContext.focusCandidates.map((f) => (
-              <li key={f.topic} className="flex items-center justify-between gap-3">
-                <span className="text-body-sm text-text-secondary">
-                  <span className="font-mono text-[10px] font-bold text-primary">{f.actionType}</span>{" "}
-                  {f.topic}
-                  <span className="text-[10px] text-text-muted"> — {f.reason}</span>
-                </span>
-                <span className="text-[10px] font-mono text-text-muted whitespace-nowrap">
-                  (Phase 15 plan drives practice)
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="text-[10px] text-text-muted">{outcomePlanContext.note}</p>
-        </section>
-      )}
-
-      {/* 3. Main Two-Column Composition */}
+      {/* Main Two-Column Composition */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* ================================================================= */}
-        {/* LEFT COLUMN: Readiness, Target, Preparation Focus                 */}
-        {/* ================================================================= */}
+        {/* LEFT COLUMN: Readiness, Target, Preparation Focus */}
         <div className="lg:col-span-5 space-y-6">
           {/* Card 1: READINESS */}
           <section
             aria-labelledby="readiness-section-heading"
-            className="rounded-xl border border-border bg-surface p-5 sm:p-6"
+            className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none"
           >
             <div className="flex items-center justify-between mb-4">
               <span
                 id="readiness-section-heading"
-                className="text-[11px] font-mono tracking-wider uppercase text-text-muted font-medium"
+                className="text-caption font-mono tracking-wider uppercase text-moss-70 font-medium"
               >
-                Readiness
+                Readiness Score
               </span>
               <span
-                className={`text-label-xs font-mono font-semibold px-2 py-0.5 rounded border ${
+                className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-pills border ${
                   roadmap.hasBaseline
-                    ? `${getScoreColor(
-                        roadmap.readiness.score || 0
-                      )} bg-surface-high border-border`
-                    : "text-text-muted bg-surface-high border-border"
+                    ? "bg-lime-pulse/15 border-lime-pulse/40 text-phosphor-white"
+                    : "text-sage-40 bg-carbon-veil border-circuit-border/60"
                 }`}
               >
                 {roadmap.hasBaseline
@@ -233,55 +193,47 @@ export default async function RoadmapPage() {
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl sm:text-5xl font-bold font-mono text-text-primary tracking-tight leading-none">
+              <span className="text-4xl sm:text-5xl font-bold font-mono text-phosphor-white tracking-tight leading-none">
                 {roadmap.hasBaseline && roadmap.readiness.score !== null
                   ? `${roadmap.readiness.score}`
                   : "--"}
               </span>
-              <span className="text-body-md font-mono text-text-muted">/ 100</span>
+              <span className="text-body-md font-mono text-sage-40">/ 100</span>
             </div>
 
-            {/* Visual Bar */}
-            <div className="w-full bg-surface-highest h-2 rounded-full mt-4 overflow-hidden">
+            {/* Progress Bar */}
+            <div className="w-full bg-carbon-veil h-2 rounded-full mt-4 overflow-hidden">
               <div
-                className="h-full bg-primary transition-all duration-500 rounded-full"
+                className="h-full bg-lime-pulse transition-all duration-500 rounded-full"
                 style={{
                   width: `${roadmap.hasBaseline ? roadmap.readiness.score || 0 : 0}%`,
                 }}
               />
             </div>
 
-            <p className="text-[12px] font-mono text-text-secondary mt-3 leading-relaxed">
+            <p className="text-caption font-mono text-sage-60 mt-3 leading-relaxed">
               {roadmap.hasBaseline
-                ? "Calculated dynamically across 7 placement domains and interview speed indexing."
+                ? "Calculated dynamically across 7 placement domains and verified attempt metrics."
                 : "Calibrate readiness by completing your baseline diagnostic assessment."}
             </p>
 
             {roadmap.hasBaseline && roadmap.readiness.breakdown && (
-              <div className="mt-4 pt-4 border-t border-border/80 grid grid-cols-2 gap-2 text-label-xs font-mono">
-                <div className="flex justify-between p-2 rounded bg-surface-high/60">
-                  <span className="text-text-muted">DSA</span>
-                  <span className="text-text-primary font-semibold">
-                    {roadmap.readiness.breakdown.dsa}%
-                  </span>
+              <div className="mt-4 pt-4 border-t border-circuit-border/60 grid grid-cols-2 gap-2 text-caption font-mono">
+                <div className="flex justify-between p-2 rounded bg-carbon-veil/70 border border-circuit-border/40">
+                  <span className="text-sage-40">DSA</span>
+                  <span className="text-phosphor-white font-semibold">{roadmap.readiness.breakdown.dsa}%</span>
                 </div>
-                <div className="flex justify-between p-2 rounded bg-surface-high/60">
-                  <span className="text-text-muted">Core CS</span>
-                  <span className="text-text-primary font-semibold">
-                    {roadmap.readiness.breakdown.coreCs}%
-                  </span>
+                <div className="flex justify-between p-2 rounded bg-carbon-veil/70 border border-circuit-border/40">
+                  <span className="text-sage-40">Core CS</span>
+                  <span className="text-phosphor-white font-semibold">{roadmap.readiness.breakdown.coreCs}%</span>
                 </div>
-                <div className="flex justify-between p-2 rounded bg-surface-high/60">
-                  <span className="text-text-muted">SQL</span>
-                  <span className="text-text-primary font-semibold">
-                    {roadmap.readiness.breakdown.sql}%
-                  </span>
+                <div className="flex justify-between p-2 rounded bg-carbon-veil/70 border border-circuit-border/40">
+                  <span className="text-sage-40">SQL</span>
+                  <span className="text-phosphor-white font-semibold">{roadmap.readiness.breakdown.sql}%</span>
                 </div>
-                <div className="flex justify-between p-2 rounded bg-surface-high/60">
-                  <span className="text-text-muted">Aptitude</span>
-                  <span className="text-text-primary font-semibold">
-                    {roadmap.readiness.breakdown.aptitude}%
-                  </span>
+                <div className="flex justify-between p-2 rounded bg-carbon-veil/70 border border-circuit-border/40">
+                  <span className="text-sage-40">Aptitude</span>
+                  <span className="text-phosphor-white font-semibold">{roadmap.readiness.breakdown.aptitude}%</span>
                 </div>
               </div>
             )}
@@ -290,23 +242,21 @@ export default async function RoadmapPage() {
           {/* Card 2: PLACEMENT TARGET */}
           <section
             aria-labelledby="placement-target-heading"
-            className="rounded-xl border border-border bg-surface p-5 sm:p-6"
+            className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none"
           >
             <div className="flex items-center justify-between mb-4">
               <span
                 id="placement-target-heading"
-                className="text-[11px] font-mono tracking-wider uppercase text-text-muted font-medium"
+                className="text-caption font-mono tracking-wider uppercase text-moss-70 font-medium"
               >
-                Placement Target
+                Placement Targets
               </span>
               <Link
                 href="/profile"
-                className="text-primary-text font-mono text-[12px] hover:text-primary transition-colors inline-flex items-center gap-1 font-medium"
+                className="text-fern-link font-mono text-caption hover:text-phosphor-white underline inline-flex items-center gap-1"
               >
-                <span>{roadmap.targets.configured ? "Manage Targets" : "Set Targets"}</span>
-                <span className="material-symbols-outlined text-[15px]">
-                  arrow_forward
-                </span>
+                <span>{roadmap.targets.configured ? "Manage" : "Set Targets"}</span>
+                <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
               </Link>
             </div>
 
@@ -314,14 +264,14 @@ export default async function RoadmapPage() {
               <div className="space-y-3">
                 {roadmap.targets.primaryRole && (
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
+                    <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
                       Target Role
                     </span>
-                    <h3 className="text-title-md font-bold text-text-primary">
+                    <h3 className="font-heading text-title-md font-semibold text-phosphor-white">
                       {roadmap.targets.primaryRole.name}
                     </h3>
                     {roadmap.targets.primaryRole.category && (
-                      <span className="text-[11px] font-mono text-text-muted">
+                      <span className="text-caption font-mono text-sage-40">
                         {roadmap.targets.primaryRole.category}
                       </span>
                     )}
@@ -329,57 +279,32 @@ export default async function RoadmapPage() {
                 )}
 
                 {roadmap.targets.primaryCompany && (
-                  <div className="pt-2 border-t border-border/60">
-                    <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
+                  <div className="pt-2 border-t border-circuit-border/60">
+                    <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
                       Target Company
                     </span>
-                    <p className="text-body-md font-semibold text-text-primary">
+                    <p className="text-body font-semibold text-phosphor-white">
                       {roadmap.targets.primaryCompany.name}
                     </p>
                     {roadmap.targets.primaryCompany.industry && (
-                      <span className="text-[11px] font-mono text-text-muted">
+                      <span className="text-caption font-mono text-sage-40">
                         {roadmap.targets.primaryCompany.industry}
                       </span>
                     )}
                   </div>
                 )}
-
-                <div className="pt-2 flex items-center gap-2 text-[11px] font-mono text-text-muted">
-                  <span>
-                    {roadmap.targets.companyCount}{" "}
-                    {roadmap.targets.companyCount === 1 ? "company" : "companies"}
-                  </span>
-                  <span>·</span>
-                  <span>
-                    {roadmap.targets.roleCount}{" "}
-                    {roadmap.targets.roleCount === 1 ? "role" : "roles"}
-                  </span>
-                </div>
-
-                <div className="pt-3 border-t border-border/60">
-                  <p className="text-[11px] font-mono text-text-secondary leading-relaxed">
-                    Contextualized for your target roles and companies. Preparation
-                    focus emphasizes verifiable engineering fundamentals.
-                  </p>
-                </div>
               </div>
             ) : (
               <div className="py-2 space-y-3">
-                <h3 className="text-body-md font-semibold text-text-primary">
-                  No placement targets yet
-                </h3>
-                <p className="text-body-sm text-text-secondary text-[13px] leading-relaxed">
-                  Targets give context to your roadmap and focus your preparation.
-                  Recommendations will still calibrate against your performance gaps.
+                <p className="text-body-sm text-sage-60 leading-relaxed">
+                  Configure targets to tailor recommendations to specific company hiring benchmarks.
                 </p>
                 <Link
                   href="/profile"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-high border border-primary/30 text-primary-text text-[12px] font-mono font-medium hover:bg-surface-highest transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-buttons bg-carbon-veil border border-circuit-border text-phosphor-white hover:border-lime-pulse text-caption font-mono font-medium transition-all"
                 >
-                  <span className="material-symbols-outlined text-[15px]">
-                    add_circle
-                  </span>
-                  <span>Set Placement Targets</span>
+                  <span className="material-symbols-outlined text-[15px] text-lime-pulse">add_circle</span>
+                  <span>Set Targets</span>
                 </Link>
               </div>
             )}
@@ -388,60 +313,50 @@ export default async function RoadmapPage() {
           {/* Card 3: PREPARATION FOCUS */}
           <section
             aria-labelledby="prep-focus-heading"
-            className="rounded-xl border border-border bg-surface p-5 sm:p-6"
+            className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none"
           >
             <div className="flex items-center justify-between mb-3">
               <span
                 id="prep-focus-heading"
-                className="text-[11px] font-mono tracking-wider uppercase text-text-muted font-medium"
+                className="text-caption font-mono tracking-wider uppercase text-moss-70 font-medium"
               >
                 Preparation Focus
               </span>
               {roadmap.hasBaseline && (
-                <span className="text-[10px] font-mono text-primary-text">
-                  REAL SIGNALS
-                </span>
+                <span className="text-[10px] font-mono text-lime-pulse">VERIFIED SIGNALS</span>
               )}
             </div>
 
-            <p className="text-body-sm text-text-secondary mb-4 leading-relaxed">
+            <p className="text-body-sm text-sage-60 mb-4 leading-relaxed">
               {roadmap.preparationFocus.summary}
             </p>
 
             {roadmap.preparationFocus.items.length > 0 ? (
               <div className="space-y-3">
                 {roadmap.preparationFocus.items.map((item) => {
-                  const displayScore =
-                    item.type === "subject" ? item.score : item.accuracy;
+                  const displayScore = item.type === "subject" ? item.score : item.accuracy;
                   return (
                     <div
                       key={item.id}
-                      className="p-3 rounded-lg bg-surface-high border border-border/80 space-y-2"
+                      className="p-3 rounded-md bg-carbon-veil/70 border border-circuit-border/60 space-y-2"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-body-sm font-bold text-text-primary">
+                        <span className="text-body-sm font-semibold text-phosphor-white">
                           {item.name}
                         </span>
-                        <span className="font-mono text-body-sm font-bold text-primary-text">
+                        <span className="font-mono text-caption font-bold text-lime-pulse">
                           {displayScore !== undefined ? `${displayScore}%` : "—"}
                         </span>
                       </div>
 
-                      {/* Progress bar */}
-                      <div className="w-full bg-surface-highest h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-ground-iron h-1.5 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all ${
-                            (displayScore || 0) < 50
-                              ? "bg-error"
-                              : (displayScore || 0) < 70
-                              ? "bg-tertiary"
-                              : "bg-primary"
-                          }`}
+                          className="h-full rounded-full bg-lime-pulse"
                           style={{ width: `${displayScore || 0}%` }}
                         />
                       </div>
 
-                      <p className="text-[11px] font-mono text-text-secondary leading-normal">
+                      <p className="text-[11px] font-mono text-sage-40 leading-normal">
                         {item.detail}
                       </p>
                     </div>
@@ -449,167 +364,80 @@ export default async function RoadmapPage() {
                 })}
               </div>
             ) : !roadmap.hasBaseline ? (
-              <div className="p-4 rounded-lg bg-surface-high/60 border border-border text-center space-y-2 font-mono text-[12px] text-text-muted">
+              <div className="p-4 rounded-md bg-carbon-veil/40 border border-circuit-border/60 text-center font-mono text-caption text-sage-40">
                 <p>No assessment data available yet.</p>
-                <Link
-                  href={baselineHref}
-                  className="text-primary-text hover:underline inline-block font-medium"
-                >
-                  Start baseline assessment →
-                </Link>
               </div>
             ) : (
-              <div className="p-3.5 rounded-lg bg-secondary/10 border border-secondary/20 text-secondary text-[12px] font-mono">
-                No critical gaps detected — maintain readiness with periodic mock tests.
-              </div>
-            )}
-          </section>
-
-          {/* Card 4: PLACEMENT SIMULATION MILESTONE (Phase 17) */}
-          <section
-            aria-labelledby="simulation-milestone-heading"
-            className="rounded-xl border border-primary/30 bg-surface p-5 sm:p-6 space-y-3 relative overflow-hidden"
-          >
-            <div className="flex items-center justify-between">
-              <span
-                id="simulation-milestone-heading"
-                className="text-[11px] font-mono tracking-wider uppercase text-primary font-bold flex items-center gap-1.5"
-              >
-                <span className="material-symbols-outlined text-[16px]">terminal</span>
-                Placement Simulation
-              </span>
-              <span
-                className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${
-                  latestSimulation?.status === "completed"
-                    ? "bg-secondary/10 border-secondary/30 text-secondary"
-                    : latestSimulation
-                    ? "bg-primary/10 border-primary/30 text-primary"
-                    : "bg-surface-high border-border text-text-muted"
-                }`}
-              >
-                {latestSimulation?.status === "completed"
-                  ? "CALIBRATED"
-                  : latestSimulation
-                  ? `ROUND ${latestSimulation.currentRoundOrder}/5`
-                  : "NOT SIMULATED"}
-              </span>
-            </div>
-
-            {latestSimulation ? (
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-body-md font-bold text-text-primary">
-                    {latestSimulation.companyName ? `${latestSimulation.companyName} — ` : ""}{latestSimulation.roleName}
-                  </h3>
-                  <p className="text-[12px] font-mono text-text-secondary mt-0.5">
-                    {latestSimulation.status === "completed"
-                      ? `Simulation Readiness: ${latestSimulation.overallReadinessScore}% • Verdict: ${latestSimulation.readinessLevel || "Evaluated"}`
-                      : "Simulation in progress across 5 sequential rounds."}
-                  </p>
-                </div>
-                <div className="pt-2 flex items-center justify-between border-t border-border/60">
-                  <Link
-                    href={`/simulation/${latestSimulation.id}`}
-                    className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-primary-text hover:underline"
-                  >
-                    <span>{latestSimulation.status === "completed" ? "View Readiness Report" : "Resume Simulation"}</span>
-                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                  </Link>
-                  <Link
-                    href="/simulation"
-                    className="text-[11px] font-mono text-text-muted hover:text-text-primary transition-colors"
-                  >
-                    All Simulations
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-[12px] font-mono text-text-secondary leading-relaxed">
-                  Put your preparation to the test with an end-to-end 5-round hiring simulation (Screening, Coding, Debugging, AI Tech &amp; HR).
-                </p>
-                <Link
-                  href="/simulation"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-text-inverse font-semibold text-body-sm hover:bg-primary-text transition-colors shadow-sm"
-                >
-                  <span className="material-symbols-outlined text-[17px]">play_circle</span>
-                  <span>Start Placement Simulation</span>
-                </Link>
+              <div className="p-3.5 rounded-md bg-lime-pulse/10 border border-lime-pulse/30 text-phosphor-white text-caption font-mono">
+                No critical gaps detected — maintain momentum with periodic practice.
               </div>
             )}
           </section>
         </div>
 
-        {/* ================================================================= */}
-        {/* RIGHT COLUMN: Next Actions, Preparation Progress                  */}
-        {/* ================================================================= */}
+        {/* RIGHT COLUMN: Next Actions, Preparation Progress */}
         <div className="lg:col-span-7 space-y-6">
           {/* Execution OS: TODAY'S OPERATIONAL FOCUS */}
           {dailyPlan.hasEnoughData && todayActiveAction && (
             <section
               aria-labelledby="today-focus-heading"
-              className="rounded-xl border border-primary/40 bg-surface p-5 sm:p-6 relative overflow-hidden shadow-sm"
+              className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-lime-pulse animate-pulse" />
                     <span
                       id="today-focus-heading"
-                      className="text-[11px] font-mono tracking-wider uppercase text-primary font-bold"
+                      className="text-caption font-mono tracking-wider uppercase text-moss-70 font-semibold"
                     >
                       TODAY&apos;S FOCUS
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-high border border-border text-text-muted">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-pills bg-carbon-veil border border-circuit-border text-sage-40">
                       {dailyPlan.completedCount} / {dailyPlan.totalCount} COMPLETE
                     </span>
                   </div>
-                  <h3 className="text-title-md font-bold text-text-primary">
+                  <h3 className="font-heading text-title-md font-semibold text-phosphor-white">
                     {todayActiveAction.domain} → {todayActiveAction.topic}
                   </h3>
-                  <p className="text-body-sm text-text-secondary mt-1">
-                    {todayActiveAction.targetCount} targeted questions • Current accuracy: {todayActiveAction.accuracy}%
+                  <p className="text-body-sm text-sage-60 mt-1">
+                    {todayActiveAction.targetCount} targeted questions • Verified accuracy: {todayActiveAction.accuracy}%
                   </p>
                 </div>
 
                 <Link
                   href={todayActiveAction.ctaHref}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60 shrink-0 shadow-sm"
+                  className="inline-flex items-center justify-center gap-2 rounded-buttons bg-carbon-veil border border-circuit-border hover:border-lime-pulse px-5 py-2.5 text-body-sm font-medium text-phosphor-white transition-all shrink-0 shadow-none"
                 >
                   <span>
                     {todayActiveAction.status === "COMPLETED"
                       ? "PRACTICE AGAIN"
-                      : todayActiveAction.status === "IN_PROGRESS" ||
-                        todayActiveAction.status === "PARTIALLY_COMPLETED"
-                      ? "CONTINUE PRACTICE"
-                      : todayActiveAction.type === "REVIEW"
-                      ? "START REVIEW"
-                      : `START ${todayActiveAction.domain.toUpperCase()} PRACTICE`}
+                      : "START PRACTICE"}
                   </span>
-                  <span className="material-symbols-outlined text-[17px]">play_arrow</span>
+                  <span className="material-symbols-outlined text-[16px] text-lime-pulse">play_arrow</span>
                 </Link>
               </div>
             </section>
           )}
 
-          {/* Card 4: YOUR NEXT ACTIONS */}
+          {/* Prioritized Preparation Sequence */}
           <section
             aria-labelledby="next-actions-heading"
-            className="rounded-xl border border-border bg-surface p-5 sm:p-6"
+            className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none"
           >
             <div className="flex items-center justify-between mb-4">
               <div>
                 <span
                   id="next-actions-heading"
-                  className="text-[11px] font-mono tracking-wider uppercase text-text-muted font-medium"
+                  className="text-caption font-mono tracking-wider uppercase text-moss-70 font-medium"
                 >
-                  Your Next Actions
-                </span>
-                <h2 className="text-title-md font-bold text-text-primary mt-0.5">
                   Prioritized Preparation Sequence
+                </span>
+                <h2 className="font-heading text-title-md font-semibold text-phosphor-white mt-0.5">
+                  Execution Actions
                 </h2>
               </div>
-              <span className="text-[11px] font-mono text-text-muted">
+              <span className="text-caption font-mono text-sage-40">
                 {roadmap.nextActions.length}{" "}
                 {roadmap.nextActions.length === 1 ? "STEP" : "STEPS"}
               </span>
@@ -619,107 +447,67 @@ export default async function RoadmapPage() {
               {roadmap.nextActions.map((action) => (
                 <article
                   key={action.id}
-                  className="p-4 sm:p-5 rounded-xl bg-surface-high/90 border border-border/90 hover:border-primary/40 transition-colors relative"
+                  className="p-5 rounded-md bg-carbon-veil/60 border border-circuit-border/60 hover:border-lime-pulse/50 transition-all relative"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-xl font-bold font-mono text-primary-text">
+                      <span className="text-xl font-bold font-mono text-lime-pulse">
                         {action.stepNumber}
                       </span>
                       {action.category && (
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase tracking-wider ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-pills font-bold uppercase tracking-wider ${
                             action.category === "FIX"
-                              ? "bg-error/20 text-error border border-error/30"
+                              ? "bg-[#331c1c] text-[#ff7b72] border border-[#663131]"
                               : action.category === "REINFORCE"
-                              ? "bg-tertiary/20 text-tertiary border border-tertiary/30"
-                              : "bg-secondary/20 text-secondary border border-secondary/30"
+                              ? "bg-lime-pulse/15 text-phosphor-white border border-lime-pulse/40"
+                              : "bg-ground-iron text-sage-60 border border-circuit-border"
                           }`}
                         >
                           {action.category}
                         </span>
                       )}
-                      <h3 className="text-body-md font-bold text-text-primary tracking-tight">
+                      <h3 className="text-body font-semibold text-phosphor-white tracking-tight">
                         {action.title}
                       </h3>
                     </div>
 
                     <div className="flex items-center gap-2 self-start sm:self-auto">
-                      {action.isTargetPriority && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase tracking-wider bg-primary/20 text-primary-text border border-primary/30 flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[12px]">track_changes</span>
-                          TARGET PRIORITY
-                        </span>
-                      )}
                       {action.accuracy !== undefined && (
-                        <span className="text-label-xs font-mono font-semibold px-2 py-0.5 rounded bg-surface border border-border text-text-primary">
+                        <span className="text-caption font-mono font-medium px-2 py-0.5 rounded-pills bg-ground-iron border border-circuit-border text-phosphor-white">
                           {action.accuracy}% ACCURACY
                         </span>
                       )}
-                      <span
-                        className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold uppercase tracking-wider ${
-                          action.priority === "Critical"
-                            ? "bg-error/20 text-error border border-error/30"
-                            : action.priority === "High"
-                            ? "bg-tertiary/20 text-tertiary border border-tertiary/30"
-                            : "bg-surface-highest text-text-muted border border-border"
-                        }`}
-                      >
-                        {action.priority}
-                      </span>
                     </div>
                   </div>
 
-                  <div className="space-y-2.5 mb-4 pl-0 sm:pl-9">
-                    <div>
-                      <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
-                        Why:
-                      </span>
-                      <p className="text-body-sm text-text-secondary leading-relaxed text-[13px]">
-                        {action.why}
-                      </p>
-                    </div>
-
+                  <div className="space-y-2 mb-4 pl-0 sm:pl-9">
+                    <p className="text-body-sm text-sage-60 leading-relaxed">
+                      {action.why}
+                    </p>
                     {action.evidence && (
-                      <div>
-                        <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
-                          Evidence:
-                        </span>
-                        <p className="text-[12px] font-mono text-text-muted leading-relaxed">
-                          {action.evidence}
-                        </p>
-                      </div>
+                      <p className="text-caption font-mono text-sage-40 leading-relaxed">
+                        Evidence: {action.evidence}
+                      </p>
                     )}
-
                     {action.recommendedAction && (
-                      <div>
-                        <span className="text-[10px] font-mono uppercase text-text-muted block mb-0.5">
-                          Action:
-                        </span>
-                        <p className="text-body-sm text-text-primary font-medium leading-relaxed text-[13px]">
-                          {action.recommendedAction}
-                        </p>
-                      </div>
+                      <p className="text-body-sm text-phosphor-white font-medium leading-relaxed">
+                        Action: {action.recommendedAction}
+                      </p>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-border/60 pl-0 sm:pl-9">
-                    {action.recommendedTestTitle ? (
-                      <span className="text-[11px] font-mono text-text-muted truncate max-w-[200px] sm:max-w-xs">
-                        Target: {action.recommendedTestTitle}
-                      </span>
-                    ) : (
-                      <span className="text-[11px] font-mono text-text-muted">
-                        Nexora Target Practice Flow
-                      </span>
-                    )}
+                  <div className="flex items-center justify-between pt-3 border-t border-circuit-border/40 pl-0 sm:pl-9">
+                    <span className="text-caption font-mono text-sage-40 truncate">
+                      {action.recommendedTestTitle ?? "Target Practice Flow"}
+                    </span>
 
                     <Link
                       href={action.ctaHref}
-                      className="bg-primary text-text-inverse font-semibold text-body-sm px-4 py-2 rounded-lg hover:bg-primary-text transition-colors inline-flex items-center gap-1.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="bg-ground-iron border border-circuit-border hover:border-lime-pulse text-phosphor-white font-medium text-caption px-4 py-2 rounded-buttons transition-all inline-flex items-center gap-1.5"
                     >
                       <span>{action.ctaLabel}</span>
-                      <span className="material-symbols-outlined text-[16px]">
+                      <span className="material-symbols-outlined text-[15px] text-lime-pulse">
                         arrow_forward
                       </span>
                     </Link>
@@ -727,93 +515,6 @@ export default async function RoadmapPage() {
                 </article>
               ))}
             </div>
-          </section>
-
-          {/* Card 5: PREPARATION PROGRESS */}
-          <section
-            aria-labelledby="prep-progress-heading"
-            className="rounded-xl border border-border bg-surface p-5 sm:p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <span
-                  id="prep-progress-heading"
-                  className="text-[11px] font-mono tracking-wider uppercase text-text-muted font-medium"
-                >
-                  Preparation Progress
-                </span>
-                <h2 className="text-title-md font-bold text-text-primary mt-0.5">
-                  Verified Skill Progression
-                </h2>
-              </div>
-              <span className="text-[11px] font-mono text-text-muted">
-                {roadmap.progress.overall !== null
-                  ? `Overall: ${roadmap.progress.overall}%`
-                  : "Uncalibrated"}
-              </span>
-            </div>
-
-            <p className="text-[12px] font-mono text-text-secondary mb-5 leading-relaxed">
-              {roadmap.progress.statusMessage}
-            </p>
-
-            {roadmap.progress.overall !== null && (
-              <div className="mb-6 p-4 rounded-xl bg-surface-high border border-border/80">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-body-sm font-bold text-text-primary">
-                    Overall Benchmark Readiness
-                  </span>
-                  <span className="font-mono text-title-md font-bold text-primary-text">
-                    {roadmap.progress.overall}%
-                  </span>
-                </div>
-                <div className="w-full bg-surface-highest h-2 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all duration-500"
-                    style={{ width: `${roadmap.progress.overall}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {roadmap.progress.subjects.length > 0 ? (
-              <div className="space-y-3">
-                <span className="text-[10px] font-mono uppercase text-text-muted block">
-                  Subject Performance Relative to Benchmark
-                </span>
-                {roadmap.progress.subjects.map((subj) => (
-                  <div
-                    key={subj.code}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-surface-high/60 border border-border/60"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="font-mono text-label-xs text-text-muted w-12 flex-shrink-0">
-                        {subj.code}
-                      </span>
-                      <span className="text-body-sm font-medium text-text-primary truncate">
-                        {subj.name}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3 sm:w-48">
-                      <div className="flex-1 bg-surface-highest h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{ width: `${subj.score}%` }}
-                        />
-                      </div>
-                      <span className="font-mono text-body-sm font-semibold text-text-primary w-12 text-right">
-                        {subj.score}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 rounded-lg bg-surface-high/60 border border-border text-center font-mono text-[12px] text-text-muted">
-                Progress bars will populate with verified scores once tests are completed.
-              </div>
-            )}
           </section>
         </div>
       </div>

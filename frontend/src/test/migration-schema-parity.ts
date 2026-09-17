@@ -78,6 +78,7 @@ function matchAll(source: string, pattern: RegExp, group = 1): string[] {
 
 const schemaTables = [...new Set(matchAll(schemaSource, /pgTable\(\s*"([a-z0-9_]+)"/i))].sort();
 const schemaEnums = [...new Set(matchAll(schemaSource, /pgEnum\(\s*"([a-z0-9_]+)"/i))].sort();
+const schemaIndexes = [...new Set(matchAll(schemaSource, /(?:uniqueIndex|index)\(\s*"([a-z0-9_]+)"/i))].sort();
 const migrationTables = [
   ...new Set(matchAll(migrationSource, /CREATE TABLE(?:\s+IF NOT EXISTS)?\s+"?([a-z0-9_]+)"?/i)),
 ].sort();
@@ -87,6 +88,14 @@ const migrationEnums = [
       migrationSource,
       // Migrations may qualify the type (`CREATE TYPE "public"."x" AS ENUM`).
       /CREATE TYPE(?:\s+IF NOT EXISTS)?\s+(?:(?:"[a-z0-9_]+"|[a-z0-9_]+)\.)?"?([a-z0-9_]+)"?/i
+    )
+  ),
+].sort();
+const migrationIndexes = [
+  ...new Set(
+    matchAll(
+      migrationSource,
+      /CREATE\s+(?:UNIQUE\s+)?INDEX(?:\s+IF NOT EXISTS)?\s+(?:(?:"[a-z0-9_]+"|[a-z0-9_]+)\.)?"?([a-z0-9_]+)"?/i
     )
   ),
 ].sort();
@@ -109,6 +118,12 @@ async function run() {
   assert(
     enumsWithoutMigration.length === 0,
     `every declared enum type is created by a migration (missing: ${enumsWithoutMigration.join(", ") || "none"})`
+  );
+
+  const indexesWithoutMigration = schemaIndexes.filter((i) => !migrationIndexes.includes(i));
+  assert(
+    indexesWithoutMigration.length === 0,
+    `every declared index is created by a migration (missing: ${indexesWithoutMigration.join(", ") || "none"})`
   );
 
   // The exact incident: these must never lose their migration again.
@@ -172,6 +187,16 @@ async function run() {
     assert(
       missingEnumsInDb.length === 0,
       `every schema enum exists in the database (missing: ${missingEnumsInDb.join(", ") || "none"})`
+    );
+
+    const indexResult = await pool.query<{ indexname: string }>(
+      "select indexname from pg_indexes where schemaname = 'public'"
+    );
+    const liveIndexes = indexResult.rows.map((r) => r.indexname);
+    const missingIndexesInDb = schemaIndexes.filter((i) => !liveIndexes.includes(i));
+    assert(
+      missingIndexesInDb.length === 0,
+      `every schema index exists in the database (missing: ${missingIndexesInDb.join(", ") || "none"})`
     );
   }
   await pool.end().catch(() => undefined);

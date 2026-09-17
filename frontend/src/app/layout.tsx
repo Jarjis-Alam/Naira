@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/components/providers/auth-provider";
-import GradientWaves from "@/components/ui/gradient-waves";
 import { DevButton } from "@/components/layout/dev-modal";
 
 export const metadata: Metadata = {
-  title: "Nexora — Your Operating System for Placements",
+  title: "Nexora — Placement Operating System",
   description:
-    "Assess your skills, identify your weaknesses, practice smarter, and measure your placement readiness with high-precision metrics.",
+    "Assess your skills, identify weaknesses, practice with precision, and measure placement readiness with high-precision metrics.",
 };
 
 export default function RootLayout({
@@ -23,33 +22,11 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-base text-text-primary antialiased selection:bg-primary/30 selection:text-text-primary min-h-screen relative overflow-x-hidden">
-        {/* Background Gradient Waves from React Bits (https://reactbits.dev/backgrounds/gradient-waves) */}
-        <div className="fixed inset-0 pointer-events-none -z-10 w-full h-full min-h-screen overflow-hidden">
-          <GradientWaves
-            horizonColor="#5227FF"
-            waveColor="#FF9FFC"
-            crestColor="#FFFFFF"
-            speed={0.4}
-            amplitude={2.5}
-            waveScale={0.6}
-            waveRatio={0.9}
-            swell={35}
-            turbulence={20}
-            tilt={1.11}
-            zoom={1.0}
-            height={5.5}
-            fogDepth={15}
-            detail="medium"
-            brightness={1.0}
-            opacity={0.45}
-            mouseInteraction={true}
-            parallaxStrength={0.5}
-          />
-          {/* Subtle dark gradient overlay to ensure perfect contrast and text readability */}
-          <div className="absolute inset-0 bg-base/75 pointer-events-none" />
-        </div>
-        <div className="relative z-10 min-h-screen">
+      <body className="bg-void-black text-sage-60 antialiased min-h-screen relative overflow-x-hidden">
+        {/* Phosphor terminal canvas with subtle green bloom & precision grid */}
+        <div className="fixed inset-0 pointer-events-none -z-10 w-full h-full min-h-screen bg-void-black tech-grid ambient-glow" />
+
+        <div className="relative z-10 min-h-screen flex flex-col justify-between">
           <AuthProvider>
             {children}
             {/* Quick Access Floating DEV Profile Trigger */}

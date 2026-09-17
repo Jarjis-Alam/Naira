@@ -27,6 +27,7 @@ export async function GET(
     if (msg.includes("not found")) {
       return NextResponse.json({ error: msg }, { status: 404 });
     }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error(`[simulation-api] GET /api/student/simulation/${id} failed:`, error);
+    return NextResponse.json({ error: "Failed to load simulation" }, { status: 500 });
   }
 }

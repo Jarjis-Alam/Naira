@@ -87,15 +87,24 @@ export function ApplicationActions({
               key={t.status}
               type="button"
               disabled={busy !== null}
-              onClick={() =>
+              onClick={() => {
+                if (
+                  t.terminal &&
+                  typeof window !== "undefined" &&
+                  !window.confirm(
+                    `Mark this application as "${t.label}"? This is a terminal state that closes the application.`
+                  )
+                ) {
+                  return;
+                }
                 call(
                   `status-${t.status}`,
                   `/api/student/applications/${applicationId}?action=status`,
                   "PATCH",
                   { status: t.status },
                   `Status updated to ${t.label}`
-                )
-              }
+                );
+              }}
               className={`rounded-lg px-3 py-1.5 text-[11px] font-mono font-bold uppercase transition-colors disabled:opacity-50 ${t.terminal ? "border border-rose-400/50 text-rose-500 hover:bg-rose-500/10" : "bg-primary/10 text-primary-text hover:bg-primary/20"}`}
             >
               {busy === `status-${t.status}` ? "…" : t.label}
@@ -312,6 +321,40 @@ export function ApplicationActions({
         </p>
       )}
       {success && <p className="text-body-sm text-emerald-600 dark:text-emerald-400">{success}</p>}
+
+      {/* Destructive zone */}
+      <div className="pt-4 border-t border-border/60 flex items-center justify-between">
+        <span className="text-[11px] font-mono text-text-muted">Need to remove this application?</span>
+        <button
+          type="button"
+          disabled={busy !== null}
+          onClick={async () => {
+            if (
+              typeof window !== "undefined" &&
+              !window.confirm(
+                "Delete this application? All recorded events, assessments, and interview logs for this application will be permanently removed."
+              )
+            ) {
+              return;
+            }
+            setBusy("delete");
+            try {
+              const res = await fetch(`/api/student/applications/${applicationId}`, { method: "DELETE" });
+              if (!res.ok) {
+                const b = await res.json().catch(() => ({}));
+                throw new Error(b?.error ?? "Failed to delete application");
+              }
+              router.push("/applications");
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Failed to delete application");
+              setBusy(null);
+            }
+          }}
+          className="rounded-lg border border-rose-500/30 px-3 py-1.5 text-[11px] font-mono font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+        >
+          {busy === "delete" ? "Deleting…" : "Delete Application"}
+        </button>
+      </div>
     </section>
   );
 }
