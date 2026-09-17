@@ -7,19 +7,14 @@ import { CinematicHero } from "@/components/landing/cinematic-hero";
 export default async function LandingPage() {
   const session = await auth();
 
-  const navItems = [
-    { label: "Preparation Loop", href: "#loop" },
-    { label: "Readiness Model", href: "#readiness" },
-    { label: "Curriculum", href: "#curriculum" },
-  ];
-
   return (
     <div className="min-h-screen bg-void-black text-sage-60 selection:bg-white/20 selection:text-white flex flex-col justify-between">
-      {/* Cinematic Full-Screen Video Hero with Minimal Layered Navigation and NAIRA Wordmark */}
-      <CinematicHero isAuthenticated={Boolean(session)} navItems={navItems} />
+      {/* Cinematic Full-Screen Video Hero with Minimal Floating Navbar and Mileast Italic Naira Title */}
+      <CinematicHero isAuthenticated={Boolean(session)} />
 
-      {/* Code Window / Live Terminal Preview Section */}
-      <section id="readiness" className="container-fluid pt-16 pb-20 scroll-mt-20">
+      {/* Code Window / Live Terminal Preview Section (Features / Readiness) */}
+      <section id="features" className="container-fluid pt-20 pb-20 scroll-mt-20 relative">
+        <span id="readiness" className="absolute -top-20" aria-hidden="true" />
         <div className="rounded-xl bg-ground-iron border border-circuit-border overflow-hidden shadow-none">
           {/* Traffic-light terminal window top bar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-circuit-border/60 bg-carbon-veil/60">
@@ -82,7 +77,8 @@ export default async function LandingPage() {
       </section>
 
       {/* 6-Step Placement Preparation Loop */}
-      <section id="loop" className="container-fluid py-20 scroll-mt-20 border-t border-phosphor-blue-black">
+      <section id="how-it-works" className="container-fluid py-20 scroll-mt-20 border-t border-phosphor-blue-black relative">
+        <span id="loop" className="absolute -top-20" aria-hidden="true" />
         <div className="text-center max-w-3xl mx-auto mb-12">
           <Eyebrow system="NEXORA" category="EXECUTION ARCHITECTURE" className="justify-center">
             CLOSED-LOOP PREPARATION
@@ -125,7 +121,8 @@ export default async function LandingPage() {
       </section>
 
       {/* Curriculum & Placement Tests Section */}
-      <section id="curriculum" className="py-20 container-fluid border-t border-phosphor-blue-black scroll-mt-20">
+      <section id="about" className="py-20 container-fluid border-t border-phosphor-blue-black scroll-mt-20 relative">
+        <span id="curriculum" className="absolute -top-20" aria-hidden="true" />
         <div className="mb-12 text-center md:text-left">
           <Eyebrow system="NEXORA" category="CURRICULUM">
             STANDARDIZED SYLLABUS
