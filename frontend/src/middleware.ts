@@ -14,6 +14,7 @@ export default auth((req) => {
     pathname.startsWith("/auth/") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/_next") ||
+    pathname.startsWith("/video") ||
     pathname.startsWith("/favicon");
 
   if (isPublic) return NextResponse.next();
@@ -38,6 +39,6 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.svg$|.*\\.jpg$|.*\\.css$|.*\\.js$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.svg$|.*\\.jpg$|.*\\.mp4$|.*\\.webm$|.*\\.css$|.*\\.js$).*)",
   ],
 };

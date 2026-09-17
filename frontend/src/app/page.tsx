@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { LandingNav } from "@/components/layout/landing-nav";
 import { DeveloperFooter } from "@/components/layout/developer-footer";
-import { DevButton } from "@/components/layout/dev-modal";
 import { Eyebrow } from "@/components/ui/eyebrow";
-import { NexoraLogo } from "@/components/ui/nexora-logo";
+import { CinematicHero } from "@/components/landing/cinematic-hero";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -16,96 +14,12 @@ export default async function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-void-black text-sage-60 selection:bg-lime-pulse/25 selection:text-phosphor-white flex flex-col justify-between">
-      {/* Top Navigation */}
-      <header className="border-b border-phosphor-blue-black sticky top-0 z-50 bg-carbon-veil/90 backdrop-blur-md w-full">
-        <div className="container-fluid h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <NexoraLogo size={32} priority className="group-hover:border-white transition-colors" />
-            <div className="flex items-center gap-1.5">
-              <span className="font-heading font-semibold text-title-md text-phosphor-white tracking-tight">
-                Nexora
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-white" />
-            </div>
-          </Link>
-
-          <LandingNav items={navItems} />
-
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <DevButton variant="nav" />
-
-            {session ? (
-              <Link
-                href="/dashboard"
-                className="bg-lime-pulse text-void-black font-semibold text-body-sm px-5 py-2 rounded-pills hover:bg-[#6edc54] transition-all flex items-center gap-1.5 shadow-none"
-              >
-                <span>Dashboard</span>
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/auth/login"
-                  className="text-body-sm text-sage-60 hover:text-phosphor-white transition-colors px-3 py-1.5 font-medium"
-                >
-                  Log In
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className="bg-lime-pulse text-void-black font-semibold text-body-sm px-5 py-2 rounded-pills hover:bg-[#6edc54] transition-all shadow-none"
-                >
-                  Start Assessment
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 container-fluid text-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-pills border border-circuit-border bg-carbon-veil text-caption font-mono text-moss-70 mb-6">
-          <span className="w-2 h-2 rounded-full bg-lime-pulse animate-pulse" />
-          <span>CAMPUS PLACEMENT OPERATING SYSTEM • 7 DOMAINS • DETERMINISTIC READINESS</span>
-        </div>
-
-        <div className="max-w-4xl mx-auto mb-6">
-          <h1 className="font-heading text-4xl sm:text-6xl font-medium tracking-tight text-phosphor-white leading-tight">
-            The <span className="text-lime-pulse">Operating System</span> <br className="hidden sm:inline" />
-            for Campus Placements
-          </h1>
-        </div>
-
-        <p className="font-sans text-subheading text-moss-80 max-w-xl mx-auto font-normal mb-3">
-          Assess. Analyze. Improve. Calibrate placement readiness.
-        </p>
-
-        <p className="text-body text-sage-60 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Nexora evaluates your engineering readiness, identifies conceptual weaknesses, aligns target company benchmarks,
-          generates daily prioritized execution actions, and conducts realistic multi-round simulations.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href={session ? "/dashboard" : "/auth/register"}
-            className="w-full sm:w-auto bg-lime-pulse text-void-black font-semibold text-body px-8 py-3.5 rounded-pills hover:bg-[#6edc54] transition-all flex items-center justify-center gap-2 shadow-none"
-          >
-            <span>Start Baseline Assessment</span>
-            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </Link>
-          <a
-            href="#loop"
-            className="w-full sm:w-auto bg-ground-iron border border-circuit-border text-phosphor-white font-medium text-body px-8 py-3.5 rounded-buttons hover:border-phosphor-white transition-all flex items-center justify-center gap-1.5"
-          >
-            <span>Explore Architecture</span>
-            <span className="material-symbols-outlined text-[16px] text-sage-40">expand_more</span>
-          </a>
-        </div>
-      </section>
+    <div className="min-h-screen bg-void-black text-sage-60 selection:bg-white/20 selection:text-white flex flex-col justify-between">
+      {/* Cinematic Full-Screen Video Hero with Minimal Layered Navigation and NAIRA Wordmark */}
+      <CinematicHero isAuthenticated={Boolean(session)} navItems={navItems} />
 
       {/* Code Window / Live Terminal Preview Section */}
-      <section id="readiness" className="container-fluid pb-20 scroll-mt-20">
+      <section id="readiness" className="container-fluid pt-16 pb-20 scroll-mt-20">
         <div className="rounded-xl bg-ground-iron border border-circuit-border overflow-hidden shadow-none">
           {/* Traffic-light terminal window top bar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-circuit-border/60 bg-carbon-veil/60">
