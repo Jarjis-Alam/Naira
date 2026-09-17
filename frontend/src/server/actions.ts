@@ -270,3 +270,27 @@ export async function updateStudyPlanItemStatusAction(
   return res;
 }
 
+export async function generatePracticeSessionAction(params: {
+  topicId?: string;
+  subjectCode?: string;
+  objective?: "FIX" | "REINFORCE" | "REVIEW" | "REASSESS" | "MIXED";
+  questionCount?: number;
+  planItemId?: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { materializePracticeSession } = await import("./practice-question-intelligence");
+  const res = await materializePracticeSession({
+    userId: session.user.id,
+    ...params,
+  });
+
+  revalidatePath("/practice");
+  revalidatePath("/planner");
+  revalidatePath("/tests");
+  return res;
+}
+

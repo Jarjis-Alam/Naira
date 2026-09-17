@@ -199,7 +199,7 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
             onClick={() => setActiveTab("today")}
           >
             <span className="material-symbols-outlined text-[16px]">today</span>
-            <span>Today's Plan</span>
+            <span>Today&apos;s Plan</span>
             <span className="ml-1 text-[10px] opacity-70">
               ({today.items.length})
             </span>
@@ -249,7 +249,7 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-bold font-heading text-white">
-                    Today's Preparation Focus
+                    Today&apos;s Preparation Focus
                   </h2>
                   <Pill variant="neutral" size="sm" type="label">
                     v{plan.planVersion}
