@@ -21,7 +21,7 @@ export default function ProtectedError({
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-12 text-center">
       <div className="max-w-md w-full rounded-2xl border border-border/80 bg-surface/90 p-8 shadow-2xl backdrop-blur-sm space-y-6">
-        <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 mx-auto flex items-center justify-center">
+        <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 text-white mx-auto flex items-center justify-center">
           <span className="material-symbols-outlined text-[24px]">warning</span>
         </div>
 

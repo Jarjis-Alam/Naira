@@ -118,7 +118,7 @@ export default async function ProfilePage() {
             <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-ping" />
             <span>Active Cycle</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30 text-[11px] font-mono font-semibold uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-zinc-300 border border-white/20 text-[11px] font-mono font-semibold uppercase tracking-wider">
             <span className="material-symbols-outlined text-[14px]">verified_user</span>
             <span>Profile Verified</span>
           </div>
@@ -187,7 +187,7 @@ export default async function ProfilePage() {
                 <span className="px-2.5 py-0.5 rounded-full bg-[#282b29] text-sage-40 font-mono text-[10px] font-semibold border border-[#3f4a38]/40">
                   CLASS OF {profile.graduationYear || "2026"}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300 font-mono text-[10px] font-semibold border border-purple-500/30">
+                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-zinc-300 font-mono text-[10px] font-semibold border border-white/20">
                   {profile.preferredLanguage ? `${profile.preferredLanguage.toUpperCase()} TRACK` : "C++ TRACK"}
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse font-mono text-[10px] font-bold border border-lime-pulse/30">
@@ -344,7 +344,7 @@ export default async function ProfilePage() {
                 </div>
                 <div className="rounded-xl bg-[#111413] border border-[#3f4a38]/30 p-2.5">
                   <p className="text-[10px] uppercase text-sage-40">Rejections</p>
-                  <p className="text-lg font-bold text-rose-400 mt-0.5">{outcomeHistory.rejections}</p>
+                  <p className="text-lg font-bold text-zinc-400 mt-0.5">{outcomeHistory.rejections}</p>
                 </div>
               </div>
             </div>

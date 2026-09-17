@@ -46,9 +46,9 @@ const typeIcons: Record<TestCatalogItem["type"], string> = {
 };
 
 const difficultyColor: Record<string, string> = {
-  easy:   "text-lime-pulse bg-lime-pulse/10 border-lime-pulse/30",
-  medium: "text-[#f59e0b] bg-[#f59e0b]/10 border-[#f59e0b]/30",
-  hard:   "text-[#f87171] bg-[#f87171]/10 border-[#f87171]/30",
+  easy:   "text-white bg-white/10 border-white/25",
+  medium: "text-zinc-300 bg-white/5 border-zinc-700",
+  hard:   "text-zinc-400 bg-white/5 border-zinc-800",
 };
 
 export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
@@ -100,16 +100,16 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
 
   return (
     <section aria-labelledby="test-library-heading" className="space-y-8">
-      {/* Metric Strip: 4 Diagnostic Cards */}
+      {/* Metric Strip: 4 Diagnostic Cards (Monochrome) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {/* Card 1: Completed (Green) */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant/30 p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-lime-pulse/40 transition-colors group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-lime-pulse/5 blur-xl pointer-events-none group-hover:bg-lime-pulse/10 transition-all"></div>
+        {/* Card 1: Completed */}
+        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
               Tests Completed
             </span>
-            <div className="w-7 h-7 rounded-full bg-lime-pulse/20 flex items-center justify-center text-lime-pulse">
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[16px]">task_alt</span>
             </div>
           </div>
@@ -122,25 +122,25 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
             </div>
             <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden mt-3 mb-2">
               <div
-                className="h-full bg-lime-pulse rounded-full transition-all duration-500"
+                className="h-full bg-white rounded-full transition-all duration-500"
                 style={{ width: `${metrics.completionPct}%` }}
               ></div>
             </div>
             <div className="flex items-center justify-between text-text-muted text-[11px] font-mono">
-              <span className="text-lime-pulse font-semibold">{metrics.completionPct}% Coverage</span>
+              <span className="text-white font-semibold">{metrics.completionPct}% Coverage</span>
               <span>Placement Catalog</span>
             </div>
           </div>
         </div>
 
-        {/* Card 2: Average Score (Blue) */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant/30 p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-[#38bdf8]/40 transition-colors group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-[#38bdf8]/5 blur-xl pointer-events-none group-hover:bg-[#38bdf8]/10 transition-all"></div>
+        {/* Card 2: Average Score */}
+        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
               Diagnostic Average
             </span>
-            <div className="w-7 h-7 rounded-full bg-[#38bdf8]/20 flex items-center justify-center text-[#38bdf8]">
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[16px]">query_stats</span>
             </div>
           </div>
@@ -150,50 +150,50 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                 {metrics.avgScore > 0 ? `${metrics.avgScore}%` : "--"}
               </span>
               {metrics.avgScore >= 70 && (
-                <span className="text-[11px] font-mono text-lime-pulse font-semibold flex items-center">
+                <span className="text-[11px] font-mono text-white font-semibold flex items-center">
                   <span className="material-symbols-outlined text-[14px]">trending_up</span> Good
                 </span>
               )}
             </div>
             <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden mt-3 mb-2">
               <div
-                className="h-full bg-[#38bdf8] rounded-full transition-all duration-500"
+                className="h-full bg-zinc-300 rounded-full transition-all duration-500"
                 style={{ width: `${metrics.avgScore}%` }}
               ></div>
             </div>
             <div className="flex items-center justify-between text-text-muted text-[11px] font-mono">
-              <span className="text-[#38bdf8] font-semibold">Calibrated Rubric</span>
+              <span className="text-white font-semibold">Calibrated Rubric</span>
               <span>Tier-1 Threshold</span>
             </div>
           </div>
         </div>
 
-        {/* Card 3: In Progress (Amber) */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant/30 p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-[#f59e0b]/40 transition-colors group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-[#f59e0b]/5 blur-xl pointer-events-none group-hover:bg-[#f59e0b]/10 transition-all"></div>
+        {/* Card 3: In Progress */}
+        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
               In Progress Sessions
             </span>
-            <div className="w-7 h-7 rounded-full bg-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[16px]">pending</span>
             </div>
           </div>
           <div>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-bold font-mono text-[#f59e0b] tracking-tight">
+              <span className="text-3xl font-bold font-mono text-white tracking-tight">
                 {metrics.inProgressCount}
               </span>
               <span className="text-xs font-mono text-text-muted">active tests</span>
             </div>
             <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden mt-3 mb-2">
               <div
-                className="h-full bg-[#f59e0b] rounded-full transition-all duration-500"
+                className="h-full bg-zinc-400 rounded-full transition-all duration-500"
                 style={{ width: metrics.inProgressCount > 0 ? "50%" : "0%" }}
               ></div>
             </div>
             <div className="flex items-center justify-between text-text-muted text-[11px] font-mono">
-              <span className="text-[#f59e0b] font-semibold">
+              <span className="text-white font-semibold">
                 {metrics.inProgressCount > 0 ? "Needs Completion" : "All Caught Up"}
               </span>
               <span>Active</span>
@@ -201,14 +201,14 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
           </div>
         </div>
 
-        {/* Card 4: Top Benchmark (Purple) */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant/30 p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-purple-400/40 transition-colors group">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-purple-500/5 blur-xl pointer-events-none group-hover:bg-purple-500/10 transition-all"></div>
+        {/* Card 4: Top Benchmark */}
+        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
               Mastered Tests (&ge;75%)
             </span>
-            <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[16px]">military_tech</span>
             </div>
           </div>
@@ -221,27 +221,27 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
             </div>
             <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden mt-3 mb-2">
               <div
-                className="h-full bg-purple-400 rounded-full transition-all duration-500"
+                className="h-full bg-white rounded-full transition-all duration-500"
                 style={{ width: `${metrics.total > 0 ? (metrics.topScorersCount / metrics.total) * 100 : 0}%` }}
               ></div>
             </div>
             <div className="flex items-center justify-between text-text-muted text-[11px] font-mono">
-              <span className="text-purple-400 font-semibold">Tier-1 Shortlist Ready</span>
+              <span className="text-white font-semibold">Tier-1 Shortlist Ready</span>
               <span>Verified</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Priority Adaptive Drill Spotlight Banner */}
+      {/* Priority Adaptive Drill Spotlight Banner (Monochrome) */}
       {spotlightTest && (
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant/30 p-6 sm:p-8 relative overflow-hidden shadow-md">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-lime-pulse/10 via-[#38bdf8]/5 to-transparent blur-3xl pointer-events-none"></div>
+        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-6 sm:p-8 relative overflow-hidden shadow-md">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-white/10 via-white/5 to-transparent blur-3xl pointer-events-none"></div>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div className="flex flex-col max-w-3xl">
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-3 py-0.5 rounded-full bg-lime-pulse/20 text-lime-pulse font-mono text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-pulse"></span>
+                <span className="px-3 py-0.5 rounded-full bg-white/20 text-white font-mono text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                   {spotlightTest.status === "in_progress" ? "ACTIVE IN PROGRESS" : "RECOMMENDED DIAGNOSTIC"}
                 </span>
                 <span className="text-xs font-mono text-text-muted">
@@ -256,11 +256,11 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
               </p>
               {/* Meta pills */}
               <div className="flex flex-wrap items-center gap-2 mt-4 text-xs font-mono">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/30 text-text-primary">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-white">
                   <span className="material-symbols-outlined text-[15px] text-text-muted">quiz</span>
                   <span>{spotlightTest.questionCount} Questions</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant/30 text-text-primary">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-white">
                   <span className="material-symbols-outlined text-[15px] text-text-muted">schedule</span>
                   <span>{spotlightTest.duration} Mins</span>
                 </div>
@@ -270,7 +270,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                   </div>
                 )}
                 {spotlightTest.bestScore !== null && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-pulse/10 border border-lime-pulse/30 text-lime-pulse">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white">
                     <span>Best Score: {spotlightTest.bestScore}%</span>
                   </div>
                 )}
@@ -280,7 +280,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
             <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-center gap-2 shrink-0">
               <Link
                 href={`/tests/${spotlightTest.id}`}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 shadow-md transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 shadow-md transition-all"
               >
                 <span>{spotlightTest.status === "in_progress" ? "Resume Test" : "Start Test Now"}</span>
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -294,7 +294,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
       )}
 
       {/* Search + Filter Strip Pill Matrix */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-outline-variant/30">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-outline-variant">
         {/* Search Input with ⌘K style */}
         <div className="relative flex-1 max-w-md">
           <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] text-text-muted pointer-events-none">
@@ -306,7 +306,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search diagnostic tests, skills, topics..."
-            className="w-full h-10 bg-surface-container-low border border-outline-variant/40 rounded-full pl-10 pr-4 text-xs text-text-primary placeholder:text-text-muted outline-none focus:border-lime-pulse transition-colors"
+            className="w-full h-10 bg-surface-container-low border border-outline-variant rounded-full pl-10 pr-4 text-xs text-white placeholder:text-text-muted outline-none focus:border-white/40 transition-colors"
           />
         </div>
 
@@ -324,13 +324,13 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                 onClick={() => setActiveFilter(f.value)}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-white text-void-black shadow-sm"
-                    : "bg-surface-container hover:bg-surface-container-high text-text-secondary hover:text-white border border-outline-variant/30"
+                    ? "bg-white text-black shadow-sm"
+                    : "bg-surface-container hover:bg-surface-container-high text-text-secondary hover:text-white border border-outline-variant"
                 }`}
               >
                 <span>{f.label}</span>
                 <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                  isActive ? "bg-void-black/20 text-void-black" : "bg-surface-container-low text-text-muted"
+                  isActive ? "bg-black/20 text-black" : "bg-surface-container-low text-text-muted"
                 }`}>
                   {count}
                 </span>
@@ -363,18 +363,13 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
               isCompleted  ? "refresh" :
               "arrow_forward";
 
-            const scoreColor =
-              (test.bestScore ?? 0) >= 75 ? "text-lime-pulse" :
-              (test.bestScore ?? 0) >= 50 ? "text-[#f59e0b]" :
-              "text-[#f87171]";
-
             return (
               <article
                 key={test.id}
                 className={`group flex flex-col rounded-2xl border p-5 transition-all duration-200 bg-surface-container-low ${
                   isBaseline
-                    ? "border-lime-pulse/40 shadow-[0_0_15px_rgba(127,238,100,0.06)]"
-                    : "border-outline-variant/30 hover:border-outline-variant/70 hover:bg-surface-container"
+                    ? "border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.06)]"
+                    : "border-outline-variant hover:border-white/40 hover:bg-surface-container"
                 }`}
               >
                 {/* Card Top */}
@@ -383,8 +378,8 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${
                       isBaseline
-                        ? "bg-lime-pulse/15 border-lime-pulse/30 text-lime-pulse"
-                        : "bg-surface-container-highest border-outline-variant/30 text-text-secondary group-hover:text-lime-pulse transition-colors"
+                        ? "bg-white/15 border-white/30 text-white"
+                        : "bg-surface-container-highest border-outline-variant text-text-secondary group-hover:text-white transition-colors"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[20px]">
@@ -395,23 +390,23 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                   {/* Status & Difficulty Badges */}
                   <div className="flex items-center gap-1.5 flex-wrap justify-end">
                     {isBaseline && (
-                      <span className="px-2 py-0.5 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 text-lime-pulse font-mono text-[10px] font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded-full bg-white/15 border border-white/30 text-white font-mono text-[10px] font-bold uppercase">
                         BASELINE
                       </span>
                     )}
                     {isScheduled && (
-                      <span className="px-2 py-0.5 rounded-full bg-[#38bdf8]/15 border border-[#38bdf8]/30 text-[#38bdf8] font-mono text-[10px] font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-zinc-300 font-mono text-[10px] font-bold uppercase">
                         UPCOMING
                       </span>
                     )}
                     {isInProgress && (
-                      <span className="px-2 py-0.5 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b] font-mono text-[10px] font-bold uppercase flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-[#f59e0b] animate-ping"></span>
+                      <span className="px-2 py-0.5 rounded-full bg-white/15 border border-white/30 text-white font-mono text-[10px] font-bold uppercase flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-white animate-pulse"></span>
                         IN PROGRESS
                       </span>
                     )}
                     {isClosed && !isCompleted && (
-                      <span className="px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-muted font-mono text-[10px] font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted font-mono text-[10px] font-bold uppercase">
                         CLOSED
                       </span>
                     )}
@@ -439,11 +434,11 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
 
                   {/* Meta Pills */}
                   <div className="flex items-center gap-2 flex-wrap mb-4 text-[11px] font-mono">
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/30 text-text-muted">
+                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted">
                       <span className="material-symbols-outlined text-[13px]">schedule</span>
                       {test.duration} MIN
                     </span>
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/30 text-text-muted">
+                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted">
                       <span className="material-symbols-outlined text-[13px]">format_list_numbered</span>
                       {test.questionCount} Q
                     </span>
@@ -451,13 +446,13 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-outline-variant/20 pt-3 mt-auto space-y-2.5">
+                <div className="border-t border-outline-variant pt-3 mt-auto space-y-2.5">
                   {/* Score / Status Row */}
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="text-text-muted text-[10px] uppercase tracking-wider">Status</span>
                     <span className={`font-semibold ${
-                      isCompleted ? scoreColor :
-                      isInProgress ? "text-[#f59e0b]" :
+                      isCompleted ? "text-white" :
+                      isInProgress ? "text-zinc-200" :
                       "text-text-muted"
                     }`}>
                       {isInProgress ? "IN PROGRESS" :
@@ -473,7 +468,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                   {isCompleted && test.bestScore !== null && (
                     <ProgressBar
                       value={test.bestScore}
-                      color={test.bestScore >= 75 ? "green" : test.bestScore >= 50 ? "amber" : "rose"}
+                      color="green"
                       size="xs"
                       animated
                     />
@@ -484,10 +479,10 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                     href={`/tests/${test.id}`}
                     className={`w-full h-9 flex items-center justify-center gap-2 rounded-full font-semibold text-xs border transition-all ${
                       isClosed && !isCompleted
-                        ? "border-outline-variant/30 bg-surface-container text-text-muted cursor-not-allowed pointer-events-none opacity-60"
+                        ? "border-outline-variant bg-surface-container text-text-muted cursor-not-allowed pointer-events-none opacity-60"
                         : isBaseline || (!isCompleted && !isInProgress)
-                        ? "border-lime-pulse bg-lime-pulse text-void-black hover:brightness-110 shadow-sm"
-                        : "border-outline-variant/40 bg-surface-container text-text-primary hover:border-lime-pulse hover:text-lime-pulse"
+                        ? "border-white bg-white text-black hover:bg-zinc-200 shadow-sm"
+                        : "border-outline-variant bg-surface-container text-white hover:border-white"
                     }`}
                   >
                     <span>{ctaLabel}</span>

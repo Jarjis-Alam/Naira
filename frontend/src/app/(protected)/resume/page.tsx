@@ -84,7 +84,7 @@ export default async function ResumeIntelligencePage({
           activeVariant ? (
             <Link
               href={`/resume/builder?variantId=${activeVariant.id}`}
-              className="px-5 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs transition-all shadow-[0_0_15px_rgba(127,238,100,0.2)] hover:bg-mint-frost flex items-center gap-1.5"
+              className="px-5 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:bg-mint-frost flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-[17px]">auto_fix_high</span>
               <span>Open Builder</span>

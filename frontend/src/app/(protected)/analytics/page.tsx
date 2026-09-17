@@ -145,7 +145,7 @@ export default async function AnalyticsPage() {
             <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
               Execution Velocity
             </span>
-            <div className="w-8 h-8 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">speed</span>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default async function AnalyticsPage() {
           </div>
           <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
             <div
-              className="bg-purple-400 h-full rounded-full transition-all duration-500"
+              className="bg-white h-full rounded-full transition-all duration-500"
               style={{ width: `${Math.min(100, analytics.overview.testsCompleted * 10)}%` }}
             />
           </div>
@@ -174,7 +174,7 @@ export default async function AnalyticsPage() {
             <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
               Accuracy Index
             </span>
-            <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">track_changes</span>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default async function AnalyticsPage() {
               <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
                 {analytics.overview.avgAccuracy}%
               </span>
-              <span className="text-[11px] font-mono text-blue-400">
+              <span className="text-[11px] font-mono text-zinc-300">
                 {analytics.overview.questionsCorrect} correct
               </span>
             </div>
@@ -193,7 +193,7 @@ export default async function AnalyticsPage() {
           </div>
           <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
             <div
-              className="bg-blue-400 h-full rounded-full transition-all duration-500"
+              className="bg-zinc-300 h-full rounded-full transition-all duration-500"
               style={{ width: `${analytics.overview.avgAccuracy}%` }}
             />
           </div>
@@ -205,7 +205,7 @@ export default async function AnalyticsPage() {
             <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
               Average Score
             </span>
-            <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">psychology</span>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default async function AnalyticsPage() {
               <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
                 {analytics.overview.avgScore}%
               </span>
-              <span className="text-[11px] font-mono text-amber-400">
+              <span className="text-[11px] font-mono text-zinc-400">
                 {analytics.overview.questionsAttempted} graded
               </span>
             </div>
@@ -224,7 +224,7 @@ export default async function AnalyticsPage() {
           </div>
           <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
             <div
-              className="bg-amber-400 h-full rounded-full transition-all duration-500"
+              className="bg-zinc-400 h-full rounded-full transition-all duration-500"
               style={{ width: `${analytics.overview.avgScore}%` }}
             />
           </div>
@@ -296,7 +296,7 @@ export default async function AnalyticsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
               02
             </span>
             <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
@@ -313,7 +313,7 @@ export default async function AnalyticsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
               03
             </span>
             <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
@@ -365,7 +365,7 @@ export default async function AnalyticsPage() {
 
             {/* Negative Contributors */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-mono font-semibold text-rose-400 uppercase">
+              <div className="flex items-center justify-between text-xs font-mono font-semibold text-zinc-400 uppercase">
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">remove_circle</span>
                   Holding Your Readiness Back
@@ -388,7 +388,7 @@ export default async function AnalyticsPage() {
                           {c.status} • Weight: {(c.weight * 100).toFixed(0)}%
                         </div>
                       </div>
-                      <span className="text-base font-bold font-mono text-rose-400">
+                      <span className="text-base font-bold font-mono text-zinc-400">
                         {c.score}%
                       </span>
                     </div>
@@ -408,7 +408,7 @@ export default async function AnalyticsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
               04
             </span>
             <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
@@ -428,7 +428,7 @@ export default async function AnalyticsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
               05
             </span>
             <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
@@ -472,10 +472,10 @@ export default async function AnalyticsPage() {
                     <span
                       className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
                         rec.priority === "Critical"
-                          ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                          ? "bg-white/20 text-white border border-white/30"
                           : rec.priority === "High"
-                          ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                          : "bg-[#282b29] text-sage-40 border border-[#3f4a38]/40"
+                          ? "bg-white/10 text-zinc-300 border border-white/20"
+                          : "bg-white/5 text-zinc-400 border border-white/10"
                       }`}
                     >
                       {rec.priority}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import { DevModal } from "@/components/layout/dev-modal";
@@ -15,12 +15,10 @@ interface NavItem {
   label: string;
   href: string;
   icon: string;
-  accentColor?: "green" | "blue" | "purple" | "amber" | "rose";
 }
 
 export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [devModalOpen, setDevModalOpen] = useState(false);
@@ -33,23 +31,23 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
   const assessmentHref = baselineTestId ? `/tests/${baselineTestId}` : "/assessment";
 
   const coreNavItems: NavItem[] = [
-    { label: "Dashboard",         href: "/dashboard",    icon: "space_dashboard",  accentColor: "green" },
-    { label: "Target Strategy",   href: "/target",       icon: "track_changes",    accentColor: "blue" },
-    { label: "Resume",            href: "/resume",       icon: "description",      accentColor: "blue" },
-    { label: "Applications",      href: "/applications", icon: "work_outline",     accentColor: "amber" },
-    { label: "Outcomes",          href: "/outcomes",     icon: "insights",         accentColor: "rose" },
-    { label: "Simulations",       href: "/simulation",   icon: "terminal",         accentColor: "purple" },
+    { label: "Dashboard",         href: "/dashboard",    icon: "space_dashboard" },
+    { label: "Target Strategy",   href: "/target",       icon: "track_changes" },
+    { label: "Resume",            href: "/resume",       icon: "description" },
+    { label: "Applications",      href: "/applications", icon: "work_outline" },
+    { label: "Outcomes",          href: "/outcomes",     icon: "insights" },
+    { label: "Simulations",       href: "/simulation",   icon: "terminal" },
   ];
 
   const prepNavItems: NavItem[] = [
-    { label: "Assessment",        href: assessmentHref,  icon: "assignment",       accentColor: "green" },
-    { label: "Tests & Practice",  href: "/tests",        icon: "quiz",             accentColor: "green" },
-    { label: "Roadmap",           href: "/roadmap",      icon: "alt_route",        accentColor: "blue" },
-    { label: "Analytics",         href: "/analytics",    icon: "monitoring",       accentColor: "purple" },
+    { label: "Assessment",        href: assessmentHref,  icon: "assignment" },
+    { label: "Tests & Practice",  href: "/tests",        icon: "quiz" },
+    { label: "Roadmap",           href: "/roadmap",      icon: "alt_route" },
+    { label: "Analytics",         href: "/analytics",    icon: "monitoring" },
   ];
 
   const identityNavItems: NavItem[] = [
-    { label: "Profile",           href: "/profile",      icon: "person_outline",   accentColor: "neutral" as "green" },
+    { label: "Profile",           href: "/profile",      icon: "person_outline" },
   ];
 
   const adminNavItems: NavItem[] = [
@@ -60,28 +58,6 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
     { label: "Companies",         href: "/admin/companies",    icon: "domain" },
     { label: "Roles",             href: "/admin/roles",        icon: "badge" },
   ];
-
-  const accentTextMap = {
-    green:  "text-lime-pulse",
-    blue:   "text-accent-blue",
-    purple: "text-accent-purple",
-    amber:  "text-accent-amber",
-    rose:   "text-accent-rose",
-  };
-  const accentBgMap = {
-    green:  "bg-[rgba(127,238,100,0.10)]",
-    blue:   "bg-[rgba(96,165,250,0.10)]",
-    purple: "bg-[rgba(167,139,250,0.10)]",
-    amber:  "bg-[rgba(251,191,36,0.10)]",
-    rose:   "bg-[rgba(251,113,133,0.10)]",
-  };
-  const accentDotMap = {
-    green:  "bg-lime-pulse",
-    blue:   "bg-accent-blue",
-    purple: "bg-accent-purple",
-    amber:  "bg-accent-amber",
-    rose:   "bg-accent-rose",
-  };
 
   function isActive(item: NavItem): boolean {
     const isBaselineRoute = baselineTestId
@@ -101,19 +77,16 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
     items: NavItem[],
     showDivider = true
   ) => (
-    <div className={`${showDivider ? "pt-4 border-t border-[#1a1f1a]" : ""}`}>
+    <div className={`${showDivider ? "pt-4 border-t border-outline-variant/60" : ""}`}>
       {/* Group label */}
       <div className="px-3 mb-1">
-        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-deep-fern font-medium">
+        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted font-medium">
           {title}
         </span>
       </div>
       <nav className="flex flex-col gap-0.5" role="navigation" aria-label={title}>
         {items.map((item) => {
           const active = isActive(item);
-          const accent = item.accentColor && item.accentColor !== ("neutral" as string)
-            ? item.accentColor
-            : undefined;
 
           return (
             <Link
@@ -125,20 +98,18 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
                 relative flex items-center gap-2.5 px-3 py-2 rounded-full
                 text-[13px] font-medium transition-all duration-150 group
                 ${active
-                  ? `${accent ? accentBgMap[accent] : "bg-[rgba(127,238,100,0.1)]"} border ${accent ? "border-" + accent + "-500/20" : "border-lime-pulse/20"}`
-                  : "border border-transparent hover:bg-[rgba(127,238,100,0.05)] hover:border-[rgba(127,238,100,0.12)]"
+                  ? "bg-white/15 text-white border border-white/30 shadow-sm"
+                  : "border border-transparent hover:bg-white/5 hover:border-white/10 text-text-secondary hover:text-white"
                 }
               `}
             >
-              {/* No left strip for rounded-full pills */}
-
               {/* Icon */}
               <span
                 className={`
-                  material-symbols-outlined text-[17px] flex-shrink-0 transition-colors
+                  material-symbols-outlined text-[17px] shrink-0 transition-colors
                   ${active
-                    ? accent ? accentTextMap[accent] : "text-lime-pulse"
-                    : "text-sage-40 group-hover:text-sage-60"
+                    ? "text-white"
+                    : "text-text-muted group-hover:text-white"
                   }
                 `}
               >
@@ -149,8 +120,8 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
               <span
                 className={`flex-1 truncate transition-colors ${
                   active
-                    ? "text-phosphor-white"
-                    : "text-sage-60 group-hover:text-phosphor-white"
+                    ? "text-white font-semibold"
+                    : "text-text-secondary group-hover:text-white"
                 }`}
               >
                 {item.label}
@@ -158,11 +129,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
 
               {/* Active dot */}
               {active && (
-                <span
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                    accent ? accentDotMap[accent] : "bg-lime-pulse"
-                  }`}
-                />
+                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 shadow-sm" />
               )}
             </Link>
           );
@@ -184,17 +151,17 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
         className="flex items-center gap-2.5 px-2.5 py-2 mb-4 group"
       >
         {/* Emblem */}
-        <div className="w-7 h-7 rounded-[6px] bg-ground-iron border border-circuit-border flex items-center justify-center group-hover:border-lime-pulse transition-colors flex-shrink-0">
+        <div className="w-7 h-7 rounded-[6px] bg-surface-container border border-outline-variant flex items-center justify-center group-hover:border-white transition-colors shrink-0">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1L12.5 4.5V9.5L7 13L1.5 9.5V4.5L7 1Z" stroke="#7fee64" strokeWidth="1.2" fill="none"/>
-            <path d="M7 4L10 5.75V9.25L7 11L4 9.25V5.75L7 4Z" fill="#7fee64" fillOpacity="0.25" stroke="#7fee64" strokeWidth="0.8"/>
+            <path d="M7 1L12.5 4.5V9.5L7 13L1.5 9.5V4.5L7 1Z" stroke="#ffffff" strokeWidth="1.2" fill="none"/>
+            <path d="M7 4L10 5.75V9.25L7 11L4 9.25V5.75L7 4Z" fill="#ffffff" fillOpacity="0.3" stroke="#ffffff" strokeWidth="0.8"/>
           </svg>
         </div>
         <div>
-          <div className="font-heading font-semibold text-[15px] text-phosphor-white leading-none tracking-tight">
+          <div className="font-heading font-semibold text-[15px] text-white leading-none tracking-tight">
             Nexora
           </div>
-          <div className="font-mono text-[9px] uppercase tracking-[0.1em] text-deep-fern mt-0.5">
+          <div className="font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted mt-0.5">
             Placement OS
           </div>
         </div>
@@ -203,26 +170,25 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
       {/* ── Navigation ── */}
       <div className="flex-1 overflow-y-auto space-y-0 pr-0.5 -mr-0.5 min-h-0">
         {renderNavGroup("Core OS", coreNavItems, false)}
-
         {renderNavGroup("Preparation", prepNavItems)}
         {renderNavGroup("Identity", identityNavItems)}
         {isAdmin && renderNavGroup("Admin", adminNavItems)}
       </div>
 
       {/* ── Bottom: Profile + Actions ── */}
-      <div className="mt-3 pt-3 border-t border-[#1a1f1a] space-y-2">
+      <div className="mt-3 pt-3 border-t border-outline-variant/60 space-y-2">
         {/* User Profile Card */}
         {session?.user && (
-          <div className="flex items-center gap-2 p-2 rounded-[8px] bg-ground-iron border border-circuit-border/60">
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-surface-container border border-outline-variant/60">
             {/* Avatar */}
-            <div className="w-7 h-7 rounded-[6px] bg-carbon-veil border border-circuit-border flex items-center justify-center font-mono text-[11px] font-semibold text-lime-pulse flex-shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center font-mono text-[11px] font-semibold text-white shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-medium text-phosphor-white truncate leading-tight">
+              <p className="text-[12px] font-medium text-white truncate leading-tight">
                 {session.user.name || session.user.email}
               </p>
-              <p className="text-[10px] font-mono text-deep-fern truncate">
+              <p className="text-[10px] font-mono text-text-muted truncate">
                 {session.user.email}
               </p>
             </div>
@@ -230,36 +196,36 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
               onClick={() => signOut({ callbackUrl: "/auth/login" })}
               title="Sign Out"
               aria-label="Sign Out"
-              className="p-1 rounded-md text-sage-40 hover:text-accent-rose transition-colors cursor-pointer flex-shrink-0"
+              className="p-1 rounded-md text-text-muted hover:text-white transition-colors cursor-pointer shrink-0"
             >
               <span className="material-symbols-outlined text-[15px]">logout</span>
             </button>
           </div>
         )}
 
-        {/* UI 2.0 Motivation Card */}
-        <div className="relative overflow-hidden rounded-[16px] p-4 bg-gradient-to-br from-[#101b14] via-[#0b1410] to-[#0a110f] border border-lime-pulse/20 mb-3">
+        {/* UI 2.0 Motivation Card (Monochrome) */}
+        <div className="relative overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low border border-outline-variant/80 mb-3 shadow-md">
           <div className="relative z-10">
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-pulse" />
-              <span className="text-[10px] font-mono text-lime-pulse uppercase tracking-widest font-semibold">Momentum</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-[10px] font-mono text-white uppercase tracking-widest font-semibold">Momentum</span>
             </div>
-            <p className="text-[11px] text-phosphor-white font-medium leading-tight">
+            <p className="text-[11px] text-zinc-300 font-medium leading-tight">
               Discipline today.<br/>Placement tomorrow.
             </p>
           </div>
           {/* Decorative orbs */}
-          <div className="absolute -right-3 -bottom-4 w-20 h-20 bg-lime-pulse/10 rounded-full blur-lg pointer-events-none" />
-          <div className="absolute right-1 bottom-1 w-12 h-12 rounded-full border border-lime-pulse/20 bg-gradient-to-tr from-lime-pulse/20 to-mint-frost/10" />
+          <div className="absolute -right-3 -bottom-4 w-20 h-20 bg-white/5 rounded-full blur-lg pointer-events-none" />
+          <div className="absolute right-1 bottom-1 w-12 h-12 rounded-full border border-white/10 bg-gradient-to-tr from-white/10 to-transparent" />
         </div>
 
         {/* Dev footer */}
         <div className="flex items-center justify-between px-1">
           <button
             onClick={() => setDevModalOpen(true)}
-            className="flex items-center gap-1 text-[10px] font-mono text-deep-fern hover:text-sage-60 transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-[10px] font-mono text-text-muted hover:text-white transition-colors cursor-pointer"
           >
-            <span className="w-1 h-1 rounded-full bg-lime-pulse" />
+            <span className="w-1 h-1 rounded-full bg-white" />
             DEV
           </button>
           <div className="flex items-center gap-1">
@@ -267,7 +233,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
               href="https://github.com/Jarjis-Alam"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-0.5 rounded text-deep-fern hover:text-sage-60 transition-colors"
+              className="p-0.5 rounded text-text-muted hover:text-white transition-colors"
               title="GitHub"
             >
               <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
@@ -278,7 +244,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
               href="https://www.linkedin.com/in/jarjisalam/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-0.5 rounded text-deep-fern hover:text-sage-60 transition-colors"
+              className="p-0.5 rounded text-text-muted hover:text-white transition-colors"
               title="LinkedIn"
             >
               <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
@@ -294,19 +260,19 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
   return (
     <>
       {/* ── Mobile top bar ── */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-void-black border-b border-circuit-border/50 backdrop-blur-sm">
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-void-black border-b border-outline-variant backdrop-blur-sm">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[5px] bg-ground-iron border border-circuit-border flex items-center justify-center">
+          <div className="w-6 h-6 rounded-[5px] bg-surface-container border border-outline-variant flex items-center justify-center">
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1L12.5 4.5V9.5L7 13L1.5 9.5V4.5L7 1Z" stroke="#7fee64" strokeWidth="1.2" fill="none"/>
-              <path d="M7 4L10 5.75V9.25L7 11L4 9.25V5.75L7 4Z" fill="#7fee64" fillOpacity="0.25" stroke="#7fee64" strokeWidth="0.8"/>
+              <path d="M7 1L12.5 4.5V9.5L7 13L1.5 9.5V4.5L7 1Z" stroke="#ffffff" strokeWidth="1.2" fill="none"/>
+              <path d="M7 4L10 5.75V9.25L7 11L4 9.25V5.75L7 4Z" fill="#ffffff" fillOpacity="0.3" stroke="#ffffff" strokeWidth="0.8"/>
             </svg>
           </div>
-          <span className="font-heading font-semibold text-[14px] text-phosphor-white">Nexora</span>
+          <span className="font-heading font-semibold text-[14px] text-white">Nexora</span>
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-1.5 text-sage-60 hover:text-phosphor-white transition-colors cursor-pointer"
+          className="p-1.5 text-text-muted hover:text-white transition-colors cursor-pointer"
           aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
           aria-expanded={mobileMenuOpen}
         >
@@ -330,7 +296,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
 
       {/* ── Desktop fixed sidebar ── */}
       <aside
-        className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-30 bg-void-black border-r border-[#1a1f1a] w-60"
+        className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-30 bg-void-black border-r border-outline-variant w-60"
         aria-label="Main navigation"
       >
         {navContent}

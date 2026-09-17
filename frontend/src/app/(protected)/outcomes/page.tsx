@@ -42,11 +42,11 @@ export default async function OutcomesPage() {
       />
 
       {/* Non-causal disclaimer — Phase 20 invariant */}
-      <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#191c1b] border border-amber-500/30 shadow-md">
-        <span className="material-symbols-outlined text-[18px] text-amber-400 flex-shrink-0 mt-0.5">
+      <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#191c1b] border border-white/20 shadow-md">
+        <span className="material-symbols-outlined text-[18px] text-zinc-400 flex-shrink-0 mt-0.5">
           info
         </span>
-        <span className="font-mono text-xs text-amber-300 leading-relaxed">
+        <span className="font-mono text-xs text-zinc-300 leading-relaxed">
           {CAUSALITY_DISCLAIMER}
         </span>
       </div>
@@ -64,7 +64,7 @@ export default async function OutcomesPage() {
           </p>
           <Link
             href="/applications"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-6 py-2.5 text-xs transition-all shadow-[0_0_20px_rgba(127,238,100,0.25)]"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-6 py-2.5 text-xs transition-all shadow-[0_0_20px_rgba(255,255,255,0.25)]"
           >
             <span>Go to Applications</span>
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -109,7 +109,7 @@ export default async function OutcomesPage() {
                 <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
                   INTERVIEW ROUNDS
                 </span>
-                <div className="w-8 h-8 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
                   <span className="material-symbols-outlined text-[18px]">insights</span>
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default async function OutcomesPage() {
                   <span className="text-3xl font-extrabold font-heading text-phosphor-white">
                     {analytics.totals.interviews}
                   </span>
-                  <span className="text-[11px] font-mono text-purple-400">Stages reached</span>
+                  <span className="text-[11px] font-mono text-zinc-300">Stages reached</span>
                 </div>
                 <p className="text-[11px] text-sage-40 mt-1">
                   Evaluator signal across recorded loops
@@ -126,7 +126,7 @@ export default async function OutcomesPage() {
               </div>
               <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
                 <div
-                  className="bg-purple-400 h-full rounded-full"
+                  className="bg-white h-full rounded-full"
                   style={{ width: `${Math.min(100, analytics.totals.interviews * 20)}%` }}
                 />
               </div>
@@ -138,7 +138,7 @@ export default async function OutcomesPage() {
                 <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
                   OFFERS EXTENDED
                 </span>
-                <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
                   <span className="material-symbols-outlined text-[18px]">emoji_events</span>
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default async function OutcomesPage() {
                   <span className="text-3xl font-extrabold font-heading text-lime-pulse">
                     {analytics.totals.offers}
                   </span>
-                  <span className="text-[11px] font-mono text-blue-400">Offers secured</span>
+                  <span className="text-[11px] font-mono text-zinc-300">Offers secured</span>
                 </div>
                 <p className="text-[11px] text-sage-40 mt-1">
                   High-alignment company offers
@@ -155,7 +155,7 @@ export default async function OutcomesPage() {
               </div>
               <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
                 <div
-                  className="bg-blue-400 h-full rounded-full"
+                  className="bg-zinc-300 h-full rounded-full"
                   style={{ width: `${Math.min(100, analytics.totals.offers * 50)}%` }}
                 />
               </div>
@@ -167,16 +167,16 @@ export default async function OutcomesPage() {
                 <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
                   TERMINAL RESULTS
                 </span>
-                <div className="w-8 h-8 rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
                   <span className="material-symbols-outlined text-[18px]">update</span>
                 </div>
               </div>
               <div className="mt-4">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold font-heading text-rose-400">
+                  <span className="text-3xl font-extrabold font-heading text-zinc-400">
                     {analytics.totals.rejections}
                   </span>
-                  <span className="text-[11px] font-mono text-rose-400">Post-mortems</span>
+                  <span className="text-[11px] font-mono text-zinc-400">Post-mortems</span>
                 </div>
                 <p className="text-[11px] text-sage-40 mt-1">
                   Provides empirical feedback for recalibration
@@ -184,7 +184,7 @@ export default async function OutcomesPage() {
               </div>
               <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
                 <div
-                  className="bg-rose-400 h-full rounded-full"
+                  className="bg-zinc-400 h-full rounded-full"
                   style={{ width: `${Math.min(100, analytics.totals.rejections * 25)}%` }}
                 />
               </div>

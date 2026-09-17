@@ -74,14 +74,14 @@ export default async function TargetStrategyPage() {
           </div>
           {secondaryRolesCount > 0 && (
             <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
-              <span className="w-2 h-2 rounded-full bg-[#38bdf8]"></span>
+              <span className="w-2 h-2 rounded-full bg-zinc-300"></span>
               <span>Secondary Roles</span>
               <span className="text-text-muted text-[11px] font-mono">({secondaryRolesCount})</span>
             </div>
           )}
           {secondaryCompaniesCount > 0 && (
             <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
-              <span className="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+              <span className="w-2 h-2 rounded-full bg-zinc-400"></span>
               <span>Target Companies</span>
               <span className="text-text-muted text-[11px] font-mono">({secondaryCompaniesCount})</span>
             </div>
@@ -279,9 +279,9 @@ export default async function TargetStrategyPage() {
                   <div className="flex items-baseline gap-2 text-sm font-mono font-bold">
                     <span className="text-lime-pulse">{readiness.strongCount} Strong</span>
                     <span className="text-text-muted">•</span>
-                    <span className="text-[#f59e0b]">{readiness.developingCount} Dev</span>
+                    <span className="text-zinc-300">{readiness.developingCount} Dev</span>
                     <span className="text-text-muted">•</span>
-                    <span className="text-[#f87171]">{readiness.weakCount} Weak</span>
+                    <span className="text-zinc-400">{readiness.weakCount} Weak</span>
                   </div>
                   <p className="text-xs text-text-secondary font-mono">
                     {matrix.length} domain rubrics tracked against target benchmark.
@@ -442,9 +442,9 @@ export default async function TargetStrategyPage() {
                             row.studentState === "STRONG"
                               ? "bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30"
                               : row.studentState === "DEVELOPING"
-                              ? "bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30"
+                              ? "bg-white/10 text-zinc-300 border border-white/20"
                               : row.studentState === "WEAK"
-                              ? "bg-[#f87171]/15 text-[#f87171] border border-[#f87171]/30"
+                              ? "bg-zinc-800 text-zinc-400 border border-zinc-700"
                               : "bg-surface-container text-text-muted border border-outline-variant/40"
                           }`}
                         >
@@ -488,7 +488,7 @@ export default async function TargetStrategyPage() {
                 {gaps.map((gap) => (
                   <div
                     key={gap.id}
-                    className="rounded-2xl border border-[#f87171]/25 bg-surface-container-low p-5 hover:border-[#f87171]/40 transition-colors space-y-3"
+                    className="rounded-2xl border border-white/20 bg-surface-container-low p-5 hover:border-white/40 transition-colors space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
@@ -503,8 +503,8 @@ export default async function TargetStrategyPage() {
                         <span
                           className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold uppercase ${
                             gap.priority === "CRITICAL"
-                              ? "bg-[#f87171]/20 text-[#f87171] border border-[#f87171]/30"
-                              : "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
+                              ? "bg-white/20 text-white border border-white/30"
+                              : "bg-white/10 text-zinc-300 border border-white/20"
                           }`}
                         >
                           {gap.priority}
@@ -512,7 +512,7 @@ export default async function TargetStrategyPage() {
                         <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/25 font-bold uppercase">
                           TARGET {gap.targetRelevance}
                         </span>
-                        <span className="text-xs font-mono text-[#f87171] font-semibold bg-surface-container px-2.5 py-1 rounded-full border border-outline-variant/40">
+                        <span className="text-xs font-mono text-zinc-300 font-semibold bg-surface-container px-2.5 py-1 rounded-full border border-outline-variant/40">
                           {gap.currentAccuracy}% ACCURACY
                         </span>
                       </div>

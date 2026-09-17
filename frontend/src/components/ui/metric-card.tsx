@@ -84,11 +84,11 @@ interface MetricCardProps {
 }
 
 const accentMap = {
-  green:  { text: "text-lime-pulse",   bg: "bg-[rgba(127,238,100,0.10)]", border: "border-[rgba(127,238,100,0.25)]" },
-  blue:   { text: "text-accent-blue",   bg: "bg-[rgba(96,165,250,0.10)]",  border: "border-[rgba(96,165,250,0.25)]" },
-  purple: { text: "text-accent-purple", bg: "bg-[rgba(167,139,250,0.10)]", border: "border-[rgba(167,139,250,0.25)]" },
-  amber:  { text: "text-accent-amber",  bg: "bg-[rgba(251,191,36,0.10)]",  border: "border-[rgba(251,191,36,0.25)]" },
-  rose:   { text: "text-accent-rose",   bg: "bg-[rgba(251,113,133,0.10)]", border: "border-[rgba(251,113,133,0.25)]" },
+  green:  { text: "text-white",   bg: "bg-white/10", border: "border-white/20" },
+  blue:   { text: "text-zinc-200", bg: "bg-white/10",  border: "border-white/15" },
+  purple: { text: "text-zinc-300", bg: "bg-white/10", border: "border-white/15" },
+  amber:  { text: "text-zinc-400",  bg: "bg-white/5",   border: "border-white/10" },
+  rose:   { text: "text-zinc-500",   bg: "bg-white/5",  border: "border-white/10" },
 };
 
 export function MetricCard({

@@ -72,13 +72,13 @@ export default async function ApplicationsPage() {
           </div>
         </div>
 
-        {/* Card 2: Assessments / OA (Purple) */}
+        {/* Card 2: Assessments / OA */}
         <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
               Assessments & OAs
             </span>
-            <div className="w-8 h-8 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">terminal</span>
             </div>
           </div>
@@ -86,23 +86,23 @@ export default async function ApplicationsPage() {
             <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
               {board.totals.assessments}
             </span>
-            <span className="text-[11px] font-mono text-purple-400">active rounds</span>
+            <span className="text-[11px] font-mono text-zinc-300">active rounds</span>
           </div>
           <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
             <div
-              className="bg-purple-400 h-full rounded-full transition-all duration-500"
+              className="bg-white h-full rounded-full transition-all duration-500"
               style={{ width: `${Math.min(100, board.totals.assessments * 25)}%` }}
             />
           </div>
         </div>
 
-        {/* Card 3: Interviews (Amber) */}
+        {/* Card 3: Interviews */}
         <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
               Interview Rounds
             </span>
-            <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">videocam</span>
             </div>
           </div>
@@ -110,23 +110,23 @@ export default async function ApplicationsPage() {
             <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
               {board.totals.interviews}
             </span>
-            <span className="text-[11px] font-mono text-amber-400">live stages</span>
+            <span className="text-[11px] font-mono text-zinc-400">live stages</span>
           </div>
           <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
             <div
-              className="bg-amber-400 h-full rounded-full transition-all duration-500"
+              className="bg-zinc-300 h-full rounded-full transition-all duration-500"
               style={{ width: `${Math.min(100, board.totals.interviews * 25)}%` }}
             />
           </div>
         </div>
 
-        {/* Card 4: Offers Received (Blue) */}
+        {/* Card 4: Offers Received */}
         <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
           <div className="flex items-start justify-between">
             <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
               Offers Received
             </span>
-            <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
               <span className="material-symbols-outlined text-[18px]">emoji_events</span>
             </div>
           </div>
@@ -134,11 +134,11 @@ export default async function ApplicationsPage() {
             <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
               {board.totals.offers}
             </span>
-            <span className="text-[11px] font-mono text-blue-400">secured</span>
+            <span className="text-[11px] font-mono text-zinc-400">secured</span>
           </div>
           <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
             <div
-              className="bg-blue-400 h-full rounded-full transition-all duration-500"
+              className="bg-zinc-400 h-full rounded-full transition-all duration-500"
               style={{ width: `${Math.min(100, board.totals.offers * 50)}%` }}
             />
           </div>
@@ -183,7 +183,7 @@ export default async function ApplicationsPage() {
       {board.upcoming.length > 0 && (
         <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md">
           <div className="flex items-center gap-2 mb-3.5">
-            <span className="material-symbols-outlined text-[18px] text-amber-400">
+            <span className="material-symbols-outlined text-[18px] text-zinc-400">
               schedule
             </span>
             <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold">

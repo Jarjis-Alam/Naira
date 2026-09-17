@@ -114,7 +114,7 @@ export default async function SimulationHubPage() {
             </div>
             <Link
               href={`/simulation/${activeSimulation.id}`}
-              className="px-6 py-2.5 rounded-full bg-lime-pulse hover:bg-mint-frost text-void-black font-semibold text-xs transition-all shadow-[0_0_20px_rgba(127,238,100,0.25)] flex items-center justify-center gap-2 shrink-0"
+              className="px-6 py-2.5 rounded-full bg-lime-pulse hover:bg-mint-frost text-void-black font-semibold text-xs transition-all shadow-[0_0_20px_rgba(255,255,255,0.25)] flex items-center justify-center gap-2 shrink-0"
             >
               <span className="material-symbols-outlined text-[17px]">play_arrow</span>
               <span>Resume Simulation</span>
@@ -224,8 +224,8 @@ export default async function SimulationHubPage() {
                           isHigh
                             ? "bg-lime-pulse/15 text-lime-pulse border-lime-pulse/30"
                             : isMedium
-                            ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
-                            : "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                            ? "bg-white/10 text-zinc-300 border border-white/20"
+                            : "bg-zinc-800 text-zinc-400 border border-zinc-700"
                         }`}
                       >
                         {sim.readinessLevel ?? "COMPLETED"}
@@ -258,8 +258,8 @@ export default async function SimulationHubPage() {
                           isHigh
                             ? "text-lime-pulse"
                             : isMedium
-                            ? "text-amber-400"
-                            : "text-rose-400"
+                            ? "text-zinc-300"
+                            : "text-zinc-400"
                         }`}
                       >
                         {score}%

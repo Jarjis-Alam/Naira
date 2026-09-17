@@ -301,7 +301,7 @@ export function ApplicationsNewDialog({
               </label>
 
               {error && (
-                <p className="text-body-sm text-rose-500" role="alert">
+                <p className="text-body-sm text-zinc-400" role="alert">
                   {error}
                 </p>
               )}

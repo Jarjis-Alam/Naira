@@ -25,34 +25,34 @@ const ACCENT_STYLES: Record<
   }
 > = {
   green: {
-    iconBg: "bg-[rgba(127,238,100,0.1)]",
-    iconBorder: "border-lime-pulse/30",
-    iconText: "text-lime-pulse",
-    barFill: "bg-lime-pulse",
+    iconBg: "bg-white/10",
+    iconBorder: "border-white/20",
+    iconText: "text-white",
+    barFill: "bg-white",
   },
   pink: {
-    iconBg: "bg-rose-500/10",
-    iconBorder: "border-rose-500/30",
-    iconText: "text-rose-400",
-    barFill: "bg-rose-400",
+    iconBg: "bg-white/10",
+    iconBorder: "border-white/20",
+    iconText: "text-zinc-200",
+    barFill: "bg-zinc-300",
   },
   blue: {
-    iconBg: "bg-blue-500/10",
-    iconBorder: "border-blue-500/30",
-    iconText: "text-blue-400",
-    barFill: "bg-blue-400",
+    iconBg: "bg-white/10",
+    iconBorder: "border-white/20",
+    iconText: "text-zinc-200",
+    barFill: "bg-zinc-200",
   },
   amber: {
-    iconBg: "bg-amber-500/10",
-    iconBorder: "border-amber-500/30",
-    iconText: "text-amber-400",
-    barFill: "bg-amber-400",
+    iconBg: "bg-white/10",
+    iconBorder: "border-white/20",
+    iconText: "text-zinc-300",
+    barFill: "bg-zinc-400",
   },
   purple: {
-    iconBg: "bg-purple-500/10",
-    iconBorder: "border-purple-500/30",
-    iconText: "text-purple-400",
-    barFill: "bg-purple-400",
+    iconBg: "bg-white/10",
+    iconBorder: "border-white/20",
+    iconText: "text-zinc-200",
+    barFill: "bg-zinc-300",
   },
 };
 
@@ -71,7 +71,7 @@ export function MetricCardV2({
   const clampedProgress = hasProgress ? Math.min(100, Math.max(0, progressPct)) : 0;
 
   const content = (
-    <div className="bg-[#191c1b] rounded-2xl p-5 border border-[#3f4a38]/40 flex flex-col justify-between hover:border-[#88957f]/70 transition-all duration-200 group h-full shadow-md">
+    <div className="bg-surface-container-low rounded-2xl p-5 border border-outline-variant flex flex-col justify-between hover:border-white/40 transition-all duration-200 group h-full shadow-md">
       <div>
         <div className="flex items-center justify-between mb-3.5">
           <div
@@ -83,28 +83,28 @@ export function MetricCardV2({
           </div>
         </div>
 
-        <span className="text-[12px] text-sage-40 font-medium block">
+        <span className="text-[12px] text-text-muted font-medium block">
           {title}
         </span>
-        <span className="text-2xl sm:text-3xl font-bold font-heading text-phosphor-white mt-1 block">
+        <span className="text-2xl sm:text-3xl font-bold font-heading text-white mt-1 block">
           {value}
         </span>
 
         {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-[#0c0f0e] rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
+        <div className="w-full h-1.5 bg-surface-container-lowest rounded-full mt-3.5 overflow-hidden border border-outline-variant/40">
           <div
-            className={`${hasProgress ? accent.barFill : "bg-[#282b29]"} h-full rounded-full transition-all duration-500`}
+            className={`${hasProgress ? accent.barFill : "bg-zinc-800"} h-full rounded-full transition-all duration-500`}
             style={{ width: `${clampedProgress}%` }}
           />
         </div>
       </div>
 
       {/* Footer text + arrow */}
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#3f4a38]/30 text-[11px]">
-        <span className="text-sage-40/80 truncate mr-2">
+      <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/40 text-[11px]">
+        <span className="text-text-muted truncate mr-2">
           {footerText || "View details"}
         </span>
-        <span className="w-5 h-5 rounded-full bg-[#282b29] group-hover:bg-lime-pulse/20 group-hover:text-lime-pulse flex items-center justify-center text-sage-40 transition-colors flex-shrink-0">
+        <span className="w-5 h-5 rounded-full bg-surface-container-high group-hover:bg-white group-hover:text-black flex items-center justify-center text-text-muted transition-colors shrink-0">
           <span className="material-symbols-outlined text-[14px]">
             arrow_forward
           </span>

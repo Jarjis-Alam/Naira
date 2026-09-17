@@ -204,10 +204,10 @@ export default function GooeyNav({
       <style>{`
         :root {
           --linear-ease: linear(0, 0.068, 0.19 2.7%, 0.804 8.1%, 1.037, 1.199 13.2%, 1.245, 1.27 15.8%, 1.274, 1.272 17.4%, 1.249 19.1%, 0.996 28%, 0.949, 0.928 33.3%, 0.926, 0.933 36.8%, 1.001 45.6%, 1.013, 1.019 50.8%, 1.018 54.4%, 1 63.1%, 0.995 68%, 1.001 85%, 1);
-          --color-1: #60a5fa;
-          --color-2: #a78bfa;
-          --color-3: #f472b6;
-          --color-4: #38bdf8;
+          --color-1: #ffffff;
+          --color-2: #e4e4e7;
+          --color-3: #a1a1aa;
+          --color-4: #ffffff;
         }
         .gooey-nav-container .effect {
           position: absolute;

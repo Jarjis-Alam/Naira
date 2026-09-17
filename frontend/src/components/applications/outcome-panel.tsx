@@ -183,7 +183,7 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
       )}
 
       {/* The immutable disclaimer */}
-      <p className="text-[11px] font-mono text-amber-600 dark:text-amber-400 border-t border-border/60 pt-3">
+      <p className="text-[11px] font-mono text-zinc-400 border-t border-border/60 pt-3">
         ⚠ {analysis.causalityDisclaimer}
       </p>
 
@@ -305,9 +305,9 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
         </div>
       )}
 
-      {saved && <p className="text-body-sm text-emerald-600 dark:text-emerald-400">{saved}</p>}
+      {saved && <p className="text-body-sm text-white">{saved}</p>}
       {error && (
-        <p className="text-body-sm text-rose-500" role="alert">
+        <p className="text-body-sm text-zinc-400" role="alert">
           {error}
         </p>
       )}

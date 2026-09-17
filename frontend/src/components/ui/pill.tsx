@@ -1,7 +1,7 @@
 import * as React from "react";
 
 // ============================================================
-// Pill — Core reusable pill component (Phase 22 Pill System)
+// Pill — Core reusable pill component (Monochrome Pill System)
 // ============================================================
 
 type PillVariant =
@@ -30,13 +30,13 @@ export interface PillProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantClasses: Record<PillVariant, string> = {
-  green:   "bg-[rgba(127,238,100,0.12)] text-lime-pulse border-[rgba(127,238,100,0.30)]",
-  blue:    "bg-[rgba(96,165,250,0.12)] text-accent-blue border-[rgba(96,165,250,0.30)]",
-  purple:  "bg-[rgba(167,139,250,0.12)] text-accent-purple border-[rgba(167,139,250,0.30)]",
-  amber:   "bg-[rgba(251,191,36,0.12)] text-accent-amber border-[rgba(251,191,36,0.30)]",
-  rose:    "bg-[rgba(251,113,133,0.12)] text-accent-rose border-[rgba(251,113,133,0.30)]",
-  neutral: "bg-carbon-veil text-sage-60 border-circuit-border",
-  ghost:   "bg-transparent text-sage-40 border-pine-15",
+  green:   "bg-white/15 text-white border-white/30",
+  blue:    "bg-white/10 text-zinc-200 border-white/20",
+  purple:  "bg-white/10 text-zinc-300 border-white/20",
+  amber:   "bg-zinc-800/80 text-zinc-300 border-zinc-700",
+  rose:    "bg-zinc-800/80 text-zinc-300 border-zinc-700",
+  neutral: "bg-zinc-900/80 text-zinc-400 border-zinc-800",
+  ghost:   "bg-transparent text-zinc-500 border-zinc-800",
 };
 
 const sizeClasses: Record<PillSize, string> = {
@@ -46,13 +46,13 @@ const sizeClasses: Record<PillSize, string> = {
 };
 
 const dotColorMap: Record<PillVariant, string> = {
-  green:   "bg-lime-pulse",
-  blue:    "bg-accent-blue",
-  purple:  "bg-accent-purple",
-  amber:   "bg-accent-amber",
-  rose:    "bg-accent-rose",
-  neutral: "bg-sage-60",
-  ghost:   "bg-sage-40",
+  green:   "bg-white",
+  blue:    "bg-zinc-300",
+  purple:  "bg-zinc-300",
+  amber:   "bg-zinc-400",
+  rose:    "bg-zinc-400",
+  neutral: "bg-zinc-500",
+  ghost:   "bg-zinc-600",
 };
 
 export function Pill({
@@ -79,9 +79,9 @@ export function Pill({
 
   const activeClass =
     type === "tab" && active
-      ? "bg-ground-iron text-phosphor-white border-circuit-border"
+      ? "bg-white text-black font-semibold border-white"
       : type === "tab"
-      ? "bg-transparent text-sage-60 border-transparent hover:bg-ground-iron hover:text-phosphor-white hover:border-circuit-border"
+      ? "bg-transparent text-zinc-400 border-transparent hover:bg-zinc-800 hover:text-white"
       : "";
 
   return (
@@ -164,7 +164,7 @@ export function MetaPill({ children, className = "", ...props }: PillProps) {
 export function PillTabBar({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`flex gap-1 p-1 bg-void-black border border-circuit-border rounded-full w-fit ${className}`}
+      className={`flex gap-1 p-1 bg-void-black border border-outline-variant rounded-full w-fit ${className}`}
       role="tablist"
     >
       {children}
@@ -189,8 +189,8 @@ export function PillTab({ active = false, children, className = "", ...props }: 
         font-sans font-medium text-[13px] tracking-[-0.01em] leading-none
         border transition-all duration-200 cursor-pointer
         ${active
-          ? "bg-ground-iron text-phosphor-white border-circuit-border"
-          : "bg-transparent text-sage-60 border-transparent hover:bg-ground-iron/60 hover:text-phosphor-white hover:border-circuit-border/60"
+          ? "bg-white text-black font-semibold border-white"
+          : "bg-transparent text-zinc-400 border-transparent hover:bg-zinc-800 hover:text-white"
         }
         ${className}
       `}

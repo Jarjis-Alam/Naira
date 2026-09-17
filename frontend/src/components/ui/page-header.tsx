@@ -19,11 +19,11 @@ interface PageHeaderProps {
 }
 
 const BADGE_VARIANTS = {
-  green: "bg-lime-pulse/15 text-lime-pulse border-lime-pulse/25",
-  blue: "bg-blue-500/15 text-blue-400 border-blue-500/25",
-  amber: "bg-amber-500/15 text-amber-400 border-amber-500/25",
-  rose: "bg-rose-500/15 text-rose-400 border-rose-500/25",
-  neutral: "bg-[#282b29] text-sage-40 border-[#3f4a38]/40",
+  green: "bg-white/15 text-white border-white/30 font-semibold",
+  blue: "bg-white/10 text-zinc-200 border-white/20 font-medium",
+  amber: "bg-white/10 text-zinc-300 border-white/20 font-medium",
+  rose: "bg-zinc-800 text-zinc-400 border-zinc-700 font-medium",
+  neutral: "bg-white/5 text-zinc-400 border-white/10",
 };
 
 export function PageHeader({

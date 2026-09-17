@@ -48,8 +48,8 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
                   <span
                     className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold uppercase ${
                       priorities[0].level === "CRITICAL"
-                        ? "bg-error/20 text-error border border-error/30"
-                        : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                        ? "bg-white/20 text-white border border-white/30"
+                        : "bg-white/10 text-zinc-300 border border-white/20"
                     }`}
                   >
                     {priorities[0].level}

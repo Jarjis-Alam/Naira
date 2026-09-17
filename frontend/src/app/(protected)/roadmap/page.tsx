@@ -52,8 +52,8 @@ export default async function RoadmapPage() {
       {/* ── Master Target Cockpit Hero Banner ── */}
       <div className="relative overflow-hidden rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-6 md:p-8 shadow-xl">
         {/* Ambient Chromatic Glow */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-lime-pulse/5 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 left-1/3 w-80 h-80 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 left-1/3 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col gap-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -72,7 +72,7 @@ export default async function RoadmapPage() {
                 </div>
                 <div className="flex items-center gap-2 text-sage-40 text-xs mt-1 flex-wrap">
                   <span className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[15px] text-blue-400">calendar_today</span>
+                    <span className="material-symbols-outlined text-[15px] text-zinc-400">calendar_today</span>
                     <span>Continuous Milestone Verification</span>
                   </span>
                   <span>•</span>
@@ -155,14 +155,14 @@ export default async function RoadmapPage() {
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   Algorithmic DSA
                 </span>
-                <span className="text-xs font-mono font-bold text-purple-400">
+                <span className="text-xs font-mono font-bold text-white">
                   {roadmap.readiness.breakdown?.dsa ?? 0}%
                 </span>
               </div>
               <div className="text-sm font-semibold text-phosphor-white truncate">Data Structures</div>
               <div className="w-full h-1.5 rounded-full bg-[#282b29] overflow-hidden">
                 <div
-                  className="h-full bg-purple-400 rounded-full"
+                  className="h-full bg-white rounded-full"
                   style={{ width: `${roadmap.readiness.breakdown?.dsa ?? 0}%` }}
                 />
               </div>
@@ -174,14 +174,14 @@ export default async function RoadmapPage() {
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   DBMS &amp; SQL
                 </span>
-                <span className="text-xs font-mono font-bold text-blue-400">
+                <span className="text-xs font-mono font-bold text-zinc-300">
                   {roadmap.readiness.breakdown?.sql ?? 0}%
                 </span>
               </div>
               <div className="text-sm font-semibold text-phosphor-white truncate">Query &amp; Schema Design</div>
               <div className="w-full h-1.5 rounded-full bg-[#282b29] overflow-hidden">
                 <div
-                  className="h-full bg-blue-400 rounded-full"
+                  className="h-full bg-zinc-300 rounded-full"
                   style={{ width: `${roadmap.readiness.breakdown?.sql ?? 0}%` }}
                 />
               </div>
@@ -193,14 +193,14 @@ export default async function RoadmapPage() {
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   Quantitative Aptitude
                 </span>
-                <span className="text-xs font-mono font-bold text-amber-400">
+                <span className="text-xs font-mono font-bold text-zinc-400">
                   {roadmap.readiness.breakdown?.aptitude ?? 0}%
                 </span>
               </div>
               <div className="text-sm font-semibold text-phosphor-white truncate">Screening Velocity</div>
               <div className="w-full h-1.5 rounded-full bg-[#282b29] overflow-hidden">
                 <div
-                  className="h-full bg-amber-400 rounded-full"
+                  className="h-full bg-zinc-400 rounded-full"
                   style={{ width: `${roadmap.readiness.breakdown?.aptitude ?? 0}%` }}
                 />
               </div>
@@ -258,7 +258,7 @@ export default async function RoadmapPage() {
             </div>
             <Link
               href={baselineHref}
-              className="bg-lime-pulse text-void-black font-semibold text-xs px-6 py-2.5 rounded-full hover:bg-mint-frost transition-all flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(127,238,100,0.2)] shrink-0"
+              className="bg-lime-pulse text-void-black font-semibold text-xs px-6 py-2.5 rounded-full hover:bg-mint-frost transition-all flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(255,255,255,0.2)] shrink-0"
             >
               <span className="material-symbols-outlined text-[18px]">play_arrow</span>
               <span>Take Baseline Assessment</span>
@@ -448,7 +448,7 @@ export default async function RoadmapPage() {
 
                 <Link
                   href={todayActiveAction.ctaHref}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-5 py-2.5 text-xs transition-all shrink-0 shadow-[0_0_15px_rgba(127,238,100,0.2)]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-5 py-2.5 text-xs transition-all shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                 >
                   <span>
                     {todayActiveAction.status === "COMPLETED"
@@ -493,7 +493,7 @@ export default async function RoadmapPage() {
                         <span
                           className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
                             action.category === "FIX"
-                              ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                              ? "bg-white/10 text-zinc-300 border border-white/20"
                               : action.category === "REINFORCE"
                               ? "bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30"
                               : "bg-[#282b29] text-sage-40 border border-[#3f4a38]/40"

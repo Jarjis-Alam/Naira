@@ -105,7 +105,7 @@ export function ApplicationActions({
                   `Status updated to ${t.label}`
                 );
               }}
-              className={`rounded-lg px-3 py-1.5 text-[11px] font-mono font-bold uppercase transition-colors disabled:opacity-50 ${t.terminal ? "border border-rose-400/50 text-rose-500 hover:bg-rose-500/10" : "bg-primary/10 text-primary-text hover:bg-primary/20"}`}
+              className={`rounded-lg px-3 py-1.5 text-[11px] font-mono font-bold uppercase transition-colors disabled:opacity-50 ${t.terminal ? "border border-zinc-700 text-zinc-400 hover:bg-zinc-800" : "bg-primary/10 text-primary-text hover:bg-primary/20"}`}
             >
               {busy === `status-${t.status}` ? "…" : t.label}
             </button>
@@ -309,18 +309,18 @@ export function ApplicationActions({
         <button
           type="submit"
           disabled={busy !== null}
-          className="rounded-lg border border-emerald-500/50 px-4 py-2 text-body-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 disabled:opacity-50 h-[38px]"
+          className="rounded-lg border border-white/40 px-4 py-2 text-body-sm font-semibold text-white hover:bg-white/10 disabled:opacity-50 h-[38px]"
         >
           {busy === "offer" ? "Saving…" : "Record offer"}
         </button>
       </form>
 
       {error && (
-        <p className="text-body-sm text-rose-500" role="alert">
+        <p className="text-body-sm text-zinc-400" role="alert">
           {error}
         </p>
       )}
-      {success && <p className="text-body-sm text-emerald-600 dark:text-emerald-400">{success}</p>}
+      {success && <p className="text-body-sm text-white">{success}</p>}
 
       {/* Destructive zone */}
       <div className="pt-4 border-t border-border/60 flex items-center justify-between">
@@ -350,7 +350,7 @@ export function ApplicationActions({
               setBusy(null);
             }
           }}
-          className="rounded-lg border border-rose-500/30 px-3 py-1.5 text-[11px] font-mono font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+          className="rounded-lg border border-zinc-700 px-3 py-1.5 text-[11px] font-mono font-semibold text-zinc-400 hover:bg-zinc-800 transition-colors disabled:opacity-50"
         >
           {busy === "delete" ? "Deleting…" : "Delete Application"}
         </button>

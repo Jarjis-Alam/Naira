@@ -17,12 +17,12 @@ interface EmptyStateProps {
 }
 
 const emptyAccentMap = {
-  green:   { icon: "text-lime-pulse",   dot: "bg-lime-pulse",   ring: "border-[rgba(127,238,100,0.25)]" },
-  blue:    { icon: "text-accent-blue",   dot: "bg-accent-blue",   ring: "border-[rgba(96,165,250,0.25)]" },
-  purple:  { icon: "text-accent-purple", dot: "bg-accent-purple", ring: "border-[rgba(167,139,250,0.25)]" },
-  amber:   { icon: "text-accent-amber",  dot: "bg-accent-amber",  ring: "border-[rgba(251,191,36,0.25)]" },
-  rose:    { icon: "text-accent-rose",   dot: "bg-accent-rose",   ring: "border-[rgba(251,113,133,0.25)]" },
-  neutral: { icon: "text-sage-60",       dot: "bg-sage-60",       ring: "border-circuit-border" },
+  green:   { icon: "text-white",   dot: "bg-white",   ring: "border-white/30" },
+  blue:    { icon: "text-zinc-200", dot: "bg-zinc-200", ring: "border-white/20" },
+  purple:  { icon: "text-zinc-300", dot: "bg-zinc-300", ring: "border-white/20" },
+  amber:   { icon: "text-zinc-400", dot: "bg-zinc-400", ring: "border-white/15" },
+  rose:    { icon: "text-zinc-500", dot: "bg-zinc-500", ring: "border-white/10" },
+  neutral: { icon: "text-zinc-400", dot: "bg-zinc-400", ring: "border-circuit-border" },
 };
 
 const emptySizeMap = {

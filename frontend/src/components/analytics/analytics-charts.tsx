@@ -175,40 +175,40 @@ export function PerformanceTrendsChart({
               >
                 <defs>
                   <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8CFF5A" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#8CFF5A" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#ffffff" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#ffffff" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#273027" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
                 <XAxis
                   dataKey="date"
-                  stroke="#687267"
+                  stroke="#71717a"
                   fontSize={11}
                   tickLine={false}
                 />
                 <YAxis
-                  stroke="#687267"
+                  stroke="#71717a"
                   fontSize={11}
                   domain={[0, maxScore]}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0D0F0D",
-                    borderColor: "#35552F",
+                    backgroundColor: "#09090b",
+                    borderColor: "#27272a",
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontFamily: "JetBrains Mono",
-                    color: "#E8F0E5",
+                    color: "#ffffff",
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="score"
-                  stroke="#8CFF5A"
+                  stroke="#ffffff"
                   strokeWidth={2}
-                  dot={{ r: 4, fill: "#19351A", stroke: "#8CFF5A", strokeWidth: 2 }}
-                  activeDot={{ r: 6, fill: "#8CFF5A", stroke: "#B4FF7A", strokeWidth: 2 }}
+                  dot={{ r: 4, fill: "#18181b", stroke: "#ffffff", strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: "#ffffff", stroke: "#e4e4e7", strokeWidth: 2 }}
                   fillOpacity={1}
                   fill="url(#scoreGradient)"
                   name="Score"
@@ -259,10 +259,10 @@ export function DifficultyPerformanceCard({
               <div
                 className={`h-full ${
                   diff.difficulty === "easy"
-                    ? "bg-primary-green"
+                    ? "bg-white"
                     : diff.difficulty === "medium"
-                    ? "bg-bright-green"
-                    : "bg-[#ffd37a]"
+                    ? "bg-zinc-300"
+                    : "bg-zinc-500"
                 }`}
                 style={{ width: `${diff.accuracy}%` }}
               />

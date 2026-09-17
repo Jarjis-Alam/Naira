@@ -2,109 +2,104 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   NEXORA — Phosphor Terminal Design System
-   Source of truth: new_ui/ (Stitch project: Nexora Placement OS Redesign)
-   Theme: "Phosphor terminal in a darkened server room — the vivid green
-          is the only light source."
+   NEXORA — Pure Monochrome Design System
+   Aesthetic: Luxury obsidian, deep black, zinc hairlines, and crisp white highlights.
+   Zero chromatic color bleeding — high contrast, architectural minimalism.
    ========================================================================== */
 
 :root {
   /* =========================================================================
-     SURFACE ARCHITECTURE (Exact Stitch Phosphor Terminal values)
+     SURFACE ARCHITECTURE (Pure Obsidian & Neutral Grays)
      ========================================================================= */
   --color-void-black:         #000000;   /* Floor — page canvas */
-  --color-ground-iron:        #181818;   /* Panel tier — cards, button fills */
-  --color-carbon-veil:        #212525;   /* Header/overlay tier — nav, hover */
-  --color-circuit-border:     #485346;   /* Primary interactive hairline */
-  --color-phosphor-blue-black:#1f2a33;   /* Secondary divider strokes */
-  --color-charcoal-rust:      #231c1c;   /* Code-window inner panels */
-  --color-pine-15:            #3e4a3c;   /* Low-priority outlines */
+  --color-ground-iron:        #121215;   /* Panel tier — cards, button fills */
+  --color-carbon-veil:        #1c1c21;   /* Header/overlay tier — nav, hover */
+  --color-circuit-border:     #27272a;   /* Primary interactive hairline */
+  --color-phosphor-blue-black:#18181b;   /* Secondary divider strokes */
+  --color-charcoal-rust:      #18181b;   /* Code-window inner panels */
+  --color-pine-15:            #3f3f46;   /* Outlines / borders */
 
   /* =========================================================================
-     PHOSPHOR ACCENT PALETTE
+     MONOCHROME ACCENT PALETTE
      ========================================================================= */
-  --color-lime-pulse:         #7fee64;   /* PRIMARY — rationed, 1 per viewport */
-  --color-phosphor-white:     #ddffdc;   /* Primary text / headings */
-  --color-mint-frost:         #def0dd;   /* Secondary text / soft highlight */
-  --color-sage-60:            #8cab87;   /* Body copy */
-  --color-sage-40:            #677d64;   /* Muted helper / secondary desc */
-  --color-moss-70:            #9cbf93;   /* Eyebrow labels / category tags */
-  --color-moss-80:            #aed2a4;   /* Lead paragraph / hero subhead */
-  --color-fern-link:          #859984;   /* Inline links */
-  --color-deep-fern:          #697368;   /* Micro-copy / footer */
+  --color-lime-pulse:         #ffffff;   /* PRIMARY — high contrast white */
+  --color-phosphor-white:     #ffffff;   /* Primary text / headings */
+  --color-mint-frost:         #f4f4f5;   /* Secondary text / soft highlight */
+  --color-sage-60:            #a1a1aa;   /* Body copy */
+  --color-sage-40:            #71717a;   /* Muted helper / secondary desc */
+  --color-moss-70:            #d4d4d8;   /* Eyebrow labels / category tags */
+  --color-moss-80:            #e4e4e7;   /* Lead paragraph / hero subhead */
+  --color-fern-link:          #ffffff;   /* Inline links */
+  --color-deep-fern:          #71717a;   /* Micro-copy / footer */
 
   /* =========================================================================
-     SEMANTIC MULTI-COLOR ACCENTS (Pill System — Phase 22)
-     green  = success / completed / positive / primary action
-     blue   = information / documents / neutral technical
-     purple = intelligence / analytics / insights
-     amber  = attention / focus / reinforcement
-     rose   = outcomes / application events / interview states
+     SEMANTIC MONOCHROME ACCENTS
+     All semantic channels expressed through light/contrast gradations
      ========================================================================= */
-  --color-accent-green:       #7fee64;
-  --color-accent-green-bg:    rgba(127, 238, 100, 0.12);
-  --color-accent-green-border:rgba(127, 238, 100, 0.30);
+  --color-accent-green:       #ffffff;
+  --color-accent-green-bg:    rgba(255, 255, 255, 0.10);
+  --color-accent-green-border:rgba(255, 255, 255, 0.22);
 
-  --color-accent-blue:        #60a5fa;
-  --color-accent-blue-bg:     rgba(96, 165, 250, 0.12);
-  --color-accent-blue-border: rgba(96, 165, 250, 0.30);
+  --color-accent-blue:        #e4e4e7;
+  --color-accent-blue-bg:     rgba(255, 255, 255, 0.07);
+  --color-accent-blue-border: rgba(255, 255, 255, 0.16);
 
-  --color-accent-purple:      #a78bfa;
-  --color-accent-purple-bg:   rgba(167, 139, 250, 0.12);
-  --color-accent-purple-border:rgba(167, 139, 250, 0.30);
+  --color-accent-purple:      #d4d4d8;
+  --color-accent-purple-bg:   rgba(255, 255, 255, 0.07);
+  --color-accent-purple-border:rgba(255, 255, 255, 0.16);
 
-  --color-accent-amber:       #fbbf24;
-  --color-accent-amber-bg:    rgba(251, 191, 36, 0.12);
-  --color-accent-amber-border:rgba(251, 191, 36, 0.30);
+  --color-accent-amber:       #a1a1aa;
+  --color-accent-amber-bg:    rgba(255, 255, 255, 0.05);
+  --color-accent-amber-border:rgba(255, 255, 255, 0.14);
 
-  --color-accent-rose:        #fb7185;
-  --color-accent-rose-bg:     rgba(251, 113, 133, 0.12);
-  --color-accent-rose-border: rgba(251, 113, 133, 0.30);
+  --color-accent-rose:        #71717a;
+  --color-accent-rose-bg:     rgba(255, 255, 255, 0.05);
+  --color-accent-rose-border: rgba(255, 255, 255, 0.12);
 
-  /* Error */
-  --color-error:              #fb7185;
-  --color-error-bg:           rgba(251, 113, 133, 0.12);
+  /* Error / Warning in Monochrome */
+  --color-error:              #ffffff;
+  --color-error-bg:           rgba(255, 255, 255, 0.08);
 
   /* =========================================================================
-     BACKWARD-COMPATIBLE ALIASES (existing codebase references)
+     BACKWARD-COMPATIBLE ALIASES
      ========================================================================= */
   --color-page-bg:            var(--color-void-black);
   --color-sidebar-bg:         var(--color-void-black);
-  --color-secondary-bg:       #0a0a0a;
+  --color-secondary-bg:       #09090b;
   --color-card-standard:      var(--color-ground-iron);
   --color-card-elevated:      var(--color-carbon-veil);
-  --color-input-bg:           #0d0d0d;
+  --color-input-bg:           #09090b;
   --color-text-primary:       var(--color-phosphor-white);
   --color-text-secondary:     var(--color-sage-60);
   --color-text-muted:         var(--color-sage-40);
   --color-text-inverse:       var(--color-void-black);
   --color-primary-green:      var(--color-lime-pulse);
   --color-bright-green:       var(--color-mint-frost);
-  --color-dark-green:         #0f2e0a;
+  --color-dark-green:         #1c1c21;
   --color-green-border:       var(--color-pine-15);
   --color-neutral-border:     var(--color-circuit-border);
   --color-base:               var(--color-void-black);
   --color-surface:            var(--color-ground-iron);
   --color-surface-high:       var(--color-carbon-veil);
-  --color-surface-higher:     #2a2a2a;
-  --color-surface-highest:    #353535;
-  --color-surface-dim:        #0a0a0a;
+  --color-surface-higher:     #222226;
+  --color-surface-highest:    #2c2c32;
+  --color-surface-dim:        #09090b;
   --color-border:             var(--color-circuit-border);
   --color-border-variant:     var(--color-pine-15);
   --color-outline:            var(--color-pine-15);
   --color-primary:            var(--color-lime-pulse);
   --color-primary-text:       var(--color-phosphor-white);
   --color-primary-dim:        var(--color-mint-frost);
-  --color-primary-dark:       var(--color-dark-green);
-  --color-primary-darker:     #061808;
-  --color-secondary:          var(--color-lime-pulse);
-  --color-secondary-dark:     var(--color-dark-green);
-  --color-secondary-container:var(--color-dark-green);
+  --color-primary-dark:       #18181b;
+  --color-primary-darker:     #09090b;
+  --color-secondary:          var(--color-mint-frost);
+  --color-secondary-dark:     #18181b;
+  --color-secondary-container:#18181b;
   --color-tertiary:           var(--color-mint-frost);
-  --color-tertiary-container: var(--color-dark-green);
-  --color-tertiary-dark:      #061808;
-  --color-error-container:    rgba(251, 113, 133, 0.15);
-  --color-error-dark:         #290a0f;
+  --color-tertiary-container: #18181b;
+  --color-tertiary-dark:      #09090b;
+  --color-error-container:    rgba(255, 255, 255, 0.08);
+  --color-error-dark:         #18181b;
 
   /* =========================================================================
      TYPOGRAPHY
@@ -165,21 +160,19 @@
   --radius-DEFAULT: 8px;
 
   /* =========================================================================
-     UI 2.0 — SURFACE CONTAINER HIERARCHY (MD3-inspired)
-     Mirrors the Stitch HTML: surface-dim → container-lowest → container-low
-     → container → container-high → container-highest
+     UI 2.0 — SURFACE CONTAINER HIERARCHY (Pure Monochrome Obsidian/Zinc)
      ========================================================================= */
-  --color-surface-dim:              #111413;  /* sidebar, page canvas */
-  --color-surface-container-lowest: #0c0f0e;  /* deepest recessed panels */
-  --color-surface-container-low:    #191c1b;  /* card fill base */
-  --color-surface-container:        #1d201f;  /* standard elevated card */
-  --color-surface-container-high:   #282b29;  /* hover states */
-  --color-surface-container-highest:#323534;  /* raised/active surfaces */
-  --color-surface-bright:           #373a38;  /* brightest panel */
+  --color-surface-dim:              #09090b;  /* sidebar, canvas */
+  --color-surface-container-lowest: #000000;  /* deepest recessed floor */
+  --color-surface-container-low:    #0e0e11;  /* card fill base */
+  --color-surface-container:        #141418;  /* standard elevated card */
+  --color-surface-container-high:   #1c1c21;  /* hover states */
+  --color-surface-container-highest:#26262d;  /* raised/active surfaces */
+  --color-surface-bright:           #32323b;  /* brightest panel */
 
-  /* UI 2.0 — outline tokens (for borders at various opacities) */
-  --color-outline-variant:          #3f4a38;  /* subtle border hairlines */
-  --color-outline:                  #88957f;  /* standard border */
+  /* UI 2.0 — outline tokens (Neutral hairlines) */
+  --color-outline-variant:          #27272a;  /* subtle border hairlines */
+  --color-outline:                  #3f3f46;  /* standard border */
 
   /* UI 2.0 — top header height */
   --topbar-height: 64px;
@@ -187,7 +180,7 @@
   /* =========================================================================
      SHADOWS
      ========================================================================= */
-  --shadow-md: rgba(0, 0, 0, 0.4) 0px 10px 15px -3px, rgba(0, 0, 0, 0.3) 0px 4px 6px -4px;
+  --shadow-md: rgba(0, 0, 0, 0.6) 0px 10px 15px -3px, rgba(0, 0, 0, 0.4) 0px 4px 6px -4px;
 
   /* =========================================================================
      TRANSITIONS
@@ -205,64 +198,64 @@
 @theme {
   /* Surfaces */
   --color-void-black:          #000000;
-  --color-ground-iron:         #181818;
-  --color-carbon-veil:         #212525;
-  --color-circuit-border:      #485346;
-  --color-phosphor-blue-black: #1f2a33;
-  --color-charcoal-rust:       #231c1c;
-  --color-pine-15:             #3e4a3c;
+  --color-ground-iron:         #121215;
+  --color-carbon-veil:         #1c1c21;
+  --color-circuit-border:      #27272a;
+  --color-phosphor-blue-black: #18181b;
+  --color-charcoal-rust:       #18181b;
+  --color-pine-15:             #3f3f46;
 
-  /* Phosphor accents */
-  --color-lime-pulse:          #7fee64;
-  --color-phosphor-white:      #ddffdc;
-  --color-mint-frost:          #def0dd;
-  --color-sage-60:             #8cab87;
-  --color-sage-40:             #677d64;
-  --color-moss-70:             #9cbf93;
-  --color-moss-80:             #aed2a4;
-  --color-fern-link:           #859984;
-  --color-deep-fern:           #697368;
+  /* Monochrome accents */
+  --color-lime-pulse:          #ffffff;
+  --color-phosphor-white:      #ffffff;
+  --color-mint-frost:          #f4f4f5;
+  --color-sage-60:             #a1a1aa;
+  --color-sage-40:             #71717a;
+  --color-moss-70:             #d4d4d8;
+  --color-moss-80:             #e4e4e7;
+  --color-fern-link:           #ffffff;
+  --color-deep-fern:           #71717a;
 
-  /* Semantic accents */
-  --color-accent-green:        #7fee64;
-  --color-accent-blue:         #60a5fa;
-  --color-accent-purple:       #a78bfa;
-  --color-accent-amber:        #fbbf24;
-  --color-accent-rose:         #fb7185;
+  /* Semantic monochrome accents */
+  --color-accent-green:        #ffffff;
+  --color-accent-blue:         #e4e4e7;
+  --color-accent-purple:       #d4d4d8;
+  --color-accent-amber:        #a1a1aa;
+  --color-accent-rose:         #71717a;
 
   /* Backward-compat aliases */
   --color-page-bg:             #000000;
   --color-sidebar-bg:          #000000;
-  --color-secondary-bg:        #0a0a0a;
-  --color-card-standard:       #181818;
-  --color-card-elevated:       #212525;
-  --color-input-bg:            #0d0d0d;
-  --color-text-primary:        #ddffdc;
-  --color-text-secondary:      #8cab87;
-  --color-text-muted:          #677d64;
+  --color-secondary-bg:        #09090b;
+  --color-card-standard:       #121215;
+  --color-card-elevated:       #1c1c21;
+  --color-input-bg:            #09090b;
+  --color-text-primary:        #ffffff;
+  --color-text-secondary:      #a1a1aa;
+  --color-text-muted:          #71717a;
   --color-text-inverse:        #000000;
-  --color-primary-green:       #7fee64;
-  --color-bright-green:        #def0dd;
-  --color-dark-green:          #0f2e0a;
-  --color-green-border:        #3e4a3c;
-  --color-neutral-border:      #485346;
+  --color-primary-green:       #ffffff;
+  --color-bright-green:        #f4f4f5;
+  --color-dark-green:          #1c1c21;
+  --color-green-border:        #3f3f46;
+  --color-neutral-border:      #27272a;
   --color-base:                #000000;
-  --color-surface:             #181818;
-  --color-surface-high:        #212525;
-  --color-surface-higher:      #2a2a2a;
-  --color-surface-highest:     #353535;
-  --color-surface-dim:         #0a0a0a;
-  --color-border:              #485346;
-  --color-border-variant:      #3e4a3c;
-  --color-outline:             #3e4a3c;
-  --color-primary:             #7fee64;
-  --color-primary-text:        #ddffdc;
-  --color-primary-dim:         #def0dd;
-  --color-primary-dark:        #0f2e0a;
-  --color-secondary:           #7fee64;
-  --color-secondary-dark:      #0f2e0a;
-  --color-tertiary:            #def0dd;
-  --color-error:               #fb7185;
+  --color-surface:             #121215;
+  --color-surface-high:        #1c1c21;
+  --color-surface-higher:      #222226;
+  --color-surface-highest:     #2c2c32;
+  --color-surface-dim:         #09090b;
+  --color-border:              #27272a;
+  --color-border-variant:      #3f3f46;
+  --color-outline:             #3f3f46;
+  --color-primary:             #ffffff;
+  --color-primary-text:        #ffffff;
+  --color-primary-dim:         #f4f4f5;
+  --color-primary-dark:        #18181b;
+  --color-secondary:           #ffffff;
+  --color-secondary-dark:      #18181b;
+  --color-tertiary:            #d4d4d8;
+  --color-error:               #ffffff;
   --color-void-black-alias:    #000000;
 
   /* Fonts */
@@ -286,15 +279,15 @@
   --radius-full:    9999px;
 
   /* UI 2.0 surface containers */
-  --color-surface-dim:              #111413;
-  --color-surface-container-lowest: #0c0f0e;
-  --color-surface-container-low:    #191c1b;
-  --color-surface-container:        #1d201f;
-  --color-surface-container-high:   #282b29;
-  --color-surface-container-highest:#323534;
-  --color-surface-bright:           #373a38;
-  --color-outline-variant:          #3f4a38;
-  --color-outline:                  #88957f;
+  --color-surface-dim:              #09090b;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low:    #0e0e11;
+  --color-surface-container:        #141418;
+  --color-surface-container-high:   #1c1c21;
+  --color-surface-container-highest:#26262d;
+  --color-surface-bright:           #32323b;
+  --color-outline-variant:          #27272a;
+  --color-outline:                  #3f3f46;
 }
 
 /* ============================================================
@@ -337,27 +330,27 @@ h1, h2, h3, h4, h5, h6 {
    FOCUS & SELECTION
    ============================================================ */
 :focus-visible {
-  outline: 1px solid var(--color-lime-pulse);
+  outline: 1px solid rgba(255, 255, 255, 0.6);
   outline-offset: 2px;
 }
 
 ::selection {
-  background-color: rgba(127, 238, 100, 0.20);
-  color: var(--color-phosphor-white);
+  background-color: rgba(255, 255, 255, 0.20);
+  color: #ffffff;
 }
 
 /* ============================================================
-   ATMOSPHERE
+   ATMOSPHERE (Monochrome)
    ============================================================ */
 .tech-grid {
   background-size: 40px 40px;
   background-image:
-    linear-gradient(to right, rgba(72, 83, 70, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(72, 83, 70, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 .ambient-glow {
-  background: radial-gradient(circle 900px at 50% 0%, rgba(127, 238, 100, 0.018), transparent 70%);
+  background: radial-gradient(circle 900px at 50% 0%, rgba(255, 255, 255, 0.02), transparent 70%);
 }
 
 /* ============================================================
@@ -412,7 +405,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================
-   PILL SYSTEM — Core (Phase 22 Pill System)
+   PILL SYSTEM — Core (Monochrome Pill System)
    All pills: rounded-full, JetBrains Mono, uppercase, tight tracking
    ============================================================ */
 
@@ -441,42 +434,42 @@ h1, h2, h3, h4, h5, h6 {
 .pill-md { font-size: 11px; padding: 4px 10px; }
 .pill-lg { font-size: 12px; padding: 5px 12px; }
 
-/* ---- SEMANTIC COLOR PILLS ---- */
+/* ---- MONOCHROME COLOR PILLS ---- */
 
 .pill-green {
-  background-color: var(--color-accent-green-bg);
-  color: var(--color-lime-pulse);
-  border-color: var(--color-accent-green-border);
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
 }
 .pill-blue {
-  background-color: var(--color-accent-blue-bg);
-  color: var(--color-accent-blue);
-  border-color: var(--color-accent-blue-border);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #e4e4e7;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 .pill-purple {
-  background-color: var(--color-accent-purple-bg);
-  color: var(--color-accent-purple);
-  border-color: var(--color-accent-purple-border);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #d4d4d8;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 .pill-amber {
-  background-color: var(--color-accent-amber-bg);
-  color: var(--color-accent-amber);
-  border-color: var(--color-accent-amber-border);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #a1a1aa;
+  border-color: rgba(255, 255, 255, 0.14);
 }
 .pill-rose {
-  background-color: var(--color-accent-rose-bg);
-  color: var(--color-accent-rose);
-  border-color: var(--color-accent-rose-border);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #858590;
+  border-color: rgba(255, 255, 255, 0.12);
 }
 .pill-neutral {
-  background-color: var(--color-carbon-veil);
-  color: var(--color-sage-60);
-  border-color: var(--color-circuit-border);
+  background-color: #18181b;
+  color: #a1a1aa;
+  border-color: #27272a;
 }
 .pill-ghost {
   background-color: transparent;
-  color: var(--color-sage-40);
-  border-color: var(--color-pine-15);
+  color: #71717a;
+  border-color: #27272a;
 }
 
 /* ---- STATUS PILLS (with live dot indicator) ---- */
@@ -506,17 +499,17 @@ h1, h2, h3, h4, h5, h6 {
 .pill-action:hover { opacity: 0.85; }
 .pill-action:active { transform: scale(0.98); }
 .pill-action-primary {
-  background-color: var(--color-lime-pulse);
-  color: var(--color-void-black);
+  background-color: #ffffff;
+  color: #000000;
   border-color: transparent;
 }
-.pill-action-primary:hover { background-color: var(--color-mint-frost); }
+.pill-action-primary:hover { background-color: #e4e4e7; }
 .pill-action-secondary {
-  background-color: var(--color-ground-iron);
-  color: var(--color-phosphor-white);
-  border-color: var(--color-circuit-border);
+  background-color: #18181b;
+  color: #ffffff;
+  border-color: #27272a;
 }
-.pill-action-secondary:hover { border-color: var(--color-phosphor-white); }
+.pill-action-secondary:hover { border-color: #ffffff; }
 
 /* ---- TAB PILLS ---- */
 .pill-tab {
@@ -537,9 +530,9 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--color-circuit-border);
 }
 .pill-tab.active {
-  background-color: var(--color-ground-iron);
-  color: var(--color-phosphor-white);
-  border-color: var(--color-circuit-border);
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 .pill-tab-bar {
   display: flex;
@@ -561,7 +554,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: var(--card-padding);
   transition: border-color 200ms ease-out;
 }
-.nx-card:hover { border-color: var(--color-lime-pulse); }
+.nx-card:hover { border-color: rgba(255, 255, 255, 0.4); }
 .nx-card-sm { padding: var(--spacing-20); }
 .nx-card-md { padding: var(--spacing-24); }
 .nx-card-elevated {
@@ -575,28 +568,27 @@ h1, h2, h3, h4, h5, h6 {
    ============================================================ */
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
-  background-color: var(--color-ground-iron);
-  color: var(--color-phosphor-white);
-  border: 1px solid var(--color-phosphor-white);
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
   border-radius: var(--radius-buttons);
   padding: 10px 24px;
   font-family: var(--font-inter-variable);
-  font-size: 14px; font-weight: 500;
+  font-size: 14px; font-weight: 600;
   letter-spacing: -0.01em;
   cursor: pointer;
   transition: var(--transition-base);
   text-decoration: none;
 }
 .btn-primary:hover {
-  background-color: var(--color-carbon-veil);
-  border-color: var(--color-lime-pulse);
-  color: var(--color-lime-pulse);
+  background-color: #e4e4e7;
+  border-color: #e4e4e7;
 }
 
 .btn-accent {
   display: inline-flex; align-items: center; gap: 8px;
-  background-color: var(--color-lime-pulse);
-  color: var(--color-void-black);
+  background-color: #ffffff;
+  color: #000000;
   border: 1px solid transparent;
   border-radius: var(--radius-pills);
   padding: 10px 24px;
@@ -606,7 +598,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-base);
   text-decoration: none;
 }
-.btn-accent:hover { background-color: var(--color-mint-frost); }
+.btn-accent:hover { background-color: #e4e4e7; }
 
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 6px;
@@ -643,8 +635,8 @@ h1, h2, h3, h4, h5, h6 {
 .nx-input::placeholder { color: var(--color-sage-40); }
 .nx-input:focus {
   outline: none;
-  border-color: var(--color-lime-pulse);
-  caret-color: var(--color-lime-pulse);
+  border-color: #ffffff;
+  caret-color: #ffffff;
 }
 
 /* ============================================================
@@ -660,13 +652,13 @@ h1, h2, h3, h4, h5, h6 {
 .nx-progress-bar {
   height: 100%;
   border-radius: var(--radius-full);
-  background-color: var(--color-lime-pulse);
+  background-color: #ffffff;
   transition: width 500ms ease-out;
 }
-.nx-progress-bar.blue   { background-color: var(--color-accent-blue); }
-.nx-progress-bar.purple { background-color: var(--color-accent-purple); }
-.nx-progress-bar.amber  { background-color: var(--color-accent-amber); }
-.nx-progress-bar.rose   { background-color: var(--color-accent-rose); }
+.nx-progress-bar.blue   { background-color: #e4e4e7; }
+.nx-progress-bar.purple { background-color: #d4d4d8; }
+.nx-progress-bar.amber  { background-color: #a1a1aa; }
+.nx-progress-bar.rose   { background-color: #71717a; }
 
 /* ============================================================
    MATERIAL SYMBOLS
@@ -721,11 +713,11 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.status-dot.green  { background-color: var(--color-lime-pulse); }
-.status-dot.blue   { background-color: var(--color-accent-blue); }
-.status-dot.purple { background-color: var(--color-accent-purple); }
-.status-dot.amber  { background-color: var(--color-accent-amber); }
-.status-dot.rose   { background-color: var(--color-accent-rose); }
+.status-dot.green  { background-color: #ffffff; }
+.status-dot.blue   { background-color: #e4e4e7; }
+.status-dot.purple { background-color: #d4d4d8; }
+.status-dot.amber  { background-color: #a1a1aa; }
+.status-dot.rose   { background-color: #71717a; }
 .status-dot.muted  { background-color: var(--color-sage-40); }
 .status-dot.pulse  { animation: pulse-dot 2s ease-in-out infinite; }
 

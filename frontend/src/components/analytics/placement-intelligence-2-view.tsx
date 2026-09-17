@@ -35,33 +35,33 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
   const getStabilityBadge = (status: EvidenceState) => {
     switch (status) {
       case "STRONG_EVIDENCE":
-        return "bg-primary-green/20 text-primary-green border-primary-green/40";
+        return "bg-white/20 text-white border-white/40";
       case "STABLE":
-        return "bg-primary-green/10 text-primary-green border-primary-green/30";
+        return "bg-white/10 text-white border-white/30";
       case "DEVELOPING":
-        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
+        return "bg-white/10 text-zinc-300 border-white/20";
       case "EMERGING":
-        return "bg-blue-500/10 text-blue-400 border-blue-500/30";
+        return "bg-white/10 text-zinc-200 border-white/20";
       case "INCONSISTENT":
-        return "bg-orange-500/10 text-orange-400 border-orange-500/30";
+        return "bg-zinc-800 text-zinc-400 border-zinc-700";
       case "INSUFFICIENT_EVIDENCE":
       default:
-        return "bg-card-elevated text-text-muted border-neutral-border";
+        return "bg-zinc-900 text-zinc-500 border-zinc-800";
     }
   };
 
   const getTrendIcon = (direction: string) => {
     switch (direction) {
       case "improving":
-        return { icon: "trending_up", color: "text-primary-green" };
+        return { icon: "trending_up", color: "text-white" };
       case "declining":
-        return { icon: "trending_down", color: "text-error" };
+        return { icon: "trending_down", color: "text-zinc-500" };
       case "stable":
-        return { icon: "trending_flat", color: "text-text-secondary" };
+        return { icon: "trending_flat", color: "text-zinc-400" };
       case "inconsistent":
-        return { icon: "swap_vert", color: "text-yellow-400" };
+        return { icon: "swap_vert", color: "text-zinc-300" };
       default:
-        return { icon: "help_outline", color: "text-text-muted" };
+        return { icon: "help_outline", color: "text-zinc-500" };
     }
   };
 
@@ -164,7 +164,7 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
                 onClick={() => setSelectedDimensionId(isSelected ? null : dim.id)}
                 className={`p-4 rounded-cards border transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-card-elevated border-primary-green/80 shadow-[0_0_15px_rgba(140,255,90,0.15)]"
+                    ? "bg-card-elevated border-primary-green/80 shadow-[0_0_15px_rgba(255,255,255,0.15)]"
                     : "bg-card-standard border-neutral-border hover:border-neutral-border/80"
                 }`}
               >
@@ -478,9 +478,9 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
                       <span
                         className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase ${
                           isSupported
-                            ? "bg-primary-green/10 text-primary-green border-primary-green/30"
+                            ? "bg-white/15 text-white border-white/30"
                             : isPartial
-                            ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
+                            ? "bg-white/10 text-zinc-300 border-white/20"
                             : "bg-card-elevated text-text-muted border-neutral-border"
                         }`}
                       >
@@ -502,9 +502,9 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
                     <span
                       className={`font-bold ${
                         isSupported
-                          ? "text-primary-green"
+                          ? "text-white"
                           : isPartial
-                          ? "text-yellow-400"
+                          ? "text-zinc-300"
                           : "text-text-muted"
                       }`}
                     >
@@ -615,9 +615,9 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
                     <span
                       className={`text-[9px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
                         isCritical
-                          ? "bg-error/20 text-error border border-error/30"
+                          ? "bg-white/20 text-white border border-white/30"
                           : isHigh
-                          ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                          ? "bg-white/10 text-zinc-300 border border-white/20"
                           : "bg-card-elevated text-text-muted border border-neutral-border"
                       }`}
                     >

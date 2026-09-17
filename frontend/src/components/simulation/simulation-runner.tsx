@@ -117,7 +117,7 @@ export function SimulationRunner({
       {submitError && (
         <div
           role="alert"
-          className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-500 text-body-sm flex items-center justify-between gap-3 animate-in fade-in duration-200"
+          className="rounded-xl border border-zinc-700 bg-zinc-900 p-4 text-zinc-300 text-body-sm flex items-center justify-between gap-3 animate-in fade-in duration-200"
         >
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">error</span>
