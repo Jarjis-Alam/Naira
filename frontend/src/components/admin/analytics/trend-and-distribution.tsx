@@ -112,24 +112,24 @@ export function TrendAndDistribution({
               >
                 <defs>
                   <linearGradient id="scoreTrendGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4d8eff" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#4d8eff" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#8CFF5A" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#8CFF5A" stopOpacity={0.0} />
                   </linearGradient>
                   <linearGradient id="accTrendGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#2dd4bf" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#B4FF7A" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#B4FF7A" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#273027" />
                 <XAxis
                   dataKey="date"
-                  stroke="#8c909f"
+                  stroke="#687267"
                   fontSize={10}
                   fontFamily="JetBrains Mono, monospace"
                   tickLine={false}
                 />
                 <YAxis
-                  stroke="#8c909f"
+                  stroke="#687267"
                   fontSize={10}
                   fontFamily="JetBrains Mono, monospace"
                   domain={[0, 100]}
@@ -137,30 +137,31 @@ export function TrendAndDistribution({
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#121212",
-                    borderColor: "#262626",
+                    backgroundColor: "#0D0F0D",
+                    borderColor: "#35552F",
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontFamily: "JetBrains Mono, monospace",
+                    color: "#E8F0E5",
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="avgScore"
-                  stroke="#adc6ff"
+                  stroke="#8CFF5A"
                   strokeWidth={2}
-                  dot={{ r: 3, fill: "#4d8eff" }}
-                  activeDot={{ r: 5, fill: "#adc6ff" }}
+                  dot={{ r: 3, fill: "#19351A", stroke: "#8CFF5A" }}
+                  activeDot={{ r: 5, fill: "#8CFF5A" }}
                   fill="url(#scoreTrendGrad)"
                   name="Avg Score %"
                 />
                 <Area
                   type="monotone"
                   dataKey="avgAccuracy"
-                  stroke="#2dd4bf"
+                  stroke="#B4FF7A"
                   strokeWidth={2}
-                  dot={{ r: 3, fill: "#0d9488" }}
-                  activeDot={{ r: 5, fill: "#2dd4bf" }}
+                  dot={{ r: 3, fill: "#19351A", stroke: "#B4FF7A" }}
+                  activeDot={{ r: 5, fill: "#B4FF7A" }}
                   fill="url(#accTrendGrad)"
                   name="Avg Accuracy %"
                 />
@@ -171,7 +172,7 @@ export function TrendAndDistribution({
       </div>
 
       {/* Score & Accuracy Distribution Histograms (Span 5) */}
-      <div className="lg:col-span-5 flex flex-col justify-between rounded-xl border border-border bg-surface p-5">
+      <div className="lg:col-span-5 flex flex-col justify-between rounded-cards border border-neutral-border bg-card-standard p-5">
         <div>
           <h3 className="text-title-sm font-semibold text-text-primary">
             Score & Accuracy Distribution
@@ -182,7 +183,7 @@ export function TrendAndDistribution({
         </div>
 
         {totalSubmitted === 0 ? (
-          <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed border-border px-4 text-center">
+          <div className="flex h-64 flex-col items-center justify-center rounded-cards border border-dashed border-neutral-border px-4 text-center">
             <span className="material-symbols-outlined text-[28px] text-text-muted mb-2">
               bar_chart
             </span>
@@ -207,9 +208,9 @@ export function TrendAndDistribution({
                         {bin.count} ({bin.percentage}%)
                       </span>
                     </div>
-                    <div className="h-2 w-full bg-surface-high rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-input-bg border border-neutral-border/40 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-primary transition-all duration-300"
+                        className="h-full bg-primary-green transition-all duration-300"
                         style={{ width: `${Math.max(bin.percentage, bin.count > 0 ? 4 : 0)}%` }}
                       />
                     </div>
@@ -219,7 +220,7 @@ export function TrendAndDistribution({
             </div>
 
             {/* Quick Accuracy Distribution summary */}
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-neutral-border pt-3">
               <span className="text-[11px] font-mono uppercase text-text-muted block mb-1.5">
                 Accuracy Cohorts
               </span>
@@ -227,7 +228,7 @@ export function TrendAndDistribution({
                 {accuracyDistribution.map((b) => (
                   <div
                     key={b.bin}
-                    className="p-1.5 rounded bg-surface-high border border-border/80"
+                    className="p-1.5 rounded bg-card-elevated border border-neutral-border"
                   >
                     <div className="text-[10px] text-text-muted">{b.bin}%</div>
                     <div className="font-bold text-text-primary mt-0.5">{b.count}</div>

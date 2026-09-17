@@ -16,66 +16,109 @@ export default async function TargetStrategyPage() {
   ]);
   const { target, readiness, matrix, gaps, advantages, preparationStrategy, emptyState, partialDataBanner } = strategy;
 
+  const totalTargetsCount = (placementTargets.targetRoles?.length || 0) + (placementTargets.targetCompanies?.length || 0);
+  const secondaryRolesCount = placementTargets.targetRoles?.filter((r) => !r.isPrimary)?.length || 0;
+  const secondaryCompaniesCount = placementTargets.targetCompanies?.filter((c) => c.priority !== 1)?.length || 0;
+
   return (
-    <div className="space-y-8 pb-28 pr-28 lg:pr-0">
-      {/* Header */}
-      <div className="flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1 text-[11px] font-mono uppercase tracking-wider text-primary font-bold">
-            <span className="material-symbols-outlined text-[16px]">track_changes</span>
-            PLACEMENT TARGET STRATEGY
+    <div className="space-y-8 pb-16">
+      {/* Top Navigation / Breadcrumb & Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono">
+            <span>Nexora</span>
+            <span className="text-border">/</span>
+            <span className="text-text-secondary">Placement Strategy</span>
+            <span className="text-border">/</span>
+            <span className="text-lime-pulse font-semibold">Target Console</span>
           </div>
-          <h1 className="text-headline-lg font-bold text-text-primary tracking-tight">
-            Placement Target Strategy
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-display">
+            Target Strategy
           </h1>
-          <p className="mt-1 text-label-xs font-mono uppercase text-text-muted">
-            NEXORA / YOUR OPERATING SYSTEM FOR PLACEMENTS
+          <p className="text-sm text-text-secondary">
+            Calibrate role archetypes, company benchmarks, and competency coverage for high-velocity offers.
           </p>
         </div>
 
-        {target.configured && (
-          <div className="flex items-center gap-3">
-            <Link
-              href="/profile"
-              className="px-3.5 py-1.5 rounded-lg border border-border bg-surface-high hover:bg-surface-highest text-[12px] font-mono text-text-secondary hover:text-text-primary transition-colors inline-flex items-center gap-1.5"
-            >
-              <span className="material-symbols-outlined text-[15px]">edit</span>
-              <span>Manage Targets</span>
-            </Link>
-            <Link
-              href="/roadmap"
-              className="px-3.5 py-1.5 rounded-lg border border-primary/40 bg-primary/10 hover:bg-primary/20 text-[12px] font-mono text-primary-text transition-colors inline-flex items-center gap-1.5 font-medium"
-            >
-              <span>View Roadmap</span>
-              <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-            </Link>
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+          <Link
+            href="/profile"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary hover:bg-surface-container-high transition-colors text-xs font-semibold"
+          >
+            <span className="material-symbols-outlined text-[16px]">edit</span>
+            <span>Manage Targets</span>
+          </Link>
+          <Link
+            href="/roadmap"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 active:scale-95 transition-all shadow-md"
+          >
+            <span>View Roadmap</span>
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Filter / Scope Pills Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-outline-variant/30">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-void-black font-semibold text-xs transition-all">
+            <span>Configured Targets</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-void-black/20 text-void-black text-[10px] font-mono font-bold">
+              {totalTargetsCount || 1}
+            </span>
           </div>
-        )}
+          <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
+            <span className="w-2 h-2 rounded-full bg-lime-pulse"></span>
+            <span>Primary Role</span>
+            <span className="text-text-muted text-[11px] font-mono">(1)</span>
+          </div>
+          {secondaryRolesCount > 0 && (
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
+              <span className="w-2 h-2 rounded-full bg-[#38bdf8]"></span>
+              <span>Secondary Roles</span>
+              <span className="text-text-muted text-[11px] font-mono">({secondaryRolesCount})</span>
+            </div>
+          )}
+          {secondaryCompaniesCount > 0 && (
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
+              <span className="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+              <span>Target Companies</span>
+              <span className="text-text-muted text-[11px] font-mono">({secondaryCompaniesCount})</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-outline-variant/40 text-text-muted text-xs font-mono">
+            <span className="material-symbols-outlined text-[14px]">tune</span>
+            <span>Calibrated: <strong className="text-text-primary font-semibold">Phase 16 Engine</strong></span>
+          </div>
+        </div>
       </div>
 
       {/* EMPTY STATES */}
       {emptyState && (
-        <div className="rounded-2xl border border-primary/30 bg-surface/90 p-8 text-center max-w-2xl mx-auto my-12 space-y-5">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/25 text-primary flex items-center justify-center mx-auto">
+        <div className="rounded-2xl border border-lime-pulse/30 bg-surface-container-low/90 p-8 text-center max-w-2xl mx-auto my-12 space-y-5">
+          <div className="w-14 h-14 rounded-2xl bg-lime-pulse/10 border border-lime-pulse/25 text-lime-pulse flex items-center justify-center mx-auto">
             <span className="material-symbols-outlined text-[32px]">
               {emptyState.type === "no_target" ? "ads_click" : "verified"}
             </span>
           </div>
           <div>
-            <span className="text-[11px] font-mono text-primary font-bold uppercase tracking-wider block mb-1">
+            <span className="text-[11px] font-mono text-lime-pulse font-bold uppercase tracking-wider block mb-1">
               Strategy Activation Required
             </span>
-            <h2 className="text-2xl font-bold text-text-primary tracking-tight">
+            <h2 className="text-2xl font-bold text-white tracking-tight">
               {emptyState.title}
             </h2>
-            <p className="mt-2 text-body-sm text-text-secondary leading-relaxed max-w-lg mx-auto">
+            <p className="mt-2 text-sm text-text-secondary leading-relaxed max-w-lg mx-auto">
               {emptyState.message}
             </p>
           </div>
           <div className="pt-2">
             <Link
               href={emptyState.ctaHref}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-text-inverse font-semibold text-body-sm hover:bg-primary-text transition-all shadow-md shadow-primary/20"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-lime-pulse text-void-black font-semibold text-sm hover:brightness-110 transition-all shadow-md"
             >
               <span>{emptyState.ctaLabel}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -95,253 +138,347 @@ export default async function TargetStrategyPage() {
                 <span className="text-[11px] font-mono font-bold uppercase text-tertiary block">
                   {partialDataBanner.title}
                 </span>
-                <p className="text-body-sm text-text-secondary mt-0.5 leading-relaxed">
+                <p className="text-sm text-text-secondary mt-0.5 leading-relaxed">
                   {partialDataBanner.message}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Active Target Banner */}
-          <div className="rounded-2xl border border-primary/30 bg-surface/90 p-6 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-primary font-bold mb-1">
-                  <span className="material-symbols-outlined text-[15px]">flag</span>
-                  Active Placement Target
-                </div>
-                <div className="flex flex-wrap items-baseline gap-3">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
-                    {target.primaryRole?.name || "Software Engineer"}
-                  </h2>
-                  {target.primaryCompany && (
-                    <span className="text-xl font-semibold text-primary-text">
-                      @ {target.primaryCompany.name}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-text-muted mt-2">
-                  <span className="px-2 py-0.5 rounded bg-surface-high border border-border text-text-secondary">
-                    {target.primaryRole?.category || "Engineering"}
+          {/* Primary Active Target Spotlight Card */}
+          <div className="relative overflow-hidden rounded-2xl bg-surface-container-low border border-outline-variant/40 p-6 sm:p-8 transition-all shadow-md">
+            {/* Ambient glow accent */}
+            <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-lime-pulse/10 blur-3xl pointer-events-none"></div>
+
+            <div className="flex flex-col gap-6 relative z-10">
+              {/* Card Pill Tags Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-pulse/15 border border-lime-pulse/35 text-lime-pulse font-mono text-[11px] font-bold tracking-wider uppercase">
+                    <span className="w-2 h-2 rounded-full bg-lime-pulse animate-ping"></span>
+                    ACTIVE PRIMARY TARGET
                   </span>
-                  {target.primaryCompany?.industry && (
-                    <span className="px-2 py-0.5 rounded bg-surface-high border border-border text-text-secondary">
-                      {target.primaryCompany.industry}
+                  {target.primaryRole?.category && (
+                    <span className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
+                      {target.primaryRole.category}
                     </span>
                   )}
-                  <span>•</span>
-                  <span>{target.targetCompaniesCount} configured companies</span>
-                  <span>•</span>
-                  <span>{target.targetRolesCount} configured roles</span>
+                  <span className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
+                    {readiness.targetLevel || "CALIBRATING"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 bg-surface-container px-3.5 py-1.5 rounded-full border border-outline-variant/40">
+                  <span className="font-mono text-[11px] text-text-muted uppercase tracking-wider">FIT MATCH</span>
+                  <span className="font-mono text-lg font-bold text-lime-pulse leading-none">
+                    {readiness.targetScore !== null ? `${readiness.targetScore}%` : "--"}
+                  </span>
                 </div>
               </div>
 
-              <div className="bg-surface-high/80 border border-border rounded-xl p-4 text-center sm:text-right min-w-[200px]">
-                <span className="text-[10px] font-mono uppercase text-text-muted block">
-                  Target Readiness Index
-                </span>
-                <div className="text-3xl sm:text-4xl font-bold font-mono text-primary-text mt-0.5">
-                  {readiness.targetScore !== null ? `${readiness.targetScore} / 100` : "--"}
+              {/* Main Target Header Info */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-surface-container-highest flex items-center justify-center text-lime-pulse border border-outline-variant/40 shadow-inner shrink-0">
+                    <span className="material-symbols-outlined text-[32px]">hub</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-display">
+                        {target.primaryRole?.name || "Software Engineer"}
+                      </h2>
+                      {target.primaryCompany && (
+                        <span className="text-xl sm:text-2xl font-semibold text-lime-pulse">
+                          @ {target.primaryCompany.name}
+                        </span>
+                      )}
+                      <span className="material-symbols-outlined text-lime-pulse text-[20px]" title="Primary Placement Target">
+                        verified
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-text-muted text-xs font-mono flex-wrap mt-1">
+                      {target.primaryCompany?.industry && (
+                        <span className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">domain</span>
+                          {target.primaryCompany.industry}
+                        </span>
+                      )}
+                      <span>•</span>
+                      <span>{target.targetCompaniesCount} Target Companies</span>
+                      <span>•</span>
+                      <span>{target.targetRolesCount} Target Roles</span>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-[11px] font-mono font-bold uppercase text-secondary block mt-1">
-                  {readiness.targetLevel || "Calculating"}
-                </span>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href="/simulation"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 transition-all shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">play_circle</span>
+                    <span>Run Mock Interview</span>
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/40 text-text-primary hover:border-outline transition-colors text-xs font-medium"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">tune</span>
+                    <span>Edit Target Parameters</span>
+                  </Link>
+                </div>
               </div>
+
+              {/* 3-Column Key Performance Breakdown */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                {/* Col 1: Technical Fit Score */}
+                <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Target Readiness Index</span>
+                    <span className="text-xl font-bold font-mono text-lime-pulse">
+                      {readiness.targetScore !== null ? `${readiness.targetScore}%` : "--"}
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-lime-pulse transition-all duration-500"
+                      style={{ width: `${readiness.targetScore ?? 0}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-text-secondary font-mono">
+                    Weighted target accuracy across evaluated subject domains.
+                  </p>
+                </div>
+
+                {/* Col 2: General Baseline vs Target */}
+                <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Overall Baseline</span>
+                    <span className="text-xl font-bold font-mono text-white">
+                      {readiness.overallScore !== null ? `${readiness.overallScore}%` : "--"}
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-surface-container-low overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-white/70 transition-all duration-500"
+                      style={{ width: `${readiness.overallScore ?? 0}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-text-secondary font-mono">
+                    General technical baseline across all curriculum subjects.
+                  </p>
+                </div>
+
+                {/* Col 3: Domain Distribution */}
+                <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Domain Coverage</span>
+                    <span className="text-xs font-mono font-bold uppercase text-lime-pulse">
+                      {readiness.targetLevel || "EVALUATING"}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-2 text-sm font-mono font-bold">
+                    <span className="text-lime-pulse">{readiness.strongCount} Strong</span>
+                    <span className="text-text-muted">•</span>
+                    <span className="text-[#f59e0b]">{readiness.developingCount} Dev</span>
+                    <span className="text-text-muted">•</span>
+                    <span className="text-[#f87171]">{readiness.weakCount} Weak</span>
+                  </div>
+                  <p className="text-xs text-text-secondary font-mono">
+                    {matrix.length} domain rubrics tracked against target benchmark.
+                  </p>
+                </div>
+              </div>
+
+              {/* Additional Target Roles & Companies pill list */}
+              {(placementTargets.targetRoles.length > 1 || placementTargets.targetCompanies.length > 1) && (
+                <div className="pt-3 border-t border-outline-variant/20 flex flex-col sm:flex-row sm:items-center gap-4 text-xs font-mono">
+                  {placementTargets.targetRoles.length > 1 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-text-muted text-[11px] uppercase font-bold">
+                        Additional Roles:
+                      </span>
+                      {placementTargets.targetRoles
+                        .filter((r) => !r.isPrimary)
+                        .map((r) => (
+                          <span
+                            key={r.id}
+                            className="px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-secondary text-[11px]"
+                          >
+                            {r.name}
+                          </span>
+                        ))}
+                    </div>
+                  )}
+                  {placementTargets.targetCompanies.length > 1 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-text-muted text-[11px] uppercase font-bold">
+                        Target Companies:
+                      </span>
+                      {placementTargets.targetCompanies
+                        .filter((c) => c.priority !== 1)
+                        .map((c) => (
+                          <span
+                            key={c.id}
+                            className="px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-secondary text-[11px]"
+                          >
+                            {c.name}
+                          </span>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-
-            {/* Additional Target Roles & Companies */}
-            {(placementTargets.targetRoles.length > 1 || placementTargets.targetCompanies.length > 1) && (
-              <div className="mt-5 pt-4 border-t border-border/70 flex flex-col sm:flex-row sm:items-center gap-4 text-label-xs font-mono">
-                {placementTargets.targetRoles.length > 1 && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-text-muted text-[10px] uppercase font-bold">
-                      Additional Roles:
-                    </span>
-                    {placementTargets.targetRoles
-                      .filter((r) => !r.isPrimary)
-                      .map((r) => (
-                        <span
-                          key={r.id}
-                          className="px-2.5 py-0.5 rounded-md bg-surface-high border border-border text-[11px] text-text-secondary"
-                        >
-                          {r.name}
-                        </span>
-                      ))}
-                  </div>
-                )}
-                {placementTargets.targetCompanies.length > 1 && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-text-muted text-[10px] uppercase font-bold">
-                      Additional Companies:
-                    </span>
-                    {placementTargets.targetCompanies
-                      .filter((c) => c.priority !== 1)
-                      .map((c) => (
-                        <span
-                          key={c.id}
-                          className="px-2.5 py-0.5 rounded-md bg-surface-high border border-border text-[11px] text-text-secondary"
-                        >
-                          {c.name}
-                        </span>
-                      ))}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
-          {/* Section 01: Target Readiness vs Overall Readiness */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-2">
-                  <span className="text-primary-text font-mono">01</span>
-                  TARGET READINESS
-                </h2>
-                <p className="text-[12px] font-mono text-text-muted mt-0.5">
-                  Comparative performance calibrated against {target.primaryRole?.name} requirements
-                </p>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary/15 text-secondary border border-secondary/30 font-bold uppercase">
-                {readiness.targetLevel || "EVALUATED"}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-border bg-surface p-5 space-y-2">
-                <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
-                  Target Readiness Index
-                </span>
-                <div className="text-3xl font-bold font-mono text-primary-text">
-                  {readiness.targetScore !== null ? `${readiness.targetScore}%` : "--"}
+          {/* Strategy Recommendation Banner */}
+          {preparationStrategy.summary && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-surface-container border border-outline-variant/30 relative overflow-hidden">
+              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-lime-pulse"></div>
+              <div className="flex items-center gap-3.5 pl-2">
+                <div className="w-10 h-10 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse shrink-0">
+                  <span className="material-symbols-outlined text-[20px]">lightbulb</span>
                 </div>
-                <p className="text-[12px] font-mono text-text-secondary leading-relaxed">
-                  Weighted accuracy across required domains for {target.primaryRole?.name}.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-border bg-surface p-5 space-y-2">
-                <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
-                  Overall Readiness Score
-                </span>
-                <div className="text-3xl font-bold font-mono text-text-primary">
-                  {readiness.overallScore !== null ? `${readiness.overallScore}%` : "--"}
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-lime-pulse font-bold tracking-widest uppercase">
+                      STRATEGIC DIRECTIVE
+                    </span>
+                    <span className="text-border">•</span>
+                    <span className="text-[11px] font-mono text-text-muted">High-Yield Priority</span>
+                  </div>
+                  <p className="text-sm text-text-primary mt-0.5 leading-relaxed">
+                    {preparationStrategy.summary}
+                  </p>
                 </div>
-                <p className="text-[12px] font-mono text-text-secondary leading-relaxed">
-                  General technical assessment baseline across all curriculum subjects.
-                </p>
               </div>
-
-              <div className="rounded-xl border border-border bg-surface p-5 space-y-2">
-                <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
-                  Domain Distribution
-                </span>
-                <div className="flex items-baseline gap-3 text-lg font-mono font-bold mt-1">
-                  <span className="text-secondary">{readiness.strongCount} Strong</span>
-                  <span className="text-text-muted">•</span>
-                  <span className="text-tertiary">{readiness.developingCount} Dev</span>
-                  <span className="text-text-muted">•</span>
-                  <span className="text-error">{readiness.weakCount} Weak</span>
-                </div>
-                <p className="text-[12px] font-mono text-text-secondary leading-relaxed">
-                  Measured balance across target-relevant domain benchmarks.
-                </p>
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                {preparationStrategy.practiceHref && (
+                  <Link
+                    href={preparationStrategy.practiceHref}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 transition-all shadow-sm"
+                  >
+                    <span>Start Priority Practice</span>
+                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </Link>
+                )}
               </div>
             </div>
-          </section>
+          )}
 
-          {/* Section 02: Target Requirements & Fit Matrix */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Section 02: Target Requirements & Performance Matrix */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-2">
-                  <span className="text-primary-text font-mono">02</span>
-                  TARGET REQUIREMENTS & PERFORMANCE MATRIX
+                <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                  <span className="text-lime-pulse font-mono">01</span>
+                  TARGET REQUIREMENTS & COMPETENCY EVIDENCE
                 </h2>
-                <p className="text-[12px] font-mono text-text-muted mt-0.5">
+                <p className="text-xs font-mono text-text-muted mt-0.5">
                   Authoritative domain requirements mapped against your measured scores
                 </p>
               </div>
-              <span className="text-[11px] font-mono text-text-muted">
-                {strategy.requirements.hasAuthoritativeData ? "Authoritative Syllabus" : "Curriculum Standard"}
-              </span>
-            </div>
-
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-border bg-surface-high/60 text-[11px] font-mono uppercase text-text-muted">
-                      <th className="py-3 px-4">Domain</th>
-                      <th className="py-3 px-4">Target Need</th>
-                      <th className="py-3 px-4">Target Benchmark</th>
-                      <th className="py-3 px-4">Your Accuracy</th>
-                      <th className="py-3 px-4">State</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60 text-body-sm">
-                    {matrix.map((row) => (
-                      <tr key={row.domain} className="hover:bg-surface-high/40 transition-colors">
-                        <td className="py-3.5 px-4">
-                          <div className="font-semibold text-text-primary">
-                            {row.domain} — {row.domainName}
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
-                              row.targetNeed === "HIGH"
-                                ? "bg-primary/20 text-primary-text border border-primary/30"
-                                : row.targetNeed === "MEDIUM"
-                                ? "bg-surface-high text-text-primary border border-border"
-                                : "bg-surface-high/40 text-text-muted border border-border/50"
-                            }`}
-                          >
-                            {row.targetNeed}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 font-mono text-text-secondary text-[12px]">
-                          {row.benchmark}%
-                        </td>
-                        <td className="py-3.5 px-4 font-mono font-semibold text-text-primary text-[13px]">
-                          {row.accuracy !== null ? `${row.accuracy}%` : "--"}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
-                              row.studentState === "STRONG"
-                                ? "bg-secondary/15 text-secondary border border-secondary/30"
-                                : row.studentState === "DEVELOPING"
-                                ? "bg-tertiary/15 text-tertiary border border-tertiary/30"
-                                : row.studentState === "WEAK"
-                                ? "bg-error/15 text-error border border-error/30"
-                                : "bg-surface-high text-text-muted border border-border"
-                            }`}
-                          >
-                            {row.studentState}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="flex items-center gap-1.5 text-text-muted text-xs font-mono">
+                <span className="material-symbols-outlined text-lime-pulse text-[16px]">auto_fix_high</span>
+                <span>{strategy.requirements.hasAuthoritativeData ? "Authoritative Syllabus" : "Curriculum Standard"}</span>
               </div>
             </div>
-          </section>
 
-          {/* Section 03: Your Target Gaps */}
-          <section className="space-y-4">
+            {/* Modern Dark Table */}
+            <div className="w-full overflow-x-auto rounded-2xl border border-outline-variant/30 bg-surface-container-low">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-outline-variant/30 bg-surface-container text-text-muted font-mono text-[11px] uppercase tracking-wider">
+                    <th className="py-3.5 px-4 font-semibold">Skill / Domain</th>
+                    <th className="py-3.5 px-4 font-semibold">Required Benchmark</th>
+                    <th className="py-3.5 px-4 font-semibold">Current Accuracy</th>
+                    <th className="py-3.5 px-4 font-semibold">Target Need</th>
+                    <th className="py-3.5 px-4 font-semibold">Status</th>
+                    <th className="py-3.5 px-4 font-semibold text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/20 text-xs">
+                  {matrix.map((row) => (
+                    <tr key={row.domain} className="hover:bg-surface-container/60 transition-colors group">
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <span className="material-symbols-outlined text-[18px] text-lime-pulse">
+                            {row.studentState === "STRONG" ? "check_circle" : row.studentState === "DEVELOPING" ? "trending_up" : "error"}
+                          </span>
+                          <div>
+                            <div className="font-semibold text-text-primary text-sm">
+                              {row.domain} — {row.domainName}
+                            </div>
+                            <div className="text-text-muted text-[11px] font-mono">
+                              Weight & Need: {row.targetNeed}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 font-mono text-text-secondary">
+                        {row.benchmark}% Target
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="font-mono font-bold text-white text-sm">
+                          {row.accuracy !== null ? `${row.accuracy}%` : "--"}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
+                            row.targetNeed === "HIGH"
+                              ? "bg-lime-pulse/20 text-lime-pulse border border-lime-pulse/35"
+                              : row.targetNeed === "MEDIUM"
+                              ? "bg-surface-container-high text-text-primary border border-outline-variant/40"
+                              : "bg-surface-container text-text-muted border border-outline-variant/30"
+                          }`}
+                        >
+                          {row.targetNeed}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-bold uppercase ${
+                            row.studentState === "STRONG"
+                              ? "bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30"
+                              : row.studentState === "DEVELOPING"
+                              ? "bg-[#f59e0b]/15 text-[#f59e0b] border border-[#f59e0b]/30"
+                              : row.studentState === "WEAK"
+                              ? "bg-[#f87171]/15 text-[#f87171] border border-[#f87171]/30"
+                              : "bg-surface-container text-text-muted border border-outline-variant/40"
+                          }`}
+                        >
+                          {row.studentState}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <Link
+                          href={`/tests?domain=${encodeURIComponent(row.domain)}`}
+                          className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/40 text-text-secondary hover:text-white hover:border-lime-pulse font-mono text-[11px] transition-colors inline-block"
+                        >
+                          Practice
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Section 03: Target Gaps & Priority Deficits */}
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-2">
-                  <span className="text-primary-text font-mono">03</span>
+                <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                  <span className="text-lime-pulse font-mono">02</span>
                   TARGET GAPS & PRIORITY DEFICITS
                 </h2>
-                <p className="text-[12px] font-mono text-text-muted mt-0.5">
+                <p className="text-xs font-mono text-text-muted mt-0.5">
                   Areas below the target benchmark requiring targeted intervention
                 </p>
               </div>
-              <span className="text-[11px] font-mono text-text-muted">
+              <span className="text-xs font-mono text-text-muted">
                 {gaps.length} {gaps.length === 1 ? "priority gap" : "priority gaps"}
               </span>
             </div>
@@ -351,39 +488,39 @@ export default async function TargetStrategyPage() {
                 {gaps.map((gap) => (
                   <div
                     key={gap.id}
-                    className="rounded-xl border border-error/25 bg-surface p-5 hover:border-error/40 transition-colors space-y-3"
+                    className="rounded-2xl border border-[#f87171]/25 bg-surface-container-low p-5 hover:border-[#f87171]/40 transition-colors space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <span className="text-xl font-bold font-mono text-primary-text">
-                          {gap.orderNumber}
+                        <span className="text-lg font-bold font-mono text-lime-pulse">
+                          #{gap.orderNumber}
                         </span>
-                        <h3 className="text-lg font-bold text-text-primary tracking-tight">
+                        <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
                           {gap.domain} → {gap.topic}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2 self-start sm:self-auto">
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
+                          className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold uppercase ${
                             gap.priority === "CRITICAL"
-                              ? "bg-error/20 text-error border border-error/30"
-                              : "bg-tertiary/20 text-tertiary border border-tertiary/30"
+                              ? "bg-[#f87171]/20 text-[#f87171] border border-[#f87171]/30"
+                              : "bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30"
                           }`}
                         >
                           {gap.priority}
                         </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/15 text-primary-text border border-primary/25 font-bold uppercase">
+                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/25 font-bold uppercase">
                           TARGET {gap.targetRelevance}
                         </span>
-                        <span className="text-label-xs font-mono text-error font-semibold bg-surface-high px-2.5 py-1 rounded-md border border-border">
+                        <span className="text-xs font-mono text-[#f87171] font-semibold bg-surface-container px-2.5 py-1 rounded-full border border-outline-variant/40">
                           {gap.currentAccuracy}% ACCURACY
                         </span>
                       </div>
                     </div>
 
-                    <div className="space-y-1.5 text-body-sm">
+                    <div className="space-y-2 text-xs text-text-secondary">
                       <div>
-                        <span className="text-[10px] font-mono uppercase text-text-muted block">
+                        <span className="text-[10px] font-mono uppercase text-text-muted block font-semibold">
                           Why:
                         </span>
                         <p className="text-text-secondary leading-relaxed">
@@ -391,30 +528,30 @@ export default async function TargetStrategyPage() {
                         </p>
                       </div>
                       <div>
-                        <span className="text-[10px] font-mono uppercase text-text-muted block">
+                        <span className="text-[10px] font-mono uppercase text-text-muted block font-semibold">
                           Evidence:
                         </span>
-                        <p className="text-[12px] font-mono text-text-muted leading-relaxed">
+                        <p className="font-mono text-text-muted leading-relaxed">
                           {gap.evidence}
                         </p>
                       </div>
                       <div>
-                        <span className="text-[10px] font-mono uppercase text-text-muted block">
+                        <span className="text-[10px] font-mono uppercase text-text-muted block font-semibold">
                           Action:
                         </span>
-                        <p className="text-text-primary font-medium leading-relaxed">
+                        <p className="text-white font-medium leading-relaxed">
                           {gap.action}
                         </p>
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-border/60 flex items-center justify-between">
-                      <span className="text-[11px] font-mono text-text-muted">
+                    <div className="pt-3 border-t border-outline-variant/20 flex items-center justify-between">
+                      <span className="text-xs font-mono text-text-muted">
                         Target Benchmark: {gap.targetBenchmark}%
                       </span>
                       <Link
                         href={gap.ctaHref}
-                        className="px-4 py-2 rounded-lg bg-primary text-text-inverse hover:bg-primary-text text-[12px] font-semibold font-mono transition-colors inline-flex items-center gap-1.5 shadow-sm"
+                        className="px-4 py-1.5 rounded-full bg-lime-pulse text-void-black hover:brightness-110 text-xs font-semibold font-mono transition-all inline-flex items-center gap-1.5 shadow-sm"
                       >
                         <span>{gap.ctaLabel}</span>
                         <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
@@ -424,26 +561,26 @@ export default async function TargetStrategyPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-secondary/30 bg-surface p-6 text-center">
-                <span className="material-symbols-outlined text-secondary text-[28px] mb-2 block">
+              <div className="rounded-2xl border border-lime-pulse/30 bg-surface-container-low p-6 text-center">
+                <span className="material-symbols-outlined text-lime-pulse text-[28px] mb-2 block">
                   verified
                 </span>
-                <h3 className="text-lg font-bold text-text-primary">No Critical Target Gaps</h3>
-                <p className="text-body-sm text-text-secondary mt-1 max-w-md mx-auto">
+                <h3 className="text-base font-bold text-white">No Critical Target Gaps</h3>
+                <p className="text-xs text-text-secondary mt-1 max-w-md mx-auto">
                   Your current measured accuracy in all target-required domains meets the placement benchmark.
                 </p>
               </div>
             )}
-          </section>
+          </div>
 
           {/* Section 04: Your Advantages */}
-          <section className="space-y-4">
+          <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-2">
-                <span className="text-primary-text font-mono">04</span>
-                YOUR ADVANTAGES
+              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                <span className="text-lime-pulse font-mono">03</span>
+                YOUR COMPETITIVE ADVANTAGES
               </h2>
-              <p className="text-[12px] font-mono text-text-muted mt-0.5">
+              <p className="text-xs font-mono text-text-muted mt-0.5">
                 Areas where your measured performance exceeds target benchmarks
               </p>
             </div>
@@ -453,77 +590,77 @@ export default async function TargetStrategyPage() {
                 {advantages.map((adv) => (
                   <div
                     key={adv.id}
-                    className="rounded-xl border border-secondary/30 bg-surface p-5 space-y-2.5"
+                    className="rounded-2xl border border-lime-pulse/30 bg-surface-container-low p-5 space-y-2.5"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase text-secondary font-bold px-2 py-0.5 rounded bg-secondary/10 border border-secondary/25">
+                      <span className="text-[10px] font-mono uppercase text-lime-pulse font-bold px-2.5 py-0.5 rounded-full bg-lime-pulse/10 border border-lime-pulse/25">
                         ADVANTAGE
                       </span>
-                      <span className="text-lg font-bold font-mono text-secondary">
+                      <span className="text-base font-bold font-mono text-lime-pulse">
                         {adv.accuracy}%
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-text-primary tracking-tight">
+                    <h3 className="text-sm font-bold text-white tracking-tight">
                       {adv.domain} → {adv.topic}
                     </h3>
-                    <p className="text-body-sm text-text-secondary leading-relaxed">
+                    <p className="text-xs text-text-secondary leading-relaxed">
                       {adv.why}
                     </p>
-                    <div className="text-[11px] font-mono text-text-muted pt-2 border-t border-border/60">
+                    <div className="text-[11px] font-mono text-text-muted pt-2 border-t border-outline-variant/20">
                       {adv.evidence}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-border bg-surface p-5 text-center text-[12px] font-mono text-text-muted">
+              <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-low p-5 text-center text-xs font-mono text-text-muted">
                 Complete more practice to establish validated target advantages.
               </div>
             )}
-          </section>
+          </div>
 
           {/* Section 05: Preparation Strategy & Directives */}
-          <section className="rounded-2xl border border-primary/30 bg-surface/90 p-6 space-y-4">
+          <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-low p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-text-primary tracking-tight flex items-center gap-2">
-                <span className="text-primary-text font-mono">05</span>
+              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                <span className="text-lime-pulse font-mono">04</span>
                 PREPARATION STRATEGY DIRECTIVE
               </h2>
-              <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider">
+              <span className="text-[10px] font-mono text-lime-pulse font-bold uppercase tracking-wider">
                 Action Plan
               </span>
             </div>
 
-            <p className="text-body-md text-text-secondary leading-relaxed max-w-3xl">
+            <p className="text-sm text-text-secondary leading-relaxed max-w-3xl">
               {preparationStrategy.summary}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-border/60">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-outline-variant/20">
               {preparationStrategy.practiceHref && (
                 <Link
                   href={preparationStrategy.practiceHref}
-                  className="px-5 py-2.5 rounded-lg bg-primary text-text-inverse hover:bg-primary-text font-semibold text-body-sm transition-colors inline-flex items-center gap-2 shadow-sm"
+                  className="px-4 py-2 rounded-full bg-lime-pulse text-void-black hover:brightness-110 font-semibold text-xs transition-all inline-flex items-center gap-2 shadow-sm"
                 >
-                  <span className="material-symbols-outlined text-[18px]">play_arrow</span>
+                  <span className="material-symbols-outlined text-[16px]">play_arrow</span>
                   <span>Start Priority Practice</span>
                 </Link>
               )}
               <Link
                 href={preparationStrategy.roadmapHref}
-                className="px-5 py-2.5 rounded-lg bg-surface-high border border-border text-text-primary hover:bg-surface-highest font-medium text-body-sm transition-colors inline-flex items-center gap-2"
+                className="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary hover:bg-surface-container-high font-medium text-xs transition-colors inline-flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[18px]">alt_route</span>
+                <span className="material-symbols-outlined text-[16px]">alt_route</span>
                 <span>View Strategic Roadmap</span>
               </Link>
               <Link
                 href="/dashboard"
-                className="px-5 py-2.5 rounded-lg bg-surface-high border border-border text-text-secondary hover:text-text-primary font-mono text-[12px] transition-colors inline-flex items-center gap-1.5"
+                className="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/40 text-text-secondary hover:text-white font-mono text-xs transition-colors inline-flex items-center gap-1.5"
               >
                 <span>Today&apos;s Execution Plan</span>
-                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
               </Link>
             </div>
-          </section>
+          </div>
         </div>
       )}
     </div>

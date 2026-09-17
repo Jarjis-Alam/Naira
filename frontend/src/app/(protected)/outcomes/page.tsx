@@ -7,7 +7,7 @@ import {
   CAUSALITY_DISCLAIMER,
 } from "@/server/outcome-intelligence";
 import { formatDateShort } from "@/lib/applications/domain";
-import { Eyebrow } from "@/components/ui/eyebrow";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function OutcomesPage() {
   const session = await auth();
@@ -21,91 +21,222 @@ export default async function OutcomesPage() {
 
   const hasAny = analytics.totals.applications > 0;
 
+  const breadcrumbs = [
+    { label: "NEXORA", href: "/dashboard" },
+    { label: "PREPARATION", href: "/tests" },
+    { label: "POST-INTERVIEW INTELLIGENCE" },
+  ];
+
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
-      {/* Header */}
-      <header className="border-b border-circuit-border/60 pb-6">
-        <Eyebrow system="NEXORA" category="PLACEMENT OUTCOME INTELLIGENCE">
-          EMPIRICAL EVIDENCE & REFLECTION
-        </Eyebrow>
-        <h1 className="font-heading text-headline-lg font-semibold text-phosphor-white tracking-tight">
-          Outcomes & Observations
-        </h1>
-        <p className="text-body-sm text-sage-60 mt-1 max-w-2xl">
-          What occurred across your application pipeline — and what recorded evidence reveals about your preparation priorities.
-        </p>
-        <div className="mt-3.5 p-3 rounded-md bg-carbon-veil/70 border border-circuit-border/60 text-caption font-mono text-[#ffd37a] flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px] shrink-0 text-[#ffd37a]">info</span>
-          <span>{CAUSALITY_DISCLAIMER}</span>
-        </div>
-      </header>
+    <div className="space-y-6 pb-20 max-w-7xl mx-auto">
+      {/* ── Top Header ── */}
+      <PageHeader
+        breadcrumbs={breadcrumbs}
+        title="Interview Outcomes & Gate Debriefs"
+        subtitle="Empirical diagnostic breakdown of completed interview loops, evaluator signal capture, and precision syllabus recalibration."
+        badge={{
+          label: "TELEMETRY SYNC: ACTIVE",
+          variant: "green",
+          ping: true,
+        }}
+      />
+
+      {/* Non-causal disclaimer — Phase 20 invariant */}
+      <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#191c1b] border border-amber-500/30 shadow-md">
+        <span className="material-symbols-outlined text-[18px] text-amber-400 flex-shrink-0 mt-0.5">
+          info
+        </span>
+        <span className="font-mono text-xs text-amber-300 leading-relaxed">
+          {CAUSALITY_DISCLAIMER}
+        </span>
+      </div>
 
       {!hasAny ? (
-        <section className="rounded-cards border border-dashed border-circuit-border bg-ground-iron/40 p-12 text-center">
-          <p className="font-heading text-title-md font-semibold text-phosphor-white">
+        <section className="rounded-2xl border border-dashed border-[#3f4a38]/60 bg-[#191c1b]/40 p-12 text-center shadow-md">
+          <div className="w-12 h-12 rounded-full bg-[#191c1b] border border-[#3f4a38]/40 flex items-center justify-center text-sage-40 mx-auto mb-3">
+            <span className="material-symbols-outlined text-[24px]">verified</span>
+          </div>
+          <p className="font-heading text-lg font-semibold text-phosphor-white">
             No application outcomes recorded
           </p>
-          <p className="text-body-sm text-sage-60 mt-2 max-w-md mx-auto">
+          <p className="text-xs text-sage-40 mt-1.5 max-w-md mx-auto leading-relaxed">
             Outcome intelligence is generated once you track application progression and record outcomes in the Applications workspace.
           </p>
           <Link
             href="/applications"
-            className="mt-5 inline-flex items-center gap-2 rounded-buttons bg-carbon-veil border border-circuit-border hover:border-lime-pulse px-5 py-2.5 text-body-sm font-medium text-phosphor-white transition-all shadow-none"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-6 py-2.5 text-xs transition-all shadow-[0_0_20px_rgba(127,238,100,0.25)]"
           >
             <span>Go to Applications</span>
-            <span className="material-symbols-outlined text-[16px] text-lime-pulse">arrow_forward</span>
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
           </Link>
         </section>
       ) : (
         <>
-          {/* Overview Stats */}
-          <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat label="Applications" value={analytics.totals.applications} />
-            <Stat label="Interviews" value={analytics.totals.interviews} />
-            <Stat label="Offers" value={analytics.totals.offers} highlight />
-            <Stat label="Terminal Results" value={analytics.totals.rejections} />
-          </section>
+          {/* ── Top Metric Summary Strip ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Card 1: Applications */}
+            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+                  TOTAL APPLICATIONS
+                </span>
+                <div className="w-8 h-8 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse">
+                  <span className="material-symbols-outlined text-[18px]">rule</span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-extrabold font-heading text-phosphor-white">
+                    {analytics.totals.applications}
+                  </span>
+                  <span className="text-[11px] font-mono text-lime-pulse">Tracked</span>
+                </div>
+                <p className="text-[11px] text-sage-40 mt-1">
+                  {analytics.totals.offers} Offers • {analytics.totals.interviews} Advanced
+                </p>
+              </div>
+              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
+                <div
+                  className="bg-lime-pulse h-full rounded-full"
+                  style={{ width: `${Math.min(100, analytics.totals.applications * 15)}%` }}
+                />
+              </div>
+            </div>
 
-          {/* Stage distribution */}
-          <section className="rounded-cards border border-circuit-border bg-ground-iron p-5 shadow-none">
-            <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
+            {/* Card 2: Interviews */}
+            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+                  INTERVIEW ROUNDS
+                </span>
+                <div className="w-8 h-8 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                  <span className="material-symbols-outlined text-[18px]">insights</span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-extrabold font-heading text-phosphor-white">
+                    {analytics.totals.interviews}
+                  </span>
+                  <span className="text-[11px] font-mono text-purple-400">Stages reached</span>
+                </div>
+                <p className="text-[11px] text-sage-40 mt-1">
+                  Evaluator signal across recorded loops
+                </p>
+              </div>
+              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
+                <div
+                  className="bg-purple-400 h-full rounded-full"
+                  style={{ width: `${Math.min(100, analytics.totals.interviews * 20)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Card 3: Offers Received */}
+            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+                  OFFERS EXTENDED
+                </span>
+                <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                  <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-extrabold font-heading text-lime-pulse">
+                    {analytics.totals.offers}
+                  </span>
+                  <span className="text-[11px] font-mono text-blue-400">Offers secured</span>
+                </div>
+                <p className="text-[11px] text-sage-40 mt-1">
+                  High-alignment company offers
+                </p>
+              </div>
+              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
+                <div
+                  className="bg-blue-400 h-full rounded-full"
+                  style={{ width: `${Math.min(100, analytics.totals.offers * 50)}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Card 4: Terminal Results */}
+            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+                  TERMINAL RESULTS
+                </span>
+                <div className="w-8 h-8 rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                  <span className="material-symbols-outlined text-[18px]">update</span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-extrabold font-heading text-rose-400">
+                    {analytics.totals.rejections}
+                  </span>
+                  <span className="text-[11px] font-mono text-rose-400">Post-mortems</span>
+                </div>
+                <p className="text-[11px] text-sage-40 mt-1">
+                  Provides empirical feedback for recalibration
+                </p>
+              </div>
+              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
+                <div
+                  className="bg-rose-400 h-full rounded-full"
+                  style={{ width: `${Math.min(100, analytics.totals.rejections * 25)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Stage Distribution Pill Strip ── */}
+          <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md">
+            <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-3">
               Stage Distribution (Recorded Outcomes)
             </h2>
             <div className="flex flex-wrap gap-2">
               {analytics.stageDistribution.map((s) => (
                 <span
                   key={s.stage}
-                  className="inline-flex items-center gap-2 rounded-pills border border-circuit-border bg-carbon-veil px-3 py-1 text-caption font-mono"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#3f4a38]/40 bg-[#111413] px-3.5 py-1.5 text-xs font-mono text-sage-40"
                 >
-                  <span className="text-sage-60">{s.label}</span>
+                  <span>{s.label}</span>
                   <span className="text-phosphor-white font-bold">{s.count}</span>
                 </span>
               ))}
             </div>
           </section>
 
+          {/* ── Historical Patterns & Preparation Feedback ── */}
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Historical patterns */}
-            <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
-              <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
+            <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-3">
                 Historical Patterns (Evidence-Backed)
               </h2>
               {analytics.patterns.length === 0 ? (
-                <p className="text-body-sm text-sage-40">
+                <p className="text-xs text-sage-40 py-2">
                   No repeated evidence-backed pattern across your recorded outcomes yet. Patterns require the same observed gap in at least two applications.
                 </p>
               ) : (
                 <ul className="space-y-2.5">
                   {analytics.patterns.map((p) => (
-                    <li key={`${p.domain}-${p.topic}`} className="rounded-md border border-circuit-border/60 bg-carbon-veil/50 p-3.5">
+                    <li
+                      key={`${p.domain}-${p.topic}`}
+                      className="rounded-xl border border-[#3f4a38]/30 bg-[#111413] p-4"
+                    >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-body-sm font-semibold text-phosphor-white">{p.topic}</span>
-                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-pills bg-ground-iron text-moss-80 border border-circuit-border/60">
+                        <span className="text-xs font-semibold text-phosphor-white">
+                          {p.topic}
+                        </span>
+                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#282b29] text-lime-pulse border border-[#3f4a38]/40">
                           {p.occurrences}/{p.sampleSize} occurrences
                         </span>
                       </div>
-                      <p className="text-[12px] text-sage-60 mt-1.5">{p.description}</p>
-                      <p className="text-[11px] font-mono text-sage-40 mt-1">
+                      <p className="text-xs text-sage-40 mt-1.5 leading-relaxed">{p.description}</p>
+                      <p className="text-[10px] font-mono text-sage-40/80 mt-1">
                         Sources: {p.sources.join(", ")}
                       </p>
                     </li>
@@ -115,20 +246,23 @@ export default async function OutcomesPage() {
             </section>
 
             {/* Preparation feedback */}
-            <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
-              <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
+            <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-3">
                 Preparation Feedback
               </h2>
               {analytics.focusCandidates.length === 0 ? (
-                <p className="text-body-sm text-sage-40">
+                <p className="text-xs text-sage-40 py-2">
                   No evidence-backed focus candidates from recorded outcomes.
                 </p>
               ) : (
                 <ul className="space-y-2.5">
                   {analytics.focusCandidates.slice(0, 4).map((f) => (
-                    <li key={`${f.domain}-${f.topic}`} className="rounded-md border border-circuit-border/60 bg-carbon-veil/50 p-3.5">
+                    <li
+                      key={`${f.domain}-${f.topic}`}
+                      className="rounded-xl border border-[#3f4a38]/30 bg-[#111413] p-4"
+                    >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-body-sm font-semibold text-phosphor-white">
+                        <span className="text-xs font-semibold text-phosphor-white">
                           <span className="font-mono text-[10px] font-bold text-lime-pulse uppercase mr-1">
                             [{f.actionType}]
                           </span>{" "}
@@ -137,33 +271,33 @@ export default async function OutcomesPage() {
                         {f.topicId ? (
                           <Link
                             href={`/practice?topicId=${f.topicId}&subjectCode=${f.domain}`}
-                            className="text-caption font-mono font-semibold text-fern-link hover:text-phosphor-white underline whitespace-nowrap"
+                            className="text-xs font-mono font-semibold text-lime-pulse hover:text-mint-frost transition-colors whitespace-nowrap"
                           >
                             Practice Now →
                           </Link>
                         ) : (
                           <Link
                             href="/roadmap"
-                            className="text-caption font-mono text-sage-40 hover:text-phosphor-white underline whitespace-nowrap"
+                            className="text-xs font-mono text-sage-40 hover:text-phosphor-white transition-colors whitespace-nowrap"
                           >
                             View plan →
                           </Link>
                         )}
                       </div>
-                      <p className="text-[12px] text-sage-60 mt-1.5">{f.reason}</p>
+                      <p className="text-xs text-sage-40 mt-1.5 leading-relaxed">{f.reason}</p>
                     </li>
                   ))}
                 </ul>
               )}
-              <p className="text-caption font-mono text-sage-40 mt-4 pt-3 border-t border-circuit-border/40">
+              <p className="text-[10px] font-mono text-sage-40/70 mt-4 pt-3 border-t border-[#3f4a38]/30">
                 Practice links connect to the Phase 15 execution flow — outcome intelligence analyzes evidence without creating independent tasks.
               </p>
             </section>
           </div>
 
-          {/* Recent outcomes */}
-          <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
-            <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
+          {/* ── Recent Application Outcomes ── */}
+          <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+            <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-3">
               Recent Application Outcomes
             </h2>
             <ul className="space-y-2">
@@ -171,15 +305,15 @@ export default async function OutcomesPage() {
                 <li key={o.applicationId}>
                   <Link
                     href={`/applications/${o.applicationId}`}
-                    className="flex items-center justify-between gap-3 rounded-md border border-circuit-border/60 hover:border-lime-pulse/60 bg-carbon-veil/50 px-3.5 py-2.5 transition-all"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-[#3f4a38]/30 hover:border-lime-pulse/60 bg-[#111413] px-4 py-3 transition-all group"
                   >
                     <span className="min-w-0">
-                      <span className="text-body-sm font-medium text-phosphor-white block truncate">
+                      <span className="text-xs font-semibold text-phosphor-white block truncate group-hover:text-lime-pulse transition-colors">
                         {o.companyName} — {o.roleName}
                       </span>
-                      <span className="text-caption font-mono text-sage-40">{o.label}</span>
+                      <span className="text-[11px] font-mono text-sage-40">{o.label}</span>
                     </span>
-                    <span className="text-caption font-mono text-sage-40 shrink-0">
+                    <span className="text-[11px] font-mono text-sage-40 shrink-0">
                       {o.occurredAt ? formatDateShort(o.occurredAt) : ""}
                     </span>
                   </Link>
@@ -190,48 +324,38 @@ export default async function OutcomesPage() {
         </>
       )}
 
-      {/* Unified Placement Journey */}
+      {/* ── Placement Journey Timeline ── */}
       {journey.length > 0 && (
-        <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
-          <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
+        <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+          <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-4">
             Placement Journey Timeline
           </h2>
-          <ol className="relative border-l border-circuit-border/60 ml-2 space-y-3 max-h-96 overflow-y-auto">
+          <ol className="relative border-l border-[#3f4a38]/50 ml-3 space-y-4 max-h-96 overflow-y-auto pl-6">
             {journey.slice(-30).reverse().map((entry, idx) => (
-              <li key={`${entry.date}-${idx}`} className="ml-5">
-                <span className="absolute -left-[5px] mt-1.5 w-2.5 h-2.5 rounded-full border border-void-black bg-lime-pulse" />
+              <li key={`${entry.date}-${idx}`} className="relative">
+                <span className="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full border-2 border-[#191c1b] bg-lime-pulse" />
                 <div className="flex flex-wrap items-baseline gap-2">
-                  <span className="text-caption font-mono text-sage-40">{formatDateShort(entry.date)}</span>
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-pills bg-carbon-veil text-moss-80 border border-circuit-border/60">
+                  <span className="text-[11px] font-mono text-sage-40">{formatDateShort(entry.date)}</span>
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-[#282b29] text-lime-pulse border border-[#3f4a38]/40">
                     {entry.phase}
                   </span>
                   {entry.href ? (
-                    <Link href={entry.href} className="text-body-sm font-medium text-phosphor-white hover:text-lime-pulse underline transition-colors">
+                    <Link
+                      href={entry.href}
+                      className="text-xs font-medium text-phosphor-white hover:text-lime-pulse transition-colors"
+                    >
                       {entry.title}
                     </Link>
                   ) : (
-                    <span className="text-body-sm font-medium text-phosphor-white">{entry.title}</span>
+                    <span className="text-xs font-medium text-phosphor-white">{entry.title}</span>
                   )}
                 </div>
-                {entry.detail && <p className="text-caption text-sage-60 mt-0.5">{entry.detail}</p>}
+                {entry.detail && <p className="text-xs text-sage-40 mt-1">{entry.detail}</p>}
               </li>
             ))}
           </ol>
         </section>
       )}
-    </div>
-  );
-}
-
-function Stat({ label, value, highlight = false }: { label: string; value: number; highlight?: boolean }) {
-  return (
-    <div className="rounded-cards border border-circuit-border bg-ground-iron p-4 shadow-none">
-      <span className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium">
-        {label}
-      </span>
-      <p className={`text-headline-sm font-heading font-bold mt-1 ${highlight ? "text-lime-pulse" : "text-phosphor-white"}`}>
-        {value}
-      </p>
     </div>
   );
 }

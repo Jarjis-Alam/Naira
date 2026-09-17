@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nexora — Placement OS Dashboard</title>
+<!-- Tailwind CSS v3 with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              black: '#070909',
+              dark: '#0e1110',
+              surface: '#121615',
+              card: '#161b19',
+              cardHover: '#1c2320',
+              border: 'rgba(255, 255, 255, 0.07)',
+              borderLight: 'rgba(255, 255, 255, 0.12)',
+              green: '#8cff5a',
+              greenGlow: 'rgba(140, 255, 90, 0.18)',
+              greenDark: '#1b3820',
+              amber: '#f6c453',
+              amberDark: '#352912',
+              rose: '#f472b6',
+              roseDark: '#3a1a28',
+              blue: '#6ea8ff',
+              blueDark: '#162b48',
+              purple: '#a78bfa',
+              purpleDark: '#2b1e4a',
+              muted: '#7e8b85',
+              subtle: '#4b5550'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'monospace']
+          },
+          boxShadow: {
+            glow: '0 0 35px -5px rgba(140, 255, 90, 0.15)',
+            banner: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom CSS Styles -->
+<style data-purpose="base-typography">
+    body {
+      background-color: #070909;
+      color: #e5ece8;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070909;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e2623;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2a3531;
+    }
+  </style>
+<style data-purpose="decorative-effects">
+    /* Subtle radial glow background */
+    .bg-ambient-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(140, 255, 90, 0.035) 0%, transparent 70%);
+    }
+
+    /* Mountain vector graphic clip */
+    .mountain-silhouette {
+      fill: #0c1011;
+      opacity: 0.95;
+    }
+    .mountain-back {
+      fill: #151a1d;
+      opacity: 0.8;
+    }
+  </style>
+<!-- END: Custom CSS Styles -->
+</head>
+<body class="bg-brand-black text-zinc-100 antialiased min-h-screen flex selection:bg-brand-green selection:text-black">
+<!-- BEGIN: Sidebar Navigation -->
+<aside class="w-64 border-r border-brand-border bg-brand-dark flex flex-col justify-between shrink-0 fixed inset-y-0 left-0 z-30 overflow-y-auto">
+<div class="p-5">
+<!-- Logo Branding -->
+<div class="flex items-center gap-2.5 mb-8 px-2 cursor-pointer group">
+<div class="w-8 h-8 rounded-lg bg-emerald-950 border border-brand-green/30 flex items-center justify-center text-brand-green font-black text-xl shadow-[0_0_15px_rgba(140,255,90,0.3)] transition-transform group-hover:scale-105">
+<svg class="w-5 h-5 text-brand-green" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<path class="hidden" d="M18 6 6 18M6 6l12 12"></path>
+<path d="M3 18L10 6L14 13L21 6"></path>
+</svg>
+</div>
+<div>
+<span class="text-white font-bold text-lg tracking-tight block leading-none">Nexora</span>
+<span class="text-[9px] font-mono tracking-widest text-zinc-500 uppercase font-medium">Placement OS</span>
+</div>
+</div>
+<!-- Core OS Navigation Section -->
+<div class="mb-7">
+<h3 class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 px-3 mb-2 font-semibold">Core OS</h3>
+<nav class="space-y-1">
+<!-- Active Dashboard Item -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-full bg-brand-green/10 text-brand-green border border-brand-green/20 text-sm font-semibold transition-all shadow-[0_0_20px_rgba(140,255,90,0.12)]" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Dashboard</span>
+</a>
+<!-- Target Strategy -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<circle cx="12" cy="12" r="6"></circle>
+<circle cx="12" cy="12" r="2"></circle>
+</svg>
+<span>Target Strategy</span>
+</a>
+<!-- Resume Intelligence -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Resume Intelligence</span>
+</a>
+<!-- Applications -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<rect height="14" rx="2" ry="2" width="20" x="2" y="7"></rect>
+<path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path>
+</svg>
+<span>Applications</span>
+</a>
+<!-- Outcomes -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Outcomes</span>
+</a>
+<!-- Simulations -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Simulations</span>
+</a>
+</nav>
+</div>
+<!-- Preparation Section -->
+<div>
+<h3 class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 px-3 mb-2 font-semibold">Preparation</h3>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Assessment</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Tests &amp; Practice</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Roadmap</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-full text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 text-sm font-medium transition-colors" href="#">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Analytics</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Sidebar Footer Motivation Card -->
+<div class="p-4 border-t border-brand-border">
+<!-- Gradient Mini Promo Card -->
+<div class="relative overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-[#101b14] via-[#0b1410] to-[#0a110f] border border-emerald-500/20 mb-3">
+<div class="relative z-10">
+<p class="text-white text-xs font-semibold leading-tight">
+            Discipline<br/>today.<br/>
+            Placement<br/>tomorrow.
+          </p>
+</div>
+<!-- Stylized Green Glowing Orbs Graphic -->
+<div class="absolute -right-3 -bottom-4 w-20 h-20 bg-emerald-500/20 rounded-full blur-lg pointer-events-none"></div>
+<div class="absolute right-1 bottom-1 w-14 h-14 rounded-full border border-emerald-400/30 bg-gradient-to-tr from-emerald-500/40 to-lime-300/20"></div>
+<div class="absolute right-7 bottom-5 w-8 h-8 rounded-full border border-emerald-300/40 bg-emerald-400/20 backdrop-blur-sm"></div>
+</div>
+<!-- Version Stamp -->
+<div class="px-1 text-[11px] text-zinc-500 font-medium leading-relaxed">
+        Nexora v0.2.0<br/>
+<span class="text-zinc-600">Build for what's next.</span>
+</div>
+</div>
+</aside>
+<!-- END: Sidebar Navigation -->
+<!-- BEGIN: Main App Wrapper -->
+<div class="pl-64 flex-1 flex flex-col min-h-screen bg-ambient-glow">
+<!-- BEGIN: Top Navigation Header -->
+<header class="h-16 border-b border-brand-border px-8 flex items-center justify-between sticky top-0 bg-brand-black/90 backdrop-blur-md z-20">
+<!-- Pill Search Bar -->
+<div class="w-96 relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<input class="w-full bg-[#111614] text-xs text-zinc-300 placeholder-zinc-500 rounded-full pl-10 pr-12 py-2 border border-brand-border focus:border-brand-green/60 focus:ring-1 focus:ring-brand-green/60 focus:outline-none transition-all" placeholder="Search anything... (companies, skills, tests, etc.)" type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<kbd class="text-[10px] bg-zinc-800 text-zinc-400 border border-zinc-700 px-1.5 py-0.5 rounded font-mono">⌘ K</kbd>
+</div>
+</div>
+<!-- Header Right Utilities & Profile -->
+<div class="flex items-center gap-4">
+<!-- Notification Bell with Pink dot -->
+<button aria-label="Notifications" class="relative p-2 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-pink-500 rounded-full ring-2 ring-brand-black"></span>
+</button>
+<!-- Calendar Button -->
+<button aria-label="Calendar" class="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="18" rx="2" ry="2" stroke-width="2" width="18" x="3" y="4"></rect>
+<line stroke-width="2" x1="16" x2="16" y1="2" y2="6"></line>
+<line stroke-width="2" x1="8" x2="8" y1="2" y2="6"></line>
+<line stroke-width="2" x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+</button>
+<!-- User Profile Pill -->
+<div class="flex items-center gap-2.5 pl-2 border-l border-brand-border cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-zinc-200 text-xs shadow-inner">
+            J
+          </div>
+<div class="text-left hidden sm:block">
+<span class="text-xs font-semibold text-zinc-200 block group-hover:text-brand-green transition-colors">Jarjis Alam</span>
+<span class="text-[10px] text-zinc-500 block font-mono">CST • 2024–2028</span>
+</div>
+<svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</header>
+<!-- END: Top Navigation Header -->
+<!-- BEGIN: Main Dashboard Content Body -->
+<main class="flex-1 p-8 max-w-7xl w-full mx-auto space-y-6">
+<!-- BEGIN: Hero Greeting & Poetic Quote Widget -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+<!-- Left Greeting & Category Tabs -->
+<div class="lg:col-span-7 space-y-4">
+<div>
+<span class="text-xs text-zinc-400 tracking-wide block">Good afternoon,</span>
+<h1 class="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2 mt-0.5">
+              Jarjis <span class="inline-block animate-wave origin-[70%_70%]">👋</span>
+</h1>
+<p class="text-xs text-zinc-400 mt-1">Here's your placement preparation at a glance.</p>
+</div>
+<!-- Horizontal Pill Navigation -->
+<div class="flex items-center gap-2 pt-1 overflow-x-auto pb-1 text-xs">
+<button class="px-4 py-1.5 rounded-full bg-brand-green text-black font-semibold flex items-center gap-1.5 shadow-[0_0_15px_rgba(140,255,90,0.25)] shrink-0">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+<span>Overview</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#131816] text-zinc-400 hover:text-zinc-200 border border-brand-border flex items-center gap-1.5 transition shrink-0">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Preparation</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#131816] text-zinc-400 hover:text-zinc-200 border border-brand-border flex items-center gap-1.5 transition shrink-0">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="14" rx="2" ry="2" stroke-width="2" width="20" x="2" y="7"></rect>
+<path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke-width="2"></path>
+</svg>
+<span>Applications</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#131816] text-zinc-400 hover:text-zinc-200 border border-brand-border flex items-center gap-1.5 transition shrink-0">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Resume</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#131816] text-zinc-400 hover:text-zinc-200 border border-brand-border flex items-center gap-1.5 transition shrink-0">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+<path d="M10 8l6 4-6 4V8z" fill="currentColor"></path>
+</svg>
+<span>Simulations</span>
+</button>
+</div>
+</div>
+<!-- Right Inspiration Landscape Graphic Card -->
+<div class="lg:col-span-5">
+<div class="relative overflow-hidden rounded-2xl border border-brand-border bg-[#0f1412] h-28 p-5 flex items-center justify-between shadow-xl">
+<!-- Background Mountain/Sunset Graphic -->
+<div class="absolute inset-y-0 right-0 w-3/5 pointer-events-none overflow-hidden">
+<svg class="absolute inset-0 w-full h-full" fill="none" preserveaspectratio="none" viewbox="0 0 300 120">
+<defs>
+<radialgradient cx="65%" cy="35%" id="sunGlow" r="60%">
+<stop offset="0%" stop-color="#fca5a5" stop-opacity="0.85"></stop>
+<stop offset="40%" stop-color="#fb7185" stop-opacity="0.5"></stop>
+<stop offset="100%" stop-color="#141a18" stop-opacity="0"></stop>
+</radialgradient>
+</defs>
+<!-- Glowing Sun Orb -->
+<circle cx="210" cy="40" fill="url(#sunGlow)" r="28"></circle>
+<!-- Back Mountains -->
+<path class="mountain-back" d="M80 120 L160 55 L240 120 Z"></path>
+<path class="mountain-back" d="M150 120 L230 40 L310 120 Z" opacity="0.6"></path>
+<!-- Front Layer Mountains -->
+<path class="mountain-silhouette" d="M100 120 L180 75 L250 120 Z"></path>
+<path class="mountain-silhouette" d="M190 120 L260 60 L330 120 Z"></path>
+</svg>
+<!-- Small Pillars Words -->
+<div class="absolute right-4 top-3 text-[8px] font-mono tracking-widest text-zinc-500 uppercase flex flex-col gap-0.5 text-right font-semibold">
+<span>LEARN</span>
+<span>BUILD</span>
+<span>APPLY</span>
+<span>GROW</span>
+</div>
+</div>
+<!-- Quote Text -->
+<div class="relative z-10 max-w-[65%]">
+<p class="text-xs text-zinc-200 italic font-medium leading-relaxed">
+                “Small, consistent steps<br/>compound into opportunities.”
+              </p>
+<span class="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mt-2 block font-semibold">NEXORA</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Hero Greeting & Poetic Quote Widget -->
+<!-- BEGIN: 4-Column Metric Readiness Cards -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Metric Card 1: Preparation Readiness (Green) -->
+<div class="bg-brand-card rounded-2xl p-4 border border-brand-border flex flex-col justify-between hover:border-zinc-700 transition">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-lg bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<span class="text-[11px] text-zinc-400 font-medium block">Preparation Readiness</span>
+<span class="text-2xl font-bold text-white mt-1 block">8%</span>
+<!-- Progress Bar -->
+<div class="w-full h-1.5 bg-zinc-800 rounded-full mt-3 overflow-hidden">
+<div class="bg-brand-green h-full rounded-full w-[8%]"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4 pt-3 border-t border-brand-border/60 text-[11px]">
+<span class="text-zinc-500">Keep going. Consistency matters.</span>
+<button class="w-5 h-5 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Metric Card 2: Target Readiness (Rose/Red) -->
+<div class="bg-brand-card rounded-2xl p-4 border border-brand-border flex flex-col justify-between hover:border-zinc-700 transition">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-lg bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+<circle cx="12" cy="12" r="6" stroke-width="2"></circle>
+<circle cx="12" cy="12" r="2" stroke-width="2"></circle>
+</svg>
+</div>
+</div>
+<span class="text-[11px] text-zinc-400 font-medium block">Target Readiness</span>
+<span class="text-2xl font-bold text-zinc-400 mt-1 block">--</span>
+<!-- Progress Bar -->
+<div class="w-full h-1.5 bg-zinc-800 rounded-full mt-3 overflow-hidden">
+<div class="bg-zinc-700 h-full rounded-full w-0"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4 pt-3 border-t border-brand-border/60 text-[11px]">
+<span class="text-zinc-500">Set a target to measure this.</span>
+<button class="w-5 h-5 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Metric Card 3: Resume ATS Compatibility (Blue) -->
+<div class="bg-brand-card rounded-2xl p-4 border border-brand-border flex flex-col justify-between hover:border-zinc-700 transition">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<span class="text-[11px] text-zinc-400 font-medium block">Resume ATS Compatibility</span>
+<span class="text-2xl font-bold text-white mt-1 block">72%</span>
+<!-- Progress Bar -->
+<div class="w-full h-1.5 bg-zinc-800 rounded-full mt-3 overflow-hidden">
+<div class="bg-blue-400 h-full rounded-full w-[72%]"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4 pt-3 border-t border-brand-border/60 text-[11px]">
+<span class="text-zinc-500">Your resume is on the right track.</span>
+<button class="w-5 h-5 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Metric Card 4: Interview Readiness (Amber) -->
+<div class="bg-brand-card rounded-2xl p-4 border border-brand-border flex flex-col justify-between hover:border-zinc-700 transition">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<span class="text-[11px] text-zinc-400 font-medium block">Interview Readiness</span>
+<span class="text-2xl font-bold text-zinc-400 mt-1 block">--</span>
+<!-- Progress Bar -->
+<div class="w-full h-1.5 bg-zinc-800 rounded-full mt-3 overflow-hidden">
+<div class="bg-zinc-700 h-full rounded-full w-0"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4 pt-3 border-t border-brand-border/60 text-[11px]">
+<span class="text-zinc-500">Complete a simulation to measure this.</span>
+<button class="w-5 h-5 rounded-full bg-zinc-800/80 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+</section>
+<!-- END: 4-Column Metric Readiness Cards -->
+<!-- BEGIN: Midsection Grid (Two Columns) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Today & Focus Areas -->
+<div class="lg:col-span-7 space-y-6">
+<!-- Today Card -->
+<div class="bg-brand-card rounded-2xl p-5 border border-brand-border">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<h2 class="text-sm font-bold text-white">Today</h2>
+<span class="text-[10px] bg-zinc-800/80 border border-zinc-700/60 text-zinc-400 px-2 py-0.5 rounded-full">Wed, 17 Sep</span>
+</div>
+<button class="text-xs text-zinc-400 hover:text-brand-green flex items-center gap-1 transition">
+                View All <span class="text-sm leading-none">→</span>
+</button>
+</div>
+<p class="text-[11px] text-zinc-400 mb-3.5">Your next best action based on your progress.</p>
+<!-- Inner Focus Item Box -->
+<div class="bg-[#121614] rounded-xl p-4 border border-brand-border">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<span class="inline-block px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1">REINFORCE</span>
+<h3 class="text-sm font-bold text-white leading-tight">DBMS — Transactions &amp; Concurrency Control</h3>
+<p class="text-[11px] text-zinc-400 mt-1">
+<span class="text-amber-400 font-medium">57%</span> recent accuracy  ·  Historical baseline: 0%
+                    </p>
+</div>
+</div>
+<!-- Start Practice Pill Button -->
+<button class="px-4 py-2 rounded-full bg-brand-green text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(140,255,90,0.2)] hover:bg-[#9eff6d] transition shrink-0">
+<span>Start Practice</span>
+<span class="text-sm leading-none">→</span>
+</button>
+</div>
+<!-- Metadata pills row -->
+<div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-brand-border/40 text-[10px] text-zinc-400">
+<span class="px-2.5 py-1 rounded-full bg-zinc-900 border border-brand-border flex items-center gap-1.5">
+<svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                  10 questions
+                </span>
+<span class="px-2.5 py-1 rounded-full bg-zinc-900 border border-brand-border flex items-center gap-1.5">
+<svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+<path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                  ~25 mins
+                </span>
+<span class="px-2.5 py-1 rounded-full bg-zinc-900 border border-brand-border flex items-center gap-1.5">
+<svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                  Based on your weak areas
+                </span>
+<span class="px-2.5 py-1 rounded-full bg-zinc-900 border border-brand-border flex items-center gap-1.5">
+<svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                  Practice
+                </span>
+</div>
+</div>
+</div>
+<!-- Focus Areas Table/List Card -->
+<div class="bg-brand-card rounded-2xl p-5 border border-brand-border">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<h2 class="text-sm font-bold text-white">Focus Areas</h2>
+</div>
+<button class="text-xs text-zinc-400 hover:text-brand-green flex items-center gap-1 transition">
+                View All <span class="text-sm leading-none">→</span>
+</button>
+</div>
+<p class="text-[11px] text-zinc-400 mb-4">Topics to focus on based on your performance and targets.</p>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs">
+<thead>
+<tr class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider border-b border-brand-border/60">
+<th class="pb-2 font-medium">Topic</th>
+<th class="pb-2 font-medium">Domain</th>
+<th class="pb-2 font-medium">Accuracy</th>
+<th class="pb-2 font-medium">Trend</th>
+<th class="pb-2 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-brand-border/30">
+<!-- Row 1: DBMS -->
+<tr class="group hover:bg-zinc-800/20 transition-colors">
+<td class="py-3 pr-2 font-medium text-zinc-200 flex items-center gap-2">
+<svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="group-hover:text-white">Transactions &amp; Concurrency</span>
+</td>
+<td class="py-3 px-2 text-zinc-400 text-[11px]">DBMS</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="text-zinc-200 font-mono text-[11px]">57%</span>
+<div class="w-14 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+<div class="bg-amber-400 h-full rounded-full w-[57%]"></div>
+</div>
+</div>
+</td>
+<td class="py-3 px-2 text-brand-green font-medium text-[11px]">
+<span class="flex items-center gap-1">↗ Improving</span>
+</td>
+<td class="py-3 pl-2 text-right">
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition">
+                        Practice
+                      </button>
+</td>
+</tr>
+<!-- Row 2: OS -->
+<tr class="group hover:bg-zinc-800/20 transition-colors">
+<td class="py-3 pr-2 font-medium text-zinc-200 flex items-center gap-2">
+<svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="group-hover:text-white">CPU Scheduling &amp; Memory</span>
+</td>
+<td class="py-3 px-2 text-zinc-400 text-[11px]">OS</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="text-zinc-200 font-mono text-[11px]">67%</span>
+<div class="w-14 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+<div class="bg-blue-400 h-full rounded-full w-[67%]"></div>
+</div>
+</div>
+</td>
+<td class="py-3 px-2 text-zinc-400 font-medium text-[11px]">
+<span class="flex items-center gap-1">— Stable</span>
+</td>
+<td class="py-3 pl-2 text-right">
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold text-blue-300 bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 transition">
+                        Practice
+                      </button>
+</td>
+</tr>
+<!-- Row 3: DSA -->
+<tr class="group hover:bg-zinc-800/20 transition-colors">
+<td class="py-3 pr-2 font-medium text-zinc-200 flex items-center gap-2">
+<svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="group-hover:text-white">Trees &amp; Graphs</span>
+</td>
+<td class="py-3 px-2 text-zinc-400 text-[11px]">DSA</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="text-zinc-200 font-mono text-[11px]">100%</span>
+<div class="w-14 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+<div class="bg-brand-green h-full rounded-full w-[100%]"></div>
+</div>
+</div>
+</td>
+<td class="py-3 px-2 text-brand-green font-medium text-[11px]">
+<span class="flex items-center gap-1">↗ Strong</span>
+</td>
+<td class="py-3 pl-2 text-right">
+<button class="px-3 py-1 rounded-full text-[11px] font-semibold text-brand-green bg-brand-green/10 border border-brand-green/30 hover:bg-brand-green/20 transition">
+                        Review
+                      </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Recent Activity & Quick Actions -->
+<div class="lg:col-span-5 space-y-6">
+<!-- Recent Activity Card -->
+<div class="bg-brand-card rounded-2xl p-5 border border-brand-border">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<h2 class="text-sm font-bold text-white">Recent Activity</h2>
+</div>
+<button class="text-xs text-zinc-400 hover:text-brand-green flex items-center gap-1 transition">
+                View All <span class="text-sm leading-none">→</span>
+</button>
+</div>
+<!-- Vertical Timeline -->
+<div class="space-y-4 relative before:absolute before:left-4 before:top-3 before:bottom-3 before:w-px before:bg-zinc-800">
+<!-- Timeline Item 1: Purple / Simulation -->
+<div class="relative flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0 z-10 bg-brand-card">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+<path d="M10 8l6 4-6 4V8z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0 pt-0.5">
+<div class="flex items-center justify-between">
+<p class="text-xs font-semibold text-zinc-200 truncate">Completed simulation: Git &amp; DevOps Basics</p>
+<span class="text-[10px] text-zinc-500 shrink-0 ml-2 font-mono">2h ago</span>
+</div>
+<p class="text-[11px] text-zinc-400 mt-0.5">Score: 85%</p>
+</div>
+</div>
+<!-- Timeline Item 2: Green / Questions -->
+<div class="relative flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-full bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green shrink-0 z-10 bg-brand-card">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0 pt-0.5">
+<div class="flex items-center justify-between">
+<p class="text-xs font-semibold text-zinc-200 truncate">Solved 12 questions</p>
+<span class="text-[10px] text-zinc-500 shrink-0 ml-2 font-mono">Today, 11:20 AM</span>
+</div>
+<p class="text-[11px] text-zinc-400 mt-0.5">DSA — Binary Trees</p>
+</div>
+</div>
+<!-- Timeline Item 3: Blue / Resume -->
+<div class="relative flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 z-10 bg-brand-card">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0 pt-0.5">
+<div class="flex items-center justify-between">
+<p class="text-xs font-semibold text-zinc-200 truncate">Updated resume</p>
+<span class="text-[10px] text-zinc-500 shrink-0 ml-2 font-mono">Yesterday</span>
+</div>
+<p class="text-[11px] text-zinc-400 mt-0.5">ATS score improved to 72%</p>
+</div>
+</div>
+<!-- Timeline Item 4: Amber / Added target company -->
+<div class="relative flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 z-10 bg-brand-card">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="14" rx="2" ry="2" stroke-width="2" width="20" x="2" y="7"></rect>
+<path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0 pt-0.5">
+<div class="flex items-center justify-between">
+<p class="text-xs font-semibold text-zinc-200 truncate">Added target company</p>
+<span class="text-[10px] text-zinc-500 shrink-0 ml-2 font-mono">15 Sep</span>
+</div>
+<p class="text-[11px] text-zinc-400 mt-0.5">Stripe • SRE</p>
+</div>
+</div>
+<!-- Timeline Item 5: Rose / Practice test -->
+<div class="relative flex items-start gap-3.5">
+<div class="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400 shrink-0 z-10 bg-brand-card">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex-1 min-w-0 pt-0.5">
+<div class="flex items-center justify-between">
+<p class="text-xs font-semibold text-zinc-200 truncate">Completed practice test</p>
+<span class="text-[10px] text-zinc-500 shrink-0 ml-2 font-mono">14 Sep</span>
+</div>
+<p class="text-[11px] text-zinc-400 mt-0.5">OS — CPU Scheduling</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Grid -->
+<div class="bg-brand-card rounded-2xl p-5 border border-brand-border">
+<div class="flex items-center gap-2 mb-3.5">
+<svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<h2 class="text-sm font-bold text-white">Quick Actions</h2>
+</div>
+<!-- 2x2 Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Action 1: Take a Test -->
+<button class="bg-[#121614] hover:bg-[#181e1c] border border-brand-border p-3 rounded-xl text-left transition group flex items-start gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 group-hover:scale-105 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<span class="text-xs font-bold text-zinc-200 block group-hover:text-white">Take a Test</span>
+<span class="text-[10px] text-zinc-400 block leading-tight mt-0.5">Assess your skills</span>
+</div>
+</button>
+<!-- Action 2: Update Resume -->
+<button class="bg-[#121614] hover:bg-[#181e1c] border border-brand-border p-3 rounded-xl text-left transition group flex items-start gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 group-hover:scale-105 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<span class="text-xs font-bold text-zinc-200 block group-hover:text-white">Update Resume</span>
+<span class="text-[10px] text-zinc-400 block leading-tight mt-0.5">Improve your ATS score</span>
+</div>
+</button>
+<!-- Action 3: Explore Companies -->
+<button class="bg-[#121614] hover:bg-[#181e1c] border border-brand-border p-3 rounded-xl text-left transition group flex items-start gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="14" rx="2" ry="2" stroke-width="2" width="20" x="2" y="7"></rect>
+<path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<span class="text-xs font-bold text-zinc-200 block group-hover:text-white">Explore Companies</span>
+<span class="text-[10px] text-zinc-400 block leading-tight mt-0.5">Find your next opportunity</span>
+</div>
+</button>
+<!-- Action 4: Run Simulation -->
+<button class="bg-[#121614] hover:bg-[#181e1c] border border-brand-border p-3 rounded-xl text-left transition group flex items-start gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green shrink-0 group-hover:scale-105 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<polygon fill="currentColor" points="5 3 19 12 5 21 5 3"></polygon>
+</svg>
+</div>
+<div>
+<span class="text-xs font-bold text-zinc-200 block group-hover:text-white">Run Simulation</span>
+<span class="text-[10px] text-zinc-400 block leading-tight mt-0.5">Practice interviews</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Midsection Grid -->
+<!-- BEGIN: Bottom Motivational Banner -->
+<section class="mt-4">
+<div class="rounded-2xl p-4 bg-gradient-to-r from-purple-950/40 via-[#101915] to-[#0a110f] border border-brand-border flex items-center justify-between shadow-banner">
+<div>
+<span class="text-[10px] text-zinc-400 uppercase tracking-widest block font-medium">Stay consistent.</span>
+<p class="text-sm font-bold text-white tracking-tight mt-0.5">You're building a better you.</p>
+</div>
+<div class="flex items-center gap-4">
+<!-- Accent Stripes -->
+<div class="flex items-center gap-1 text-emerald-500/40 font-mono tracking-tighter text-lg select-none">
+<span>/</span><span>/</span><span>/</span><span>/</span><span>/</span>
+</div>
+<div class="text-right">
+<span class="text-[9px] font-mono tracking-widest text-zinc-400 uppercase block font-semibold">NEXORA</span>
+<span class="text-[8px] font-mono tracking-wider text-zinc-600 uppercase block">PLACEMENT OS</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Bottom Motivational Banner -->
+</main>
+<!-- END: Main Dashboard Content Body -->
+</div>
+<!-- END: Main App Wrapper -->
+</body></html>

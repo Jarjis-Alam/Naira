@@ -23,26 +23,26 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    // Base styles: Inter Variable font, tight tracking, 300ms ease transition
+    // Base styles: Inter Variable font, tight tracking, 200ms transition
     const base =
-      "inline-flex items-center justify-center font-medium font-sans tracking-tight transition-all duration-300 select-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lime-pulse";
+      "inline-flex items-center justify-center font-medium font-sans tracking-tight transition-all duration-200 select-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-green";
 
     const variants = {
-      // Primary Filled: #181818 fill, #ddffdc border & text, 12px radius
+      // Primary Filled: #8CFF5A fill, #050605 text, 12px radius
       filled:
-        "bg-ground-iron text-phosphor-white border border-circuit-border hover:border-phosphor-white hover:bg-carbon-veil rounded-buttons shadow-none",
-      // Accent Pill: #7fee64 fill, #181818 text, 9999px pill radius (Hero / primary conversion)
+        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-bright-green rounded-buttons shadow-none",
+      // Accent Pill: #8CFF5A fill, #050605 text, 9999px pill radius
       accent:
-        "bg-lime-pulse text-void-black font-semibold border border-lime-pulse hover:bg-[#6edc54] rounded-pills shadow-none",
-      // Outline: transparent fill, 1px phosphor or circuit border, #ddffdc text
+        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-bright-green rounded-pills shadow-none",
+      // Outline / Secondary: dark elevated surface, 1px green border, off-white text
       outline:
-        "bg-transparent text-phosphor-white border border-circuit-border hover:border-phosphor-white hover:bg-ground-iron/40 rounded-buttons",
-      // Ghost: transparent fill, no border until hover
+        "bg-card-elevated/80 text-text-primary border border-green-border hover:border-primary-green hover:text-primary-green rounded-buttons",
+      // Ghost: transparent fill, subtle hover
       ghost:
-        "bg-transparent text-sage-60 hover:text-phosphor-white hover:bg-ground-iron/60 rounded-buttons border border-transparent",
-      // Pill Ghost Link: 9999px radius, #485346 border, #859984 text
+        "bg-transparent text-text-secondary hover:text-text-primary hover:bg-card-standard rounded-buttons border border-transparent",
+      // Link: inline text link
       link:
-        "bg-transparent text-fern-link border border-circuit-border/60 hover:border-circuit-border hover:text-phosphor-white rounded-pills",
+        "bg-transparent text-primary-green hover:text-bright-green underline-offset-4 hover:underline rounded-none",
     };
 
     const sizes = {

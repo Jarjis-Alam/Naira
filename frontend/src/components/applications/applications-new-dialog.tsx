@@ -110,7 +110,7 @@ export function ApplicationsNewDialog({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm self-start"
+        className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none self-start"
       >
         <span>New Application</span>
         <span className="material-symbols-outlined text-[18px]">add_link</span>
@@ -118,14 +118,14 @@ export function ApplicationsNewDialog({
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4"
           role="dialog"
           aria-modal="true"
           onClick={(e) => {
             if (e.target === e.currentTarget) setOpen(false);
           }}
         >
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-5">
+          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-cards border border-neutral-border bg-card-standard p-6 shadow-2xl space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-title-lg font-bold text-text-primary">New Application</h2>
@@ -155,7 +155,7 @@ export function ApplicationsNewDialog({
                     required
                     value={companyId}
                     onChange={(e) => setCompanyId(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   >
                     <option value="">Select company…</option>
                     {companies.map((c) => (
@@ -174,7 +174,7 @@ export function ApplicationsNewDialog({
                     required
                     value={roleId}
                     onChange={(e) => setRoleId(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   >
                     <option value="">Select role…</option>
                     {roles.map((r) => (
@@ -193,7 +193,7 @@ export function ApplicationsNewDialog({
                   <select
                     value={initialStatus}
                     onChange={(e) => setInitialStatus(e.target.value as ApplicationStatus)}
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   >
                     {OPEN_STATUSES.map((s) => (
                       <option key={s} value={s}>
@@ -210,7 +210,7 @@ export function ApplicationsNewDialog({
                   <select
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   >
                     <option value="">Not specified</option>
                     {SOURCES.map((s) => (
@@ -229,7 +229,7 @@ export function ApplicationsNewDialog({
                     type="date"
                     value={deadline}
                     onChange={(e) => setDeadline(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   />
                 </label>
 
@@ -242,7 +242,7 @@ export function ApplicationsNewDialog({
                     onChange={(e) => setLocation(e.target.value)}
                     maxLength={255}
                     placeholder="Hyderabad, India"
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   />
                 </label>
 
@@ -255,7 +255,7 @@ export function ApplicationsNewDialog({
                     onChange={(e) => setEmploymentType(e.target.value)}
                     maxLength={60}
                     placeholder="Full-time internship"
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   />
                 </label>
 
@@ -268,7 +268,7 @@ export function ApplicationsNewDialog({
                     onChange={(e) => setPackageText(e.target.value)}
                     maxLength={120}
                     placeholder="e.g. 18 LPA (as posted)"
-                    className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                    className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                   />
                 </label>
               </div>
@@ -283,7 +283,7 @@ export function ApplicationsNewDialog({
                   rows={5}
                   maxLength={40000}
                   placeholder="Paste the job posting here…"
-                  className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                  className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                 />
               </label>
 
@@ -296,7 +296,7 @@ export function ApplicationsNewDialog({
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
                   maxLength={10000}
-                  className="w-full rounded-lg border border-border bg-surface-high/50 px-3 py-2 text-body-sm text-text-primary"
+                  className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden"
                 />
               </label>
 
@@ -310,14 +310,14 @@ export function ApplicationsNewDialog({
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-lg border border-border px-4 py-2 text-body-sm text-text-secondary hover:text-text-primary"
+                  className="rounded-buttons border border-neutral-border px-4 py-2 text-body-sm text-text-secondary hover:text-text-primary hover:border-green-border"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-lg bg-primary px-5 py-2 text-body-sm font-semibold text-text-inverse hover:bg-primary-text disabled:opacity-60"
+                  className="rounded-buttons bg-primary-green px-5 py-2 text-body-sm font-semibold text-void-black hover:bg-bright-green disabled:opacity-60"
                 >
                   {saving ? "Creating…" : "Create Application"}
                 </button>

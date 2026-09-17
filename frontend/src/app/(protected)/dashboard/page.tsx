@@ -12,19 +12,15 @@ import { getStudentSimulationHistory } from "@/server/placement-simulation";
 import { getResumeHealth } from "@/server/resume-intelligence";
 import { getApplicationDashboardCard } from "@/server/application-intelligence";
 import { getOutcomeDashboardCard } from "@/server/outcome-intelligence";
-import { ResumeHealthCard } from "@/components/resume/resume-health-card";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { getGreeting, formatDateTime, getScoreColor, getSkillLevel } from "@/lib/utils";
+import { PlacementIntelligence2Widget } from "@/components/analytics/placement-intelligence-2-widget";
+import { MetricCardV2 } from "@/components/ui/metric-card-v2";
+import { QuickActionsGrid } from "@/components/ui/quick-actions-grid";
+import { ActivityTimeline } from "@/components/ui/activity-timeline";
+import { getGreeting, formatDateTime } from "@/lib/utils";
 
 /**
  * A single non-critical intelligence widget must never take down the whole
  * dashboard.
- *
- * These reads only feed one card each, so a failure degrades to that card's
- * empty state instead of aborting the render (a missing relation used to bubble
- * out of the server component and render the global ERR_500_SYSTEM_FAULT page).
- * The failure is logged loudly — degraded, never concealed: a silent fallback
- * would hide a real schema/outage problem.
  */
 async function degradeOnFailure<T>(
   label: string,
@@ -56,7 +52,8 @@ export default async function DashboardPage() {
     .limit(1);
 
   const profile = profileList[0];
-  const userName = profile?.name || session.user.name || "Engineer";
+  const userName = profile?.name || session.user?.name || "Engineer";
+  const firstName = userName.split(" ")[0];
 
   // 2. Fetch baseline test id
   const baselineList = await db
@@ -66,8 +63,18 @@ export default async function DashboardPage() {
     .limit(1);
   const baselineTestId = baselineList[0]?.id;
 
-  // 3. Centralized Student Intelligence, Phase 14 Action Engine, Phase 15 Execution OS, Phase 16 Target Strategy & Phase 17 Simulation
-  const [intelligence, placementIntelligence, placementTargets, dailyPlan, targetStrategy, simulationHistory, resumeHealth, applicationCard, outcomeCard] = await Promise.all([
+  // 3. Parallel fetch of all student intelligence engines
+  const [
+    intelligence,
+    placementIntelligence,
+    placementTargets,
+    dailyPlan,
+    targetStrategy,
+    simulationHistory,
+    resumeHealth,
+    applicationCard,
+    outcomeCard,
+  ] = await Promise.all([
     getStudentIntelligence(userId),
     getPlacementIntelligence(userId),
     getStudentPlacementTargets(userId),
@@ -80,18 +87,18 @@ export default async function DashboardPage() {
   ]);
 
   const latestSimulation = simulationHistory[0] || null;
-
   const readiness = intelligence.readiness;
   const dataSufficiency = intelligence.dataSufficiency;
   const topAction = intelligence.topAction;
 
-  // Preparation focus for the Placement Target card (real readiness data only)
+  // Preparation focus derived strictly from real performance data
   const prepFocus = (() => {
     if (!dataSufficiency.hasCompletedBaseline) {
       return {
         label: "Calibrate Readiness",
         score: null,
         detail: "Complete your baseline assessment to establish your placement readiness.",
+        category: "CALIBRATE",
       };
     }
     if (intelligence.weakAreas.length > 0) {
@@ -100,6 +107,7 @@ export default async function DashboardPage() {
         label: `${wa.subjectCode} — ${wa.topicName}`,
         score: wa.accuracy,
         detail: `${wa.topicName} accuracy is ${wa.accuracy}%. Targeted problem-solving required.`,
+        category: "REINFORCE",
       };
     }
     const weakest = [...readiness.subjectScores]
@@ -110,17 +118,19 @@ export default async function DashboardPage() {
         label: `Focus: ${weakest.name}`,
         score: weakest.score,
         detail: `${weakest.score}% accuracy — prioritize this domain.`,
+        category: "FOCUS",
       };
     }
     return {
-      label: "No critical gaps",
+      label: "Core CS Mastery",
       score: null,
-      detail: "Maintain momentum with consistent mock tests.",
+      detail: "Maintain momentum with regular practice simulations.",
+      category: "MAINTAIN",
     };
   })();
 
-  // 4. Fetch recent submitted activity
-  const recentActivity = await db
+  // 4. Fetch recent submitted attempts
+  const recentAttempts = await db
     .select({
       id: attempts.id,
       testId: attempts.testId,
@@ -133,1243 +143,540 @@ export default async function DashboardPage() {
     .innerJoin(tests, eq(attempts.testId, tests.id))
     .where(and(eq(attempts.userId, userId), eq(attempts.status, "submitted")))
     .orderBy(desc(attempts.submittedAt))
-    .limit(4);
+    .limit(5);
 
-  // SVG Ring calculation for readiness (circumference = 2 * PI * 54 = ~339.29)
-  const radius = 54;
-  const circumference = 2 * Math.PI * radius;
-  const readinessValue = readiness.score ?? 0;
-  const strokeDashoffset = dataSufficiency.hasCompletedBaseline
-    ? circumference - (readinessValue / 100) * circumference
-    : circumference;
+  const timelineItems = recentAttempts.map((att) => {
+    const acc = att.accuracy ?? 0;
+    return {
+      id: att.id,
+      title: att.testTitle,
+      subtitle: `Accuracy: ${acc}%`,
+      timestamp: att.submittedAt ? formatDateTime(att.submittedAt) : "Recently",
+      icon: "code",
+      accentColor:
+        acc >= 80
+          ? ("green" as const)
+          : acc >= 50
+          ? ("amber" as const)
+          : ("rose" as const),
+      scoreBadge: `${att.score ?? 0} pts`,
+      href: `/tests`,
+    };
+  });
+
+  const quickActions = [
+    {
+      title: "Take a Test",
+      subtitle: "Assess your skills",
+      icon: "quiz",
+      href: "/tests",
+      accentColor: "purple" as const,
+    },
+    {
+      title: "Update Resume",
+      subtitle: "Improve your ATS score",
+      icon: "description",
+      href: "/resume",
+      accentColor: "blue" as const,
+    },
+    {
+      title: "Run Simulation",
+      subtitle: "Practice mock interview",
+      icon: "videocam",
+      href: "/simulation",
+      accentColor: "green" as const,
+    },
+    {
+      title: "Target Strategy",
+      subtitle: "Calibrate company roles",
+      icon: "radar",
+      href: "/target",
+      accentColor: "amber" as const,
+    },
+  ];
+
+  const currentDateFormatted = new Date().toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 
   return (
-    <div className="space-y-8 pb-16">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-circuit-border">
-        <div>
-          <Eyebrow system="NEXORA" category="COMMAND CENTER">ACTIVE SESSION</Eyebrow>
-          <h1 className="text-2xl sm:text-3xl font-heading font-bold tracking-tight text-phosphor-white">
-            {getGreeting()}, {userName.split(" ")[0]}
-          </h1>
-          <p className="text-body-sm text-sage-60 mt-1 max-w-2xl leading-relaxed">
-            Your personalized placement command center. Actionable intelligence, deterministic readiness drivers, and prioritized next steps.
-          </p>
-        </div>
+    <div className="space-y-6 pb-16 max-w-7xl mx-auto">
+      {/* ── 1. Hero Greeting & Poetic Inspiration Card ── */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        {/* Left Greeting & Category Tabs */}
+        <div className="lg:col-span-7 space-y-4">
+          <div>
+            <span className="text-xs text-sage-40 tracking-wide block">
+              Good afternoon,
+            </span>
+            <h1 className="text-3xl font-extrabold tracking-tight font-heading text-phosphor-white flex items-center gap-2 mt-0.5">
+              {firstName} <span className="inline-block animate-wave origin-[70%_70%]">👋</span>
+            </h1>
+            <p className="text-xs text-sage-40 mt-1">
+              Here&apos;s your placement preparation at a glance.
+            </p>
+          </div>
 
-        {/* Quick Header Badge */}
-        <div className="flex items-center gap-2.5 self-start md:self-auto px-3.5 py-2 rounded-cards bg-ground-iron border border-circuit-border">
-          <span className="material-symbols-outlined text-[18px] text-lime-pulse">verified</span>
-          <div className="flex flex-col text-left">
-            <span className="text-[10px] font-mono text-moss-70 uppercase tracking-wider leading-none">Curriculum</span>
-            <span className="text-[12px] font-mono font-semibold text-phosphor-white mt-1 leading-none">7 Subjects • 160 Questions</span>
+          {/* Horizontal Pill Navigation Tabs */}
+          <div className="flex items-center gap-2 pt-1 overflow-x-auto pb-1 text-xs no-scrollbar">
+            <Link
+              href="/dashboard"
+              className="px-4 py-1.5 rounded-full bg-lime-pulse text-void-black font-semibold flex items-center gap-1.5 shadow-[0_0_15px_rgba(127,238,100,0.25)] shrink-0 transition-all hover:brightness-105"
+            >
+              <span className="material-symbols-outlined text-[15px]">dashboard</span>
+              <span>Overview</span>
+            </Link>
+            <Link
+              href="/tests"
+              className="px-3.5 py-1.5 rounded-full bg-[#131816] text-sage-40 hover:text-phosphor-white border border-[#3f4a38]/40 flex items-center gap-1.5 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-[15px]">code</span>
+              <span>Preparation</span>
+            </Link>
+            <Link
+              href="/applications"
+              className="px-3.5 py-1.5 rounded-full bg-[#131816] text-sage-40 hover:text-phosphor-white border border-[#3f4a38]/40 flex items-center gap-1.5 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-[15px]">send</span>
+              <span>Applications</span>
+            </Link>
+            <Link
+              href="/resume"
+              className="px-3.5 py-1.5 rounded-full bg-[#131816] text-sage-40 hover:text-phosphor-white border border-[#3f4a38]/40 flex items-center gap-1.5 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-[15px]">description</span>
+              <span>Resume</span>
+            </Link>
+            <Link
+              href="/simulation"
+              className="px-3.5 py-1.5 rounded-full bg-[#131816] text-sage-40 hover:text-phosphor-white border border-[#3f4a38]/40 flex items-center gap-1.5 transition-colors shrink-0"
+            >
+              <span className="material-symbols-outlined text-[15px]">videocam</span>
+              <span>Simulations</span>
+            </Link>
           </div>
         </div>
-      </header>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (Span 8) */}
-        <div className="lg:col-span-8 space-y-8">
-          {/* 1. Placement Readiness Card & Readiness Contributors */}
-          <section className="bg-ground-iron border border-circuit-border rounded-cards p-6 sm:p-8 relative overflow-hidden">
-            <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8">
-              {/* Circular Progress Ring or Clean Uncalibrated Gauge */}
-              <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex-shrink-0">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-                  <circle
-                    cx="60"
-                    cy="60"
-                    fill="none"
-                    r={radius}
-                    stroke="#1f2a33"
-                    strokeWidth="8"
-                  />
-                  <circle
-                    className="text-lime-pulse circle-progress"
-                    cx="60"
-                    cy="60"
-                    fill="none"
-                    r={radius}
-                    stroke="currentColor"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    strokeWidth="8"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-2">
-                  {dataSufficiency.hasCompletedBaseline ? (
-                    <>
-                      <div className="flex items-baseline justify-center font-mono">
-                        <span className="text-3xl sm:text-4xl font-bold text-phosphor-white leading-none tracking-tight">
-                          {readiness.score}
-                        </span>
-                        <span className="text-xs sm:text-sm text-sage-40 ml-0.5">/ 100</span>
-                      </div>
-                      <span
-                        className={`text-label-xs font-semibold mt-1.5 uppercase tracking-wider font-mono ${
-                          readiness.level?.color || "text-lime-pulse"
-                        }`}
-                      >
-                        {readiness.level?.label || "COMPETITIVE"}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex items-baseline justify-center font-mono">
-                        <span className="text-3xl sm:text-4xl font-bold text-sage-40 leading-none tracking-wider">
-                          --
-                        </span>
-                        <span className="text-xs sm:text-sm text-sage-40 ml-0.5">/ 100</span>
-                      </div>
-                      <span className="text-[10px] font-mono text-sage-40 mt-1.5 uppercase tracking-widest">
-                        NOT ASSESSED
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Card Content & CTAs */}
-              <div className="flex-1 text-center md:text-left z-10">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-pills bg-carbon-veil border border-circuit-border text-[11px] font-mono text-moss-70 mb-2">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      dataSufficiency.hasCompletedBaseline ? "bg-lime-pulse animate-pulse" : "bg-sage-40"
-                    }`}
-                  />
-                  <span>
-                    {dataSufficiency.hasCompletedBaseline
-                      ? "BENCHMARK CALIBRATED"
-                      : "READINESS: NOT ASSESSED (UNCALIBRATED)"}
-                  </span>
-                </div>
-
-                <h2 className="text-xl sm:text-2xl font-bold text-phosphor-white tracking-tight mb-2">
-                  Placement Readiness Score
-                </h2>
-
-                <p className="text-body-sm text-sage-60 mb-5 leading-relaxed max-w-xl">
-                  {dataSufficiency.hasCompletedBaseline
-                    ? "Calculated dynamically across Core CS fundamentals, problem-solving proficiency, and interview speed indexing against standard placement benchmarks."
-                    : "Complete your baseline assessment to establish your starting benchmark across all 7 placement domains."}
-                </p>
-
-                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                  {dataSufficiency.hasCompletedBaseline ? (
-                    <>
-                      <Link
-                        href="/tests"
-                        className="bg-lime-pulse text-void-black font-mono font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-lime-pulse/90 transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-                        Take Mock Test
-                      </Link>
-                      <Link
-                        href="/analytics"
-                        className="bg-carbon-veil border border-circuit-border text-phosphor-white font-mono font-medium text-body-sm px-6 py-2.5 rounded-buttons hover:bg-circuit-border/40 transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-circuit-border"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">insights</span>
-                        View Detailed Report
-                      </Link>
-                    </>
-                  ) : (
-                    <Link
-                      href={baselineTestId ? `/tests/${baselineTestId}` : "/assessment"}
-                      className="bg-lime-pulse text-void-black font-mono font-semibold text-body-sm px-7 py-3 rounded-buttons hover:bg-lime-pulse/90 transition-all flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50 text-base"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                      Start Baseline Assessment
-                    </Link>
-                  )}
-                </div>
+        {/* Right Inspiration Landscape Graphic Card */}
+        <div className="lg:col-span-5">
+          <div className="relative overflow-hidden rounded-2xl border border-[#3f4a38]/40 bg-[#0f1412] h-28 p-5 flex items-center justify-between shadow-xl">
+            {/* Background Mountain/Sunset Graphic */}
+            <div className="absolute inset-y-0 right-0 w-3/5 pointer-events-none overflow-hidden">
+              <svg
+                className="absolute inset-0 w-full h-full"
+                fill="none"
+                preserveAspectRatio="none"
+                viewBox="0 0 300 120"
+              >
+                <defs>
+                  <radialGradient cx="65%" cy="35%" id="sunGlow" r="60%">
+                    <stop offset="0%" stopColor="#fca5a5" stopOpacity="0.85" />
+                    <stop offset="40%" stopColor="#fb7185" stopOpacity="0.5" />
+                    <stop offset="100%" stopColor="#141a18" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                {/* Glowing Sun Orb */}
+                <circle cx="210" cy="40" fill="url(#sunGlow)" r="28" />
+                {/* Back Mountains */}
+                <path d="M80 120 L160 55 L240 120 Z" fill="#151a1d" opacity="0.8" />
+                <path d="M150 120 L230 40 L310 120 Z" fill="#151a1d" opacity="0.6" />
+                {/* Front Layer Mountains */}
+                <path d="M100 120 L180 75 L250 120 Z" fill="#0c1011" opacity="0.95" />
+                <path d="M190 120 L260 60 L330 120 Z" fill="#0c1011" opacity="0.95" />
+              </svg>
+              {/* Pillars Words */}
+              <div className="absolute right-4 top-3 text-[8px] font-mono tracking-widest text-sage-40/70 uppercase flex flex-col gap-0.5 text-right font-semibold">
+                <span>LEARN</span>
+                <span>BUILD</span>
+                <span>APPLY</span>
+                <span>GROW</span>
               </div>
             </div>
 
-            {/* 2. Readiness Drivers (Contributors Analysis) */}
-            {dataSufficiency.hasCompletedBaseline && (
-              <div className="mt-8 pt-6 border-t border-circuit-border">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-body-sm font-semibold text-phosphor-white flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-lime-pulse">swap_vert</span>
-                    Readiness Contributors
-                  </h3>
-                  <span className="text-[11px] font-mono text-moss-70">
-                    Deterministic Impact Breakdown
-                  </span>
-                </div>
+            {/* Quote Text */}
+            <div className="relative z-10 max-w-[65%]">
+              <p className="text-xs text-phosphor-white/90 italic font-medium leading-relaxed">
+                “Small, consistent steps<br />compound into opportunities.”
+              </p>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-lime-pulse/80 mt-2 block font-semibold">
+                NEXORA
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Positive Contributors (Helping) */}
-                  <div className="p-3.5 rounded-cards bg-carbon-veil border border-circuit-border">
-                    <div className="flex items-center gap-2 mb-2 text-label-xs font-mono font-semibold text-lime-pulse uppercase">
-                      <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
-                      Helping Your Readiness
-                    </div>
-                    {readiness.positiveContributors.length > 0 ? (
-                      <div className="space-y-2">
-                        {readiness.positiveContributors.slice(0, 2).map((c) => (
-                          <div
-                            key={c.code}
-                            className="flex items-center justify-between text-body-sm bg-ground-iron p-2 rounded-cards border border-circuit-border"
-                          >
-                            <span className="text-phosphor-white font-medium">{c.name}</span>
-                            <span className="font-mono text-lime-pulse font-semibold">
-                              +{c.score}%
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-[12px] font-mono text-sage-40">
-                        Take more tests to establish strong benchmark areas.
-                      </p>
-                    )}
-                  </div>
+      {/* ── 2. 4-Column Readiness Metric Cards ── */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Metric 1: Preparation Readiness */}
+        <MetricCardV2
+          title="Preparation Readiness"
+          value={
+            dataSufficiency.hasCompletedBaseline && readiness.score !== null
+              ? `${readiness.score}%`
+              : "--"
+          }
+          accentColor="green"
+          icon="query_stats"
+          progressPct={dataSufficiency.hasCompletedBaseline ? readiness.score : 0}
+          footerText={
+            dataSufficiency.hasCompletedBaseline
+              ? "Keep going. Consistency matters."
+              : "Complete baseline assessment"
+          }
+          href={baselineTestId ? `/tests` : "/tests"}
+        />
 
-                  {/* Negative Contributors (Holding it back) */}
-                  <div className="p-3.5 rounded-cards bg-carbon-veil border border-rose-500/30">
-                    <div className="flex items-center gap-2 mb-2 text-label-xs font-mono font-semibold text-rose-400 uppercase">
-                      <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
-                      Holding It Back
-                    </div>
-                    {readiness.negativeContributors.length > 0 ? (
-                      <div className="space-y-2">
-                        {readiness.negativeContributors.slice(0, 2).map((c) => (
-                          <div
-                            key={c.code}
-                            className="flex items-center justify-between text-body-sm bg-ground-iron p-2 rounded-cards border border-rose-500/20"
-                          >
-                            <span className="text-phosphor-white font-medium">{c.name}</span>
-                            <span className="font-mono text-rose-400 font-semibold">
-                              {c.score}%
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-[12px] font-mono text-lime-pulse">
-                        No critical deficits holding your score back.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
+        {/* Metric 2: Target Readiness */}
+        <MetricCardV2
+          title="Target Readiness"
+          value={
+            targetStrategy.readiness.targetScore !== null
+              ? `${targetStrategy.readiness.targetScore}%`
+              : "--"
+          }
+          accentColor="pink"
+          icon="radar"
+          progressPct={targetStrategy.readiness.targetScore}
+          footerText={
+            targetStrategy.readiness.targetScore !== null
+              ? `${targetStrategy.gaps.length} target gaps remaining`
+              : "Set a target to measure this."
+          }
+          href="/target"
+        />
 
-          {/* 3. Placement Execution OS: "WHAT SHOULD I DO TODAY?" */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-lime-pulse font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-pulse" />
-                  <span>Execution OS • Your Next Actions</span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-phosphor-white tracking-tight mt-0.5">
-                  WHAT SHOULD I DO TODAY?
-                </h2>
-                <p className="text-body-sm text-sage-60 mt-0.5">
-                  Your Next Actions: Daily prioritized execution plan derived from your verified test performance
-                </p>
+        {/* Metric 3: Resume ATS Compatibility */}
+        <MetricCardV2
+          title="Resume ATS Compatibility"
+          value={resumeHealth?.atsScore ? `${resumeHealth.atsScore}%` : "--"}
+          accentColor="blue"
+          icon="description"
+          progressPct={resumeHealth?.atsScore}
+          footerText={
+            resumeHealth?.atsScore
+              ? "Your resume is on the right track."
+              : "Upload resume to scan ATS."
+          }
+          href="/resume"
+        />
+
+        {/* Metric 4: Interview Readiness */}
+        <MetricCardV2
+          title="Interview Readiness"
+          value={
+            latestSimulation?.overallReadinessScore !== null && latestSimulation?.overallReadinessScore !== undefined
+              ? `${latestSimulation.overallReadinessScore}%`
+              : "--"
+          }
+          accentColor="amber"
+          icon="videocam"
+          progressPct={latestSimulation?.overallReadinessScore}
+          footerText={
+            latestSimulation?.overallReadinessScore !== null && latestSimulation?.overallReadinessScore !== undefined
+              ? `Last simulation: ${latestSimulation.overallReadinessScore}%`
+              : "Complete a simulation to measure."
+          }
+          href="/simulation"
+        />
+      </section>
+
+      {/* ── 3. Midsection Grid (Two Columns) ── */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column (7 cols): Today + Focus Areas + Intelligence Engine */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Today Card */}
+          <div className="bg-[#191c1b] rounded-2xl p-5 border border-[#3f4a38]/40 shadow-md">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px] text-sage-40">
+                  calendar_today
+                </span>
+                <h2 className="text-sm font-bold text-phosphor-white">Today</h2>
+                <span className="text-[10px] bg-[#282b29] border border-[#3f4a38]/60 text-sage-40 px-2 py-0.5 rounded-full font-mono">
+                  {currentDateFormatted}
+                </span>
               </div>
               <Link
                 href="/roadmap"
-                className="text-lime-pulse font-mono text-[12px] hover:underline transition-colors flex items-center gap-1 font-medium"
+                className="text-xs text-sage-40 hover:text-lime-pulse flex items-center gap-1 transition-colors"
               >
-                <span>View Roadmap</span>
-                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                View All <span className="text-sm leading-none">→</span>
               </Link>
             </div>
+            <p className="text-[11px] text-sage-40 mb-3.5">
+              Your next best action based on your progress.
+            </p>
 
-            {/* Zero-Data / Empty Experience */}
-            {!dailyPlan.hasEnoughData ? (
-              <div className="p-6 sm:p-8 rounded-cards bg-ground-iron border border-circuit-border text-center flex flex-col items-center justify-center space-y-4">
-                <div className="w-14 h-14 rounded-full bg-carbon-veil border border-circuit-border flex items-center justify-center text-lime-pulse mb-1">
-                  <span className="material-symbols-outlined text-[28px]">flag</span>
-                </div>
-                <div className="max-w-md">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-lime-pulse font-bold">
-                    CALIBRATION REQUIRED
-                  </span>
-                  <h3 className="text-title-md font-bold text-phosphor-white mt-1 mb-1.5">
-                    BUILD YOUR BASELINE
-                  </h3>
-                  <p className="text-body-sm text-sage-60 leading-relaxed">
-                    Complete an assessment to unlock your personalized preparation plan. Nexora analyzes your verified responses across 7 core placement domains.
-                  </p>
-                </div>
-
-                <Link
-                  href={baselineTestId ? `/tests/${baselineTestId}` : "/assessment"}
-                  className="bg-lime-pulse text-void-black font-mono font-semibold text-body-sm px-7 py-3 rounded-buttons hover:bg-lime-pulse/90 transition-all inline-flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-[18px]">play_circle</span>
-                  Start Assessment
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {/* Partial-Data State Banner */}
-                {dailyPlan.isPartialData && (
-                  <div className="p-4 rounded-cards bg-carbon-veil border border-circuit-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-[22px] text-amber-400">info</span>
-                      <div>
-                        <h4 className="text-body-sm font-bold text-phosphor-white">
-                          KEEP BUILDING YOUR BASELINE
-                        </h4>
-                        <p className="text-[12px] font-mono text-sage-40 mt-0.5">
-                          You have enough data for an initial recommendation, but more practice will make your plan more precise.
-                        </p>
-                      </div>
-                    </div>
-                    <Link
-                      href="/tests"
-                      className="text-lime-pulse font-mono text-[12px] font-semibold hover:underline whitespace-nowrap"
-                    >
-                      CONTINUE PRACTICE →
-                    </Link>
-                  </div>
-                )}
-
-                {/* Compact Execution Progress Component */}
-                <div className="p-5 sm:p-6 rounded-cards bg-ground-iron border border-circuit-border space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-lime-pulse text-[20px]">task_alt</span>
-                      <h3 className="text-title-md font-bold text-phosphor-white">
-                        TODAY&apos;S PROGRESS
-                      </h3>
-                    </div>
-                    <div className="flex items-baseline gap-2 font-mono">
-                      <span className="text-2xl font-bold text-phosphor-white">
-                        {dailyPlan.completedCount} / {dailyPlan.totalCount}
-                      </span>
-                      <span className="text-[12px] text-sage-40">actions complete</span>
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="w-full bg-[#1f2a33] h-2 rounded-pills overflow-hidden">
-                    <div
-                      className="h-full bg-lime-pulse transition-all duration-500 rounded-pills"
-                      style={{ width: `${dailyPlan.progressPercent}%` }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] font-mono text-moss-70">
-                    <span className="text-lime-pulse font-semibold">
-                      {dailyPlan.completedCount} completed
-                    </span>
-                    <span className="font-semibold text-phosphor-white">
-                      {dailyPlan.progressPercent}%
-                    </span>
-                    <span>
-                      {dailyPlan.remainingCount} remaining
+            {/* Inner Focus Item Box */}
+            <div className="bg-[#111413] rounded-xl p-4 border border-[#3f4a38]/40">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                    <span className="material-symbols-outlined text-[20px]">
+                      database
                     </span>
                   </div>
-                </div>
-
-                {/* Execution Plan Action Cards */}
-                {dailyPlan.actions.map((action) => {
-                  const orderStr = action.order < 10 ? `0${action.order}` : `${action.order}`;
-                  const isCompleted = action.status === "COMPLETED";
-                  const isInProgress = action.status === "IN_PROGRESS";
-                  const isPartiallyCompleted = action.status === "PARTIALLY_COMPLETED";
-
-                  return (
-                    <div
-                      key={action.id}
-                      className={`p-5 sm:p-6 rounded-cards border transition-all relative overflow-hidden ${
-                        isCompleted
-                          ? "bg-ground-iron/60 border-circuit-border opacity-80"
-                          : isInProgress
-                          ? "bg-carbon-veil border-lime-pulse/50 shadow-sm"
-                          : isPartiallyCompleted
-                          ? "bg-carbon-veil border-amber-400/40"
-                          : action.order === 1
-                          ? "bg-ground-iron border-lime-pulse/40"
-                          : "bg-ground-iron border-circuit-border hover:border-moss-70/40"
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl font-bold font-mono text-lime-pulse">
-                            {orderStr}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`text-[10px] font-mono px-2 py-0.5 rounded-pills font-bold uppercase tracking-wider ${
-                                action.type === "FIX"
-                                  ? "bg-rose-950/60 text-rose-400 border border-rose-800/40"
-                                  : action.type === "REINFORCE"
-                                  ? "bg-amber-950/60 text-amber-300 border border-amber-800/40"
-                                  : "bg-carbon-veil text-moss-80 border border-circuit-border"
-                              }`}
-                            >
-                              {action.type}
-                            </span>
-                            <span className="text-[11px] font-mono text-sage-40 uppercase">
-                              {action.impact}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 self-start sm:self-auto">
-                          {isCompleted ? (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                              COMPLETED
-                            </span>
-                          ) : isPartiallyCompleted ? (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-amber-400/15 text-amber-300 border border-amber-400/30 flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[14px]">pending</span>
-                              PARTIAL PROGRESS
-                            </span>
-                          ) : isInProgress ? (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 flex items-center gap-1 animate-pulse">
-                              <span className="material-symbols-outlined text-[14px]">autorenew</span>
-                              IN PROGRESS
-                            </span>
-                          ) : (
-                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-pills bg-carbon-veil text-sage-40 border border-circuit-border">
-                              PENDING
-                            </span>
-                          )}
-                          <span className="text-label-xs font-mono text-lime-pulse font-semibold bg-carbon-veil px-2.5 py-1 rounded-pills border border-circuit-border">
-                            {action.accuracy}% ACCURACY
-                          </span>
-                          {action.targetFocus && (
-                            <span className="text-[10px] font-mono text-lime-pulse bg-lime-pulse/10 border border-lime-pulse/30 px-2 py-0.5 rounded-pills">
-                              TARGET FOCUS
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <h3 className="text-lg sm:text-xl font-bold text-phosphor-white tracking-tight mb-2">
-                        {isCompleted && (
-                          <span className="text-lime-pulse mr-2">✓</span>
-                        )}
-                        {action.domain} → {action.topic}
-                      </h3>
-
-                      <div className="space-y-2 mb-5 max-w-3xl">
-                        <div className="flex items-center gap-3 text-[12px] font-mono text-sage-40">
-                          <span className="text-phosphor-white font-semibold">
-                            {action.completedQuestionsCount !== undefined && action.completedQuestionsCount > 0
-                              ? `${action.completedQuestionsCount} / ${action.targetCount} questions answered`
-                              : `${action.targetCount} targeted questions`}
-                          </span>
-                          <span>•</span>
-                          <span>Current accuracy: {action.accuracy}%</span>
-                        </div>
-
-                        <div>
-                          <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
-                            Why:
-                          </span>
-                          <p className="text-body-sm text-sage-60 leading-relaxed">
-                            {action.reason}
-                          </p>
-                        </div>
-
-                        <div>
-                          <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
-                            Evidence:
-                          </span>
-                          <p className="text-[12px] font-mono text-sage-40 leading-relaxed">
-                            {action.evidence}
-                          </p>
-                        </div>
-
-                        <div>
-                          <span className="text-[10px] font-mono uppercase text-sage-40 block mb-0.5">
-                            Action:
-                          </span>
-                          <p className="text-body-sm text-phosphor-white font-medium leading-relaxed">
-                            {action.action}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-circuit-border">
-                        {isCompleted ? (
-                          <div className="flex items-center gap-3">
-                            <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-buttons bg-lime-pulse/10 border border-lime-pulse/30 text-lime-pulse text-body-sm font-semibold font-mono">
-                              <span className="material-symbols-outlined text-[16px]">check</span>
-                              Completed Today
-                            </span>
-                            <Link
-                              href={action.ctaHref}
-                              className="text-sage-40 hover:text-phosphor-white text-[12px] font-mono underline transition-colors"
-                            >
-                              Practice again
-                            </Link>
-                          </div>
-                        ) : isPartiallyCompleted || isInProgress ? (
-                          <Link
-                            href={action.ctaHref}
-                            className="bg-lime-pulse text-void-black font-semibold font-mono text-body-sm px-6 py-2.5 rounded-buttons hover:bg-lime-pulse/90 transition-colors inline-flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
-                          >
-                            <span>CONTINUE</span>
-                            <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-                          </Link>
-                        ) : (
-                          <Link
-                            href={action.ctaHref}
-                            className="bg-lime-pulse text-void-black font-semibold font-mono text-body-sm px-6 py-2.5 rounded-buttons hover:bg-lime-pulse/90 transition-colors inline-flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
-                          >
-                            <span>
-                              {action.type === "REVIEW"
-                                ? "Review"
-                                : action.practiceTarget?.testId
-                                ? "Start Test"
-                                : "Practice"}
-                            </span>
-                            <span className="material-symbols-outlined text-[18px]">
-                              {action.type === "REVIEW" ? "sync" : "play_arrow"}
-                            </span>
-                          </Link>
-                        )}
-                        <span className="text-[12px] font-mono text-sage-40">
-                          Direct Practice: <span className="text-phosphor-white">{action.domain}</span>
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Resume-aligned actions (Phase 18 integration with the execution loop).
-                    These never replace measured preparation tasks: a RESUME action asks the
-                    student to add evidence they already have, and an ALIGN action is only
-                    raised when Preparation OS independently measured the weakness. */}
-                {dailyPlan.resumeActions && dailyPlan.resumeActions.length > 0 && (
-                  <div className="p-4 rounded-cards bg-carbon-veil border border-circuit-border space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-moss-70 font-semibold">
-                        RESUME-ALIGNED ACTIONS
-                      </span>
-                      <Link href="/resume" className="text-[11px] font-mono text-lime-pulse hover:underline">
-                        Open Resume Intelligence
-                      </Link>
-                    </div>
-                    {dailyPlan.resumeActions.slice(0, 3).map((action) => (
-                      <div
-                        key={action.id}
-                        className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-t border-circuit-border pt-2.5 first:border-t-0 first:pt-0"
-                      >
-                        <div className="min-w-0">
-                          <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded-pills font-bold uppercase tracking-wider ${
-                              action.type === "RESUME"
-                                ? "bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30"
-                                : "bg-amber-400/15 text-amber-300 border border-amber-400/30"
-                            }`}
-                          >
-                            {action.type === "RESUME" ? "RESUME" : "ALIGN"}
-                          </span>
-                          <p className="text-body-sm text-phosphor-white mt-1.5">{action.title}</p>
-                          <p className="text-[11px] font-mono text-sage-60 leading-relaxed mt-1">
-                            {action.reason}
-                          </p>
-                          <p className="text-[11px] font-mono text-sage-40 mt-1">
-                            Evidence: {action.evidence}
-                          </p>
-                        </div>
-                        {action.ctaHref && (
-                          <Link
-                            href={action.ctaHref}
-                            className="shrink-0 text-[11px] font-mono px-3 py-1.5 rounded-buttons border border-circuit-border bg-ground-iron text-moss-80 hover:text-phosphor-white transition-colors self-start"
-                          >
-                            {action.ctaLabel}
-                          </Link>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Preparation History (Optional View) */}
-                {dailyPlan.history && dailyPlan.history.length > 0 && (
-                  <div className="p-4 rounded-cards bg-carbon-veil border border-circuit-border space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-moss-70 font-semibold">
-                        PREPARATION HISTORY
-                      </span>
-                      <span className="text-[10px] font-mono text-sage-40">
-                        Verified Daily Completion
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 font-mono text-[12px]">
-                      {dailyPlan.history.map((h) => (
-                        <div
-                          key={h.date}
-                          className="p-2 rounded-cards bg-ground-iron border border-circuit-border flex flex-col items-center text-center"
-                        >
-                          <span className="text-sage-40 text-[10px]">
-                            {new Date(h.date + "T00:00:00").toLocaleDateString(undefined, {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </span>
-                          <span className="font-bold text-phosphor-white mt-0.5">
-                            {h.completedCount} / {h.totalCount}
-                          </span>
-                          <span className="text-[10px] text-lime-pulse">
-                            {h.percent}%
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </section>
-
-          {/* 4. Skill Overview Grid (All 7 Placement Domains) */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-title-md font-semibold text-phosphor-white">
-                  Subject Performance
-                </h2>
-                <p className="text-label-xs text-moss-70 mt-0.5">
-                  Performance across 7 placement domains
-                </p>
-              </div>
-              <Link
-                href="/analytics"
-                className="text-lime-pulse font-mono text-[12px] hover:underline transition-colors flex items-center gap-1 font-medium"
-              >
-                <span>Full Analytics</span>
-                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
-              {readiness.subjectScores.map((subj) => {
-                const skillLevel = getSkillLevel(subj.score);
-                const isTested = dataSufficiency.hasCompletedBaseline && subj.score > 0;
-
-                const displayName =
-                  subj.code === "APT"
-                    ? "Aptitude"
-                    : subj.code === "DBMS"
-                    ? "DBMS"
-                    : subj.code === "DSA"
-                    ? "DSA"
-                    : subj.code === "OS"
-                    ? "OS"
-                    : subj.code === "CN"
-                    ? "Networks"
-                    : subj.code === "OOP"
-                    ? "OOP"
-                    : subj.code === "SQL"
-                    ? "SQL"
-                    : subj.name;
-
-                return (
-                  <div
-                    key={subj.subjectId}
-                    className="bg-ground-iron border border-circuit-border rounded-cards p-4 flex min-w-0 flex-col justify-between gap-3 hover:border-moss-70/40 hover:bg-carbon-veil transition-all"
-                  >
-                    <div className="flex min-w-0 items-start justify-between gap-3">
-                      <span className="min-w-0 text-body-sm font-semibold text-phosphor-white" title={subj.name}>
-                        {displayName}
-                      </span>
-                    </div>
-
-                    <div>
-                      <div className="text-2xl font-bold font-mono text-phosphor-white tracking-tight">
-                        {isTested ? (
-                          `${subj.score}%`
-                        ) : (
-                          <span className="text-sage-40">—</span>
-                        )}
-                      </div>
-                      <span
-                        className={`mt-1 inline-flex text-[9px] font-mono px-1.5 py-0.5 rounded-pills font-semibold tracking-wider ${
-                          isTested
-                            ? `${skillLevel.bgClass} ${skillLevel.colorClass}`
-                            : "bg-carbon-veil text-sage-40 border border-circuit-border"
-                        }`}
-                      >
-                        {isTested ? subj.status : "NOT TESTED"}
-                      </span>
-                    </div>
-
-                    {/* Progress indicator */}
-                    <div className="w-full bg-[#1f2a33] h-1 rounded-pills overflow-hidden">
-                      <div
-                        className={`h-full transition-all duration-500 rounded-pills ${
-                          isTested ? "bg-lime-pulse" : "bg-transparent"
-                        }`}
-                        style={{
-                          width: isTested ? `${subj.score}%` : "0%",
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* 5. Critical Focus Areas (Weak Topics) */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-title-md font-semibold text-phosphor-white flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-rose-400">track_changes</span>
-                Critical Focus Areas
-              </h2>
-              {intelligence.weakAreas.length > 0 && (
-                <span className="text-[11px] font-mono text-moss-70">
-                  {intelligence.weakAreas.length}{" "}
-                  {intelligence.weakAreas.length === 1 ? "TOPIC" : "TOPICS"} DETECTED
-                </span>
-              )}
-            </div>
-
-            {intelligence.weakAreas.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                {intelligence.weakAreas.slice(0, 4).map((wa) => (
-                  <div
-                    key={wa.topicId}
-                    className="bg-ground-iron border border-circuit-border rounded-cards p-4 flex items-center justify-between hover:border-moss-70/40 transition-colors group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-10 h-10 rounded-cards flex items-center justify-center border ${
-                          wa.priority === "CRITICAL"
-                            ? "bg-rose-950/40 text-rose-400 border-rose-800/40"
-                            : "bg-amber-950/40 text-amber-300 border-amber-800/40"
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[20px]">
-                          {wa.subjectCode === "OS"
-                            ? "memory"
-                            : wa.subjectCode === "DSA"
-                            ? "account_tree"
-                            : wa.subjectCode === "SQL" || wa.subjectCode === "DBMS"
-                            ? "database"
-                            : "insights"}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-body-sm text-phosphor-white font-medium">
-                          {wa.topicName}
-                        </h3>
-                        <p className="text-label-xs text-sage-40 mt-0.5 font-mono">
-                          {wa.subjectCode} • {wa.accuracy}% accuracy ({wa.totalAttempts} questions)
-                          {wa.trend === "declining" && " • declining trend"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Link
-                      href="/tests"
-                      className="text-lime-pulse font-mono text-[12px] uppercase hover:bg-carbon-veil px-3 py-1.5 rounded-buttons transition-colors hidden sm:flex items-center gap-1 font-semibold"
-                    >
-                      <span>Practice Topic</span>
-                      <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-6 rounded-cards bg-ground-iron border border-circuit-border text-center flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-carbon-veil border border-circuit-border flex items-center justify-center text-lime-pulse mb-3">
-                  <span className="material-symbols-outlined text-[20px]">verified</span>
-                </div>
-                <h3 className="text-body-sm font-semibold text-phosphor-white mb-1">
-                  {dataSufficiency.hasCompletedBaseline ? "No Critical Weaknesses" : "Awaiting Evaluation"}
-                </h3>
-                <p className="text-label-xs text-sage-60 max-w-md leading-relaxed">
-                  {dataSufficiency.hasCompletedBaseline
-                    ? "Great performance! No topics are currently below the accuracy threshold. Keep taking mock tests to maintain consistency."
-                    : "Focus areas will appear here after your baseline assessment provides real performance data."}
-                </p>
-              </div>
-            )}
-          </section>
-        </div>
-
-        {/* Right Column (Span 4) */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Placement Target & Preparation Roadmap Card (Section 4 Hierarchy) */}
-          <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]">target</span>
-                Placement Target
-              </span>
-              <Link
-                href="/profile"
-                className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
-              >
-                {placementTargets.configured ? "Manage Targets" : "Set Targets"}
-              </Link>
-            </div>
-
-            {placementTargets.configured ? (
-              <div className="space-y-3.5">
-                {/* Primary Target Role & Company */}
-                <div>
-                  <h3 className="text-xl font-bold text-phosphor-white tracking-tight">
-                    {placementTargets.primaryRole?.name || "Target Role Not Selected"}
-                  </h3>
-                  {placementTargets.primaryCompany && (
-                    <p className="text-body-md font-semibold text-lime-pulse mt-0.5">
-                      {placementTargets.primaryCompany.name}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-sage-40 mt-1.5">
-                    <span>
-                      {placementTargets.targetCount}{" "}
-                      {placementTargets.targetCount === 1 ? "target company" : "target companies"}
+                  <div>
+                    <span className="inline-block px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+                      {prepFocus.category}
                     </span>
-                    <span>·</span>
-                    <span>
-                      {placementTargets.roleCount}{" "}
-                      {placementTargets.roleCount === 1 ? "target role" : "target roles"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Preparation Focus */}
-                <div className="pt-3 border-t border-circuit-border space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono uppercase text-moss-70 font-bold block">
-                      Preparation Focus
-                    </span>
-                    {prepFocus.score !== null && (
-                      <span className="text-[11px] font-mono font-bold text-rose-400">
-                        {prepFocus.score}%
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-body-sm font-bold text-phosphor-white">
-                    {prepFocus.label}
-                  </div>
-                  <p className="text-[12px] font-mono text-sage-60 leading-relaxed">
-                    {prepFocus.detail}
-                  </p>
-                </div>
-
-                {/* Highest-Priority Next Action */}
-                {dataSufficiency.hasCompletedBaseline && topAction && (
-                  <div className="pt-3 border-t border-circuit-border space-y-1">
-                    <span className="text-[10px] font-mono uppercase text-moss-70 font-bold block">
-                      Next Action
-                    </span>
-                    <p className="text-[12px] font-medium text-lime-pulse truncate">
-                      {topAction.title}
-                    </p>
-                  </div>
-                )}
-
-                {/* Target Strategy Alignment (Phase 16) */}
-                {dataSufficiency.hasCompletedBaseline && targetStrategy.readiness.targetScore !== null && (
-                  <div className="pt-3 border-t border-circuit-border space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase text-moss-70 font-bold block">
-                        Target Readiness
-                      </span>
-                      <span className="text-[10px] font-mono font-bold uppercase text-lime-pulse">
-                        {targetStrategy.readiness.targetLevel || "ON TRACK"}
-                      </span>
-                    </div>
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-2xl font-bold font-mono text-lime-pulse">
-                        {targetStrategy.readiness.targetScore}%
-                      </span>
-                      <span className="text-[11px] font-mono text-amber-300">
-                        {targetStrategy.gaps.length} {targetStrategy.gaps.length === 1 ? "priority gap" : "priority gaps"}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                  <Link
-                    href="/target"
-                    id="dashboard-view-target-strategy-btn"
-                    className="flex-1 bg-carbon-veil border border-circuit-border text-phosphor-white font-medium text-[12px] py-2.5 px-3 rounded-buttons hover:bg-circuit-border/40 transition-colors flex items-center justify-center gap-1.5 font-mono"
-                  >
-                    <span className="material-symbols-outlined text-[15px]">track_changes</span>
-                    <span>View Target Strategy</span>
-                  </Link>
-                  <Link
-                    href="/roadmap"
-                    id="dashboard-view-roadmap-btn"
-                    className="bg-lime-pulse text-void-black font-semibold text-[12px] py-2.5 px-4 rounded-buttons hover:bg-lime-pulse/90 transition-colors flex items-center justify-center gap-1.5 font-mono"
-                  >
-                    <span>View Roadmap</span>
-                    <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3 py-1">
-                <p className="text-body-sm text-sage-40 font-mono text-[12px]">
-                  No target role or company selected. Set placement targets to focus your preparation roadmap.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Link
-                    href="/profile"
-                    className="flex-1 py-2 px-3 rounded-buttons border border-lime-pulse/40 bg-lime-pulse/10 hover:bg-lime-pulse/20 text-lime-pulse text-[12px] font-medium font-mono transition-colors inline-flex items-center justify-center gap-1.5"
-                  >
-                    <span className="material-symbols-outlined text-[15px]">add_circle</span>
-                    <span>Set Targets</span>
-                  </Link>
-                  <Link
-                    href="/target"
-                    className="py-2 px-3 rounded-buttons border border-circuit-border bg-carbon-veil hover:bg-circuit-border/40 text-sage-60 text-[12px] font-mono transition-colors inline-flex items-center justify-center gap-1"
-                  >
-                    <span>Strategy</span>
-                    <span className="material-symbols-outlined text-[15px]">track_changes</span>
-                  </Link>
-                  <Link
-                    href="/roadmap"
-                    className="py-2 px-3 rounded-buttons border border-circuit-border bg-carbon-veil hover:bg-circuit-border/40 text-phosphor-white text-[12px] font-mono transition-colors inline-flex items-center justify-center gap-1"
-                  >
-                    <span>View Roadmap</span>
-                    <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* Resume Health Card (Phase 18) — compact by design; ATS compatibility is
-              reported as its own dimension and never folded into readiness math. */}
-          {resumeHealth && <ResumeHealthCard health={resumeHealth} />}
-
-          {/* Application Pipeline Card (Phase 19) — compact by design; only counts and
-              the next real deadline. Full history lives in /applications. */}
-          {applicationCard && applicationCard.show && (
-            <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">work</span>
-                  Application Pipeline
-                </span>
-                <Link
-                  href={applicationCard.ctaHref}
-                  className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
-                >
-                  {applicationCard.ctaLabel}
-                </Link>
-              </div>
-
-              <p className="text-headline-md font-bold text-phosphor-white tracking-tight">
-                {applicationCard.activeApplications}{" "}
-                {applicationCard.activeApplications === 1 ? "Active Application" : "Active Applications"}
-              </p>
-
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Interviews</p>
-                  <p className="text-body-md font-bold text-phosphor-white">{applicationCard.interviews}</p>
-                </div>
-                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Assessments</p>
-                  <p className="text-body-md font-bold text-phosphor-white">{applicationCard.assessments}</p>
-                </div>
-                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Offers</p>
-                  <p className="text-body-md font-bold text-phosphor-white">{applicationCard.offers}</p>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-circuit-border flex items-center justify-between">
-                <span className="text-[11px] font-mono text-sage-40">
-                  {applicationCard.nextDeadline
-                    ? `Next deadline: ${applicationCard.nextDeadline.companyName} — ${new Date(applicationCard.nextDeadline.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
-                    : "No upcoming deadlines"}
-                </span>
-                <Link
-                  href={applicationCard.ctaHref}
-                  className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-lime-pulse hover:underline"
-                >
-                  <span>Track</span>
-                  <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                </Link>
-              </div>
-            </section>
-          )}
-
-          {/* Placement Outcomes Card (Phase 20) — compact, descriptive only.
-              Counts and the most recent recorded outcome; no success score. */}
-          {outcomeCard && outcomeCard.show && (
-            <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">insights</span>
-                  Placement Outcomes
-                </span>
-                <Link
-                  href={outcomeCard.ctaHref}
-                  className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
-                >
-                  {outcomeCard.ctaLabel}
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Applications</p>
-                  <p className="text-body-md font-bold text-phosphor-white">{outcomeCard.applications}</p>
-                </div>
-                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Interviews</p>
-                  <p className="text-body-md font-bold text-phosphor-white">{outcomeCard.interviews}</p>
-                </div>
-                <div className="rounded-cards bg-carbon-veil border border-circuit-border px-2 py-1.5">
-                  <p className="text-[9px] font-mono uppercase tracking-wide text-moss-70 font-bold">Offers</p>
-                  <p className="text-body-md font-bold text-phosphor-white">{outcomeCard.offers}</p>
-                </div>
-              </div>
-
-              {outcomeCard.recentOutcome && (
-                <div className="pt-3 border-t border-circuit-border">
-                  <p className="text-[10px] font-mono uppercase text-moss-70 font-bold">Recent outcome</p>
-                  <p className="text-body-sm font-semibold text-phosphor-white mt-1">
-                    {outcomeCard.recentOutcome.companyName}
-                  </p>
-                  <p className="text-[11px] font-mono text-sage-40">{outcomeCard.recentOutcome.label}</p>
-                  {outcomeCard.observedFocus.length > 0 && (
-                    <p className="text-[11px] text-sage-60 mt-1.5 font-mono">
-                      Observed focus: {outcomeCard.observedFocus.join(" · ")}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              <p className="text-[10px] text-sage-40 font-mono">{outcomeCard.disclaimer}</p>
-            </section>
-          )}
-
-          {/* Placement Simulation Card (Phase 17) */}
-          <section className="bg-ground-iron border border-circuit-border rounded-cards p-5 sm:p-6 space-y-4 relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]">terminal</span>
-                Placement Simulation
-              </span>
-              <Link
-                href="/simulation"
-                className="text-moss-80 hover:text-phosphor-white text-[11px] font-mono font-medium underline transition-colors"
-              >
-                {latestSimulation ? "Simulation Hub" : "Launch"}
-              </Link>
-            </div>
-
-            {latestSimulation ? (
-              <div className="space-y-3.5">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-body-md font-bold text-phosphor-white tracking-tight">
-                      {latestSimulation.companyName ? `${latestSimulation.companyName} — ` : ""}{latestSimulation.roleName}
+                    <h3 className="text-sm font-bold text-phosphor-white leading-tight">
+                      {prepFocus.label}
                     </h3>
-                    <span
-                      className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-pills border ${
-                        latestSimulation.status === "completed"
-                          ? "bg-lime-pulse/10 border-lime-pulse/30 text-lime-pulse"
-                          : "bg-carbon-veil border-circuit-border text-moss-80"
-                      }`}
-                    >
-                      {latestSimulation.status === "completed" ? "COMPLETED" : `ROUND ${latestSimulation.currentRoundOrder}/5`}
-                    </span>
+                    <p className="text-[11px] text-sage-40 mt-1">
+                      {prepFocus.detail}
+                    </p>
                   </div>
-                  <p className="text-[12px] font-mono text-sage-40 mt-0.5">
-                    {latestSimulation.status === "completed"
-                      ? `Simulation Readiness: ${latestSimulation.overallReadinessScore}%`
-                      : "Simulation in progress"}
-                  </p>
                 </div>
 
-                <div className="pt-3 border-t border-circuit-border flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-sage-40">
-                    {latestSimulation.status === "completed"
-                      ? `Verdict: ${latestSimulation.readinessLevel || "Evaluated"}`
-                      : `Next: Round ${latestSimulation.currentRoundOrder}`}
-                  </span>
-                  <Link
-                    href={`/simulation/${latestSimulation.id}`}
-                    className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-lime-pulse hover:underline"
-                  >
-                    <span>{latestSimulation.status === "completed" ? "View Report" : "Resume"}</span>
-                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3 py-1">
-                <p className="text-body-sm text-sage-40 font-mono text-[12px]">
-                  Simulate your target company&apos;s full 5-round hiring process: Screening, Coding, Debugging, AI Tech &amp; HR.
-                </p>
+                {/* Start Practice Pill Button */}
                 <Link
-                  href="/simulation"
-                  className="w-full py-2 px-3 rounded-buttons border border-lime-pulse/40 bg-lime-pulse/10 hover:bg-lime-pulse/20 text-lime-pulse text-[12px] font-medium font-mono transition-colors inline-flex items-center justify-center gap-1.5"
+                  href={topAction?.route || (baselineTestId ? `/tests` : "/tests")}
+                  className="px-4 py-2 rounded-full bg-lime-pulse text-void-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(127,238,100,0.2)] hover:bg-mint-frost transition-all shrink-0"
                 >
-                  <span className="material-symbols-outlined text-[15px]">play_circle</span>
-                  <span>Start Placement Simulation</span>
+                  <span>Start Practice</span>
+                  <span className="text-sm leading-none">→</span>
                 </Link>
               </div>
-            )}
-          </section>
 
-          {/* Quick Actions */}
-          <section className="bg-ground-iron border border-circuit-border rounded-cards p-6">
-            <h2 className="text-title-md font-semibold text-phosphor-white mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-lime-pulse">bolt</span>
-              Quick Actions
-            </h2>
-            <div className="flex flex-col gap-3">
-              {/* PRIMARY ACTION */}
-              <Link
-                href="/simulation"
-                className="w-full h-11 bg-lime-pulse text-void-black font-semibold font-mono text-body-sm px-4 rounded-buttons hover:bg-lime-pulse/90 transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-lime-pulse/50"
-              >
-                <span className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px]">terminal</span>
-                  Run Placement Simulation
-                </span>
-                <span className="material-symbols-outlined text-[18px] opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  arrow_forward
-                </span>
-              </Link>
-
-              {/* SECONDARY ACTION 1 */}
-              <Link
-                href="/tests"
-                className="w-full h-11 bg-carbon-veil border border-circuit-border text-phosphor-white hover:bg-circuit-border/40 font-medium font-mono text-body-sm px-4 rounded-buttons transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-circuit-border"
-              >
-                <span className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px] text-moss-70 group-hover:text-phosphor-white transition-colors">
+              {/* Metadata pills row */}
+              <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-[#3f4a38]/40 text-[10px] text-sage-40">
+                <span className="px-2.5 py-1 rounded-full bg-[#1d201f] border border-[#3f4a38]/40 flex items-center gap-1.5 font-mono">
+                  <span className="material-symbols-outlined text-[13px] text-deep-fern">
                     quiz
                   </span>
-                  Take Mock Test
+                  10 questions
                 </span>
-                <span className="material-symbols-outlined text-[18px] opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  arrow_forward
+                <span className="px-2.5 py-1 rounded-full bg-[#1d201f] border border-[#3f4a38]/40 flex items-center gap-1.5 font-mono">
+                  <span className="material-symbols-outlined text-[13px] text-deep-fern">
+                    schedule
+                  </span>
+                  ~25 mins
                 </span>
-              </Link>
+                <span className="px-2.5 py-1 rounded-full bg-[#1d201f] border border-[#3f4a38]/40 flex items-center gap-1.5 font-mono">
+                  <span className="material-symbols-outlined text-[13px] text-deep-fern">
+                    bolt
+                  </span>
+                  Based on your performance
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-[#1d201f] border border-[#3f4a38]/40 flex items-center gap-1.5 font-mono">
+                  <span className="material-symbols-outlined text-[13px] text-deep-fern">
+                    psychology
+                  </span>
+                  Adaptive
+                </span>
+              </div>
+            </div>
+          </div>
 
-              {/* SECONDARY ACTION 2 */}
+          {/* Focus Areas Table Card */}
+          <div className="bg-[#191c1b] rounded-2xl p-5 border border-[#3f4a38]/40 shadow-md">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px] text-sage-40">
+                  track_changes
+                </span>
+                <h2 className="text-sm font-bold text-phosphor-white">Focus Areas</h2>
+              </div>
               <Link
                 href="/analytics"
-                className="w-full h-11 bg-carbon-veil border border-circuit-border text-phosphor-white hover:bg-circuit-border/40 font-medium font-mono text-body-sm px-4 rounded-buttons transition-all flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-circuit-border"
+                className="text-xs text-sage-40 hover:text-lime-pulse flex items-center gap-1 transition-colors"
               >
-                <span className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[20px] text-moss-70 group-hover:text-phosphor-white transition-colors">
-                    insights
-                  </span>
-                  View Intelligence & Analytics
-                </span>
-                <span className="material-symbols-outlined text-[18px] opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                  arrow_forward
-                </span>
+                View All <span className="text-sm leading-none">→</span>
               </Link>
             </div>
-          </section>
+            <p className="text-[11px] text-sage-40 mb-4">
+              Topics to focus on based on your performance and targets.
+            </p>
 
-          {/* Test Discipline & Optimization Signals (if issues exist) */}
-          {dataSufficiency.hasCompletedBaseline &&
-            (intelligence.discipline.hasNegativeMarkingIssue ||
-              intelligence.discipline.hasUnansweredIssue) && (
-              <section className="bg-ground-iron border border-amber-500/30 rounded-cards p-5">
-                <h3 className="text-body-sm font-semibold text-amber-300 mb-3 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px]">warning</span>
-                  Exam Strategy Optimization
-                </h3>
-                <div className="space-y-2.5 text-label-xs font-mono">
-                  {intelligence.discipline.hasNegativeMarkingIssue && (
-                    <div className="p-2.5 rounded-cards bg-carbon-veil border border-circuit-border text-sage-60 leading-relaxed">
-                      <span className="text-phosphor-white font-bold block mb-0.5">
-                        Negative Marking Penalty
-                      </span>
-                      Losing ~{intelligence.discipline.negativeMarkingLossAvg.toFixed(1)} marks per test to incorrect answers. Reduce guessing.
-                    </div>
-                  )}
-                  {intelligence.discipline.hasUnansweredIssue && (
-                    <div className="p-2.5 rounded-cards bg-carbon-veil border border-circuit-border text-sage-60 leading-relaxed">
-                      <span className="text-phosphor-white font-bold block mb-0.5">
-                        Unanswered Questions
-                      </span>
-                      {intelligence.discipline.unansweredRate}% of questions left blank ({intelligence.discipline.unansweredCount} questions). Improve test pacing.
-                    </div>
-                  )}
-                </div>
-              </section>
-            )}
-
-          {/* Recent Activity Timeline */}
-          <section className="bg-ground-iron border border-circuit-border rounded-cards p-6 flex-1">
-            <h2 className="text-title-md font-semibold text-phosphor-white mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-moss-70">schedule</span>
-              Recent Activity
-            </h2>
-
-            {recentActivity.length > 0 ? (
-              <div className="relative border-l border-circuit-border ml-3 space-y-5 pb-2">
-                {recentActivity.map((act) => {
-                  const score = act.score ?? 0;
-                  const dotColor =
-                    score >= 75
-                      ? "bg-lime-pulse"
-                      : score >= 50
-                      ? "bg-amber-300"
-                      : "bg-rose-400";
-
-                  return (
-                    <div key={act.id} className="relative pl-5">
-                      <div
-                        className={`absolute w-2.5 h-2.5 ${dotColor} rounded-full -left-[5.5px] top-1.5 ring-4 ring-ground-iron`}
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-[11px] text-sage-40 font-mono mb-0.5">
-                          {act.submittedAt ? formatDateTime(act.submittedAt) : "Recently"}
-                        </span>
-                        <Link
-                          href={`/tests/${act.testId}/result?attemptId=${act.id}`}
-                          className="text-body-sm text-phosphor-white hover:text-lime-pulse font-medium transition-colors"
+            {/* Table Container */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="text-[10px] font-mono text-sage-40 uppercase tracking-wider border-b border-[#3f4a38]/40">
+                    <th className="pb-2 font-medium">Topic</th>
+                    <th className="pb-2 font-medium">Domain</th>
+                    <th className="pb-2 font-medium">Accuracy</th>
+                    <th className="pb-2 font-medium">Trend</th>
+                    <th className="pb-2 font-medium text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#3f4a38]/20">
+                  {intelligence.weakAreas.length > 0 ? (
+                    intelligence.weakAreas.slice(0, 4).map((wa) => (
+                      <tr
+                        key={wa.topicId}
+                        className="group hover:bg-[#282b29]/40 transition-colors"
+                      >
+                        <td className="py-3 pr-2 font-medium text-phosphor-white/90 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[16px] text-deep-fern">
+                            description
+                          </span>
+                          <span className="group-hover:text-phosphor-white truncate max-w-[180px]">
+                            {wa.topicName}
+                          </span>
+                        </td>
+                        <td className="py-3 px-2 text-sage-40 text-[11px] font-mono">
+                          {wa.subjectCode}
+                        </td>
+                        <td className="py-3 px-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-phosphor-white font-mono text-[11px]">
+                              {wa.accuracy}%
+                            </span>
+                            <div className="w-14 h-1.5 bg-[#0c0f0e] rounded-full overflow-hidden">
+                              <div
+                                className="bg-amber-400 h-full rounded-full"
+                                style={{ width: `${wa.accuracy}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-2 text-[11px]">
+                          {wa.trend === "improving" ? (
+                            <span className="text-lime-pulse font-medium">
+                              ↗ Improving
+                            </span>
+                          ) : wa.trend === "declining" ? (
+                            <span className="text-rose-400 font-medium">
+                              ↘ Declining
+                            </span>
+                          ) : (
+                            <span className="text-sage-40 font-medium">
+                              — Stable
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 pl-2 text-right">
+                          <Link
+                            href="/tests"
+                            className="px-3 py-1 rounded-full text-[11px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-colors inline-block"
+                          >
+                            Practice
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  ) : readiness.subjectScores.filter((s) => s.score > 0).length > 0 ? (
+                    readiness.subjectScores
+                      .filter((s) => s.score > 0)
+                      .slice(0, 4)
+                      .map((subj) => (
+                        <tr
+                          key={subj.subjectId}
+                          className="group hover:bg-[#282b29]/40 transition-colors"
                         >
-                          {act.testTitle}
-                        </Link>
-                        <span className="text-[12px] font-mono mt-1 text-sage-60">
-                          Score:{" "}
-                          <span className={getScoreColor(score)}>
-                            {score}/100
-                          </span>{" "}
-                          • {act.accuracy}% Acc
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="p-6 rounded-cards bg-carbon-veil border border-circuit-border text-center flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-ground-iron border border-circuit-border flex items-center justify-center text-moss-70 mb-3">
-                  <span className="material-symbols-outlined text-[20px]">history</span>
-                </div>
-                <h3 className="text-body-sm font-semibold text-phosphor-white mb-1">
-                  No activity yet
-                </h3>
-                <p className="text-label-xs text-sage-60 max-w-xs leading-relaxed font-mono">
-                  Complete your baseline assessment to start building your placement profile and test history.
-                </p>
-              </div>
-            )}
-          </section>
+                          <td className="py-3 pr-2 font-medium text-phosphor-white/90 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[16px] text-deep-fern">
+                              code
+                            </span>
+                            <span className="group-hover:text-phosphor-white">
+                              {subj.name}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2 text-sage-40 text-[11px] font-mono">
+                            {subj.code}
+                          </td>
+                          <td className="py-3 px-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-phosphor-white font-mono text-[11px]">
+                                {subj.score}%
+                              </span>
+                              <div className="w-14 h-1.5 bg-[#0c0f0e] rounded-full overflow-hidden">
+                                <div
+                                  className="bg-lime-pulse h-full rounded-full"
+                                  style={{ width: `${subj.score}%` }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-2 text-lime-pulse font-medium text-[11px]">
+                            ↗ Calibrated
+                          </td>
+                          <td className="py-3 pl-2 text-right">
+                            <Link
+                              href="/tests"
+                              className="px-3 py-1 rounded-full text-[11px] font-semibold text-lime-pulse bg-lime-pulse/10 border border-lime-pulse/30 hover:bg-lime-pulse/20 transition-colors inline-block"
+                            >
+                              Review
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="py-6 text-center text-sage-40 text-[12px]"
+                      >
+                        Complete your baseline assessment to reveal focus topics.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Phase 23 Intelligence 2.0 Engine Widget */}
+          <PlacementIntelligence2Widget intelligence={placementIntelligence.intelligence2 ?? null} />
         </div>
-      </div>
+
+        {/* Right Column (5 cols): Recent Activity + Quick Actions + Target Summary */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Recent Activity Card */}
+          <ActivityTimeline
+            title="Recent Activity"
+            items={timelineItems}
+            viewAllHref="/analytics"
+            emptyMessage="No tests completed yet. Take a test to build your history."
+          />
+
+          {/* Quick Actions Grid */}
+          <QuickActionsGrid actions={quickActions} />
+
+          {/* Target Strategy Alignment Card */}
+          {placementTargets.configured && (
+            <div className="bg-[#191c1b] rounded-2xl p-5 border border-[#3f4a38]/40 shadow-md space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-lime-pulse font-bold flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px]">radar</span>
+                  Primary Target
+                </span>
+                <Link
+                  href="/target"
+                  className="text-sage-40 hover:text-lime-pulse text-[11px] font-mono transition-colors"
+                >
+                  Manage →
+                </Link>
+              </div>
+
+              <div>
+                <h3 className="text-base font-bold text-phosphor-white tracking-tight">
+                  {placementTargets.primaryRole?.name || "Software Engineer"}
+                </h3>
+                {placementTargets.primaryCompany && (
+                  <p className="text-xs font-semibold text-lime-pulse mt-0.5">
+                    {placementTargets.primaryCompany.name}
+                  </p>
+                )}
+              </div>
+
+              {targetStrategy.readiness.targetScore !== null && (
+                <div className="pt-2.5 border-t border-[#3f4a38]/30 flex items-center justify-between">
+                  <span className="text-[11px] text-sage-40">Target Fit Score</span>
+                  <span className="text-sm font-mono font-bold text-lime-pulse">
+                    {targetStrategy.readiness.targetScore}%
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

@@ -56,10 +56,10 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
   };
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
+    <div className="bg-card-standard border border-neutral-border rounded-cards p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-label-xs text-text-muted font-mono uppercase">
-          <span className="material-symbols-outlined text-[18px]">badge</span>
+        <div className="flex items-center gap-2 text-label-xs text-text-secondary font-mono uppercase font-medium">
+          <span className="material-symbols-outlined text-[18px] text-primary-green">badge</span>
           Personal Info
         </div>
         <button
@@ -67,7 +67,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
             setIsEditing(!isEditing);
             setErrorMsg(null);
           }}
-          className="text-label-xs font-mono text-primary-text hover:text-primary transition-colors cursor-pointer"
+          className="text-label-xs font-mono text-primary-green hover:text-bright-green transition-colors cursor-pointer font-medium"
         >
           {isEditing ? "Cancel" : "Edit Details"}
         </button>
@@ -76,7 +76,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
       {isEditing ? (
         <form onSubmit={handleSave} className="space-y-3 pt-2 text-label-xs font-mono">
           {errorMsg && (
-            <div className="p-3 bg-error/10 border border-error/20 rounded text-error text-label-xs font-mono">
+            <div className="p-3 bg-error/10 border border-error/30 rounded text-error text-label-xs font-mono">
               {errorMsg}
             </div>
           )}
@@ -88,7 +88,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className="w-full rounded border border-border bg-base px-3 py-2 text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-text-primary outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30 font-mono text-body-sm"
             />
           </div>
 
@@ -99,7 +99,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
               type="text"
               value={formData.college}
               onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-              className="w-full rounded border border-border bg-base px-3 py-2 text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-text-primary outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30 font-mono text-body-sm"
             />
           </div>
 
@@ -110,7 +110,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
               type="text"
               value={formData.branch}
               onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
-              className="w-full rounded border border-border bg-base px-3 py-2 text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-text-primary outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30 font-mono text-body-sm"
             />
           </div>
 
@@ -125,7 +125,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
                   graduationYear: e.target.value,
                 })
               }
-              className="w-full rounded border border-border bg-base px-3 py-2 text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-text-primary outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30 font-mono text-body-sm"
             />
           </div>
 
@@ -139,7 +139,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
               onChange={(e) =>
                 setFormData({ ...formData, preferredLanguage: e.target.value })
               }
-              className="w-full rounded border border-border bg-base px-3 py-2 text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-inputs border border-neutral-border bg-input-bg px-3 py-2 text-text-primary outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30 font-mono text-body-sm"
             >
               <option value="">Not set</option>
               <option value="C++">C++</option>
@@ -152,26 +152,26 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-3 w-full rounded bg-primary py-2 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:opacity-60"
+            className="mt-3 w-full rounded-buttons bg-primary-green py-2.5 text-body-sm font-semibold text-void-black transition-colors hover:bg-bright-green focus:outline-none focus:ring-1 focus:ring-bright-green disabled:opacity-50 cursor-pointer shadow-none"
           >
             {loading ? "Saving..." : "Save Configuration"}
           </button>
         </form>
       ) : (
         <div className="space-y-3 font-mono text-label-xs">
-          <div className="p-2.5 rounded bg-base border border-border">
+          <div className="p-2.5 rounded-md bg-card-elevated border border-neutral-border">
             <span className="text-text-muted uppercase block text-[10px]">Email</span>
             <span className="text-text-primary">{initialProfile.email}</span>
           </div>
 
-          <div className="p-2.5 rounded bg-base border border-border">
+          <div className="p-2.5 rounded-md bg-card-elevated border border-neutral-border">
             <span className="text-text-muted uppercase block text-[10px]">College</span>
             <span className={initialProfile.college ? "text-text-primary" : "text-text-muted"}>
               {initialProfile.college || "Not set"}
             </span>
           </div>
 
-          <div className="p-2.5 rounded bg-base border border-border">
+          <div className="p-2.5 rounded-md bg-card-elevated border border-neutral-border">
             <span className="text-text-muted uppercase block text-[10px]">Branch</span>
             <span className="text-text-primary">
               {initialProfile.branch || "Not set"}

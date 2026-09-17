@@ -72,7 +72,7 @@ export function StartTestButton({
           !canStartOrResume ||
           (requireAcknowledgement && !acknowledged && !hasInProgressAttempt)
         }
-        className="inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-body-sm font-semibold text-text-inverse shadow-md shadow-primary/10 transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex h-12 items-center gap-2 rounded-buttons bg-primary-green px-6 text-body-sm font-semibold text-void-black shadow-none transition-colors hover:bg-bright-green focus:outline-none focus:ring-1 focus:ring-bright-green disabled:cursor-not-allowed disabled:opacity-50"
       >
         <span className="material-symbols-outlined text-[20px]">
           {isScheduled ? "schedule" : hasInProgressAttempt ? "play_arrow" : isClosed ? "lock" : "play_arrow"}

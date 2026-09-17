@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { getPublishedTests } from "@/server/tests";
 import { TestCatalog } from "@/components/tests/test-catalog";
+import Link from "next/link";
 
 export default async function TestCatalogPage() {
   const session = await auth();
@@ -10,16 +11,43 @@ export default async function TestCatalogPage() {
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Header */}
-      <div>
-        <h2 className="text-headline-lg font-bold text-text-primary">
-          Placement Tests
-        </h2>
-        <p className="text-body-md text-text-secondary mt-1">
-          Practice under realistic placement conditions.
-        </p>
+      {/* Top Header & Strategic Breadcrumb */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div className="flex flex-col max-w-3xl">
+          <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono mb-1">
+            <span className="font-semibold text-lime-pulse">NEXORA</span>
+            <span className="text-border">/</span>
+            <span>PREPARATION</span>
+            <span className="text-border">/</span>
+            <span className="text-white">TESTS &amp; PRACTICE</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-display">
+            Diagnostic Tests &amp; Adaptive Practice
+          </h1>
+          <p className="text-sm text-text-secondary mt-1 leading-relaxed">
+            Calibrated question banks, algorithmic pressure tests, and targeted weak-spot drills synchronized with Tier-1 placement rubrics.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 self-start lg:self-end">
+          <Link
+            href="/analytics"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high text-text-primary text-xs font-semibold transition-all border border-outline-variant/40 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[16px]">history</span>
+            <span>History &amp; Logs</span>
+          </Link>
+          <Link
+            href="/roadmap"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 active:scale-95 transition-all shadow-md"
+          >
+            <span className="material-symbols-outlined text-[16px]">alt_route</span>
+            <span>View Roadmap</span>
+          </Link>
+        </div>
       </div>
 
+      {/* Catalog Component with Metrics, Search, Filters, and Cards */}
       <TestCatalog tests={allTests} />
     </div>
   );

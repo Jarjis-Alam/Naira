@@ -449,7 +449,7 @@ export function SimulationRunner({
           {/* Round Specific Workspaces */}
           {activeRound.roundType === "screening" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-surface-high/70 border border-border space-y-2">
+              <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
                 <span className="text-body-sm font-bold text-text-primary block">
                   Aptitude & CS Fundamentals Screening Module
                 </span>
@@ -462,7 +462,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(1)}
                   disabled={submitting}
-                  className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
                 >
                   <span>{submitting ? "Submitting Screening..." : "Submit Screening Answers"}</span>
                   <span className="material-symbols-outlined text-[18px]">send</span>
@@ -473,19 +473,19 @@ export function SimulationRunner({
 
           {activeRound.roundType === "coding" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-surface-high/70 border border-border space-y-2">
+              <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-body-sm font-bold text-text-primary">
                     Problem 1: Target Sum Indices (Arrays & Hash Maps)
                   </span>
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-secondary/15 text-secondary font-bold">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-primary-green/15 text-primary-green font-bold">
                     Easy
                   </span>
                 </div>
                 <p className="text-body-sm text-text-secondary leading-relaxed">
                   Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
                 </p>
-                <div className="p-2.5 rounded bg-surface border border-border/80 font-mono text-[12px] text-text-muted">
+                <div className="p-2.5 rounded bg-input-bg border border-neutral-border/80 font-mono text-[12px] text-text-muted">
                   Input: nums = [2, 7, 11, 15], target = 9 → Output: [0, 1]
                 </div>
               </div>
@@ -498,7 +498,7 @@ export function SimulationRunner({
                   value={codeAnswer}
                   onChange={(e) => setCodeAnswer(e.target.value)}
                   rows={8}
-                  className="w-full rounded-xl bg-surface-high border border-border p-4 font-mono text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-inputs bg-input-bg border border-neutral-border p-4 font-mono text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
                 />
               </div>
 
@@ -507,7 +507,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(2)}
                   disabled={submitting}
-                  className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
                 >
                   <span>{submitting ? "Running Test Cases..." : "Run Test Cases & Submit Round"}</span>
                   <span className="material-symbols-outlined text-[18px]">play_arrow</span>
@@ -518,7 +518,7 @@ export function SimulationRunner({
 
           {activeRound.roundType === "debugging" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-surface-high/70 border border-border space-y-2">
+              <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-body-sm font-bold text-text-primary">
                     Challenge 1: Binary Search Boundary & Loop Bug
@@ -540,7 +540,7 @@ export function SimulationRunner({
                   value={debugAnswer}
                   onChange={(e) => setDebugAnswer(e.target.value)}
                   rows={8}
-                  className="w-full rounded-xl bg-surface-high border border-border p-4 font-mono text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-inputs bg-input-bg border border-neutral-border p-4 font-mono text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
                 />
               </div>
 
@@ -549,7 +549,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(3)}
                   disabled={submitting}
-                  className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
                 >
                   <span>{submitting ? "Verifying Bug Fix..." : "Submit Verified Fix"}</span>
                   <span className="material-symbols-outlined text-[18px]">build</span>
@@ -560,8 +560,8 @@ export function SimulationRunner({
 
           {activeRound.roundType === "tech_interview" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-surface-high/70 border border-border space-y-2">
-                <span className="text-[10px] font-mono uppercase text-primary font-bold block">
+              <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
+                <span className="text-[10px] font-mono uppercase text-primary-green font-bold block">
                   INTERVIEWER ARCHITECTURE PROMPT
                 </span>
                 <p className="text-body-sm text-text-primary font-semibold leading-relaxed">
@@ -577,12 +577,12 @@ export function SimulationRunner({
                   value={techAnswer}
                   onChange={(e) => setTechAnswer(e.target.value)}
                   rows={4}
-                  className="w-full rounded-xl bg-surface-high border border-border p-4 font-mono text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-inputs bg-input-bg border border-neutral-border p-4 font-mono text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
                 />
               </div>
 
-              <div className="p-4 rounded-xl bg-surface-high/70 border border-border space-y-2">
-                <span className="text-[10px] font-mono uppercase text-tertiary font-bold block">
+              <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
+                <span className="text-[10px] font-mono uppercase text-bright-green font-bold block">
                   FOLLOW-UP QUESTION
                 </span>
                 <p className="text-body-sm text-text-primary font-semibold leading-relaxed">
@@ -598,7 +598,7 @@ export function SimulationRunner({
                   value={techFollowUp}
                   onChange={(e) => setTechFollowUp(e.target.value)}
                   rows={4}
-                  className="w-full rounded-xl bg-surface-high border border-border p-4 font-mono text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-inputs bg-input-bg border border-neutral-border p-4 font-mono text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
                 />
               </div>
 
@@ -607,7 +607,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(4)}
                   disabled={submitting}
-                  className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
                 >
                   <span>{submitting ? "Evaluating Technical Depth..." : "Submit Technical Interview"}</span>
                   <span className="material-symbols-outlined text-[18px]">record_voice_over</span>
@@ -618,8 +618,8 @@ export function SimulationRunner({
 
           {activeRound.roundType === "hr_interview" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-surface-high/70 border border-border space-y-2">
-                <span className="text-[10px] font-mono uppercase text-primary font-bold block">
+              <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
+                <span className="text-[10px] font-mono uppercase text-primary-green font-bold block">
                   HR BEHAVIORAL PROMPT (STAR METHOD)
                 </span>
                 <p className="text-body-sm text-text-primary font-semibold leading-relaxed">
@@ -635,7 +635,7 @@ export function SimulationRunner({
                   value={hrAnswer}
                   onChange={(e) => setHrAnswer(e.target.value)}
                   rows={6}
-                  className="w-full rounded-xl bg-surface-high border border-border p-4 font-mono text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full rounded-inputs bg-input-bg border border-neutral-border p-4 font-mono text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
                 />
               </div>
 
@@ -644,7 +644,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(5)}
                   disabled={submitting}
-                  className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
                 >
                   <span>{submitting ? "Finalizing Simulation..." : "Submit Final HR Interview & Generate Report"}</span>
                   <span className="material-symbols-outlined text-[18px]">check_circle</span>

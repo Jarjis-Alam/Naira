@@ -68,7 +68,7 @@ export function StartSimulationForm({
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             required
-            className="w-full rounded-xl bg-surface-high border border-border px-4 py-2.5 text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-inputs bg-input-bg border border-neutral-border px-4 py-2.5 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
             placeholder="e.g. Microsoft, Google"
           />
         </div>
@@ -82,7 +82,7 @@ export function StartSimulationForm({
             value={roleName}
             onChange={(e) => setRoleName(e.target.value)}
             required
-            className="w-full rounded-xl bg-surface-high border border-border px-4 py-2.5 text-body-sm text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-inputs bg-input-bg border border-neutral-border px-4 py-2.5 text-body-sm text-text-primary focus:border-primary-green focus:outline-hidden focus:ring-1 focus:ring-primary-green/30"
             placeholder="e.g. Software Engineer"
           />
         </div>
@@ -92,7 +92,7 @@ export function StartSimulationForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 shadow-sm disabled:opacity-50"
+          className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
         >
           <span>{isSubmitting ? "Initializing Rounds..." : "Start Placement Simulation"}</span>
           <span className="material-symbols-outlined text-[18px]">play_arrow</span>

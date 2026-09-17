@@ -18,11 +18,11 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
   const readinessOffset = readinessCirc - (readinessVal / 100) * readinessCirc;
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-primary/20 bg-surface p-5 sm:p-6">
+    <div className="flex flex-col justify-between rounded-cards border border-neutral-border bg-card-standard p-5 sm:p-6">
       <div>
         <h3 className="text-title-md font-semibold text-text-primary mb-6 flex items-center justify-between">
           Placement Readiness
-          <span className="material-symbols-outlined text-text-muted text-[18px]">
+          <span className="material-symbols-outlined text-primary-green text-[18px]">
             speed
           </span>
         </h3>
@@ -31,7 +31,7 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
         <div className="relative mb-6 flex justify-center">
           <svg className="w-36 h-36" viewBox="0 0 100 100">
             <circle
-              className="text-surface-high stroke-current"
+              className="text-card-elevated stroke-current"
               cx="50"
               cy="50"
               fill="transparent"
@@ -39,7 +39,7 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
               strokeWidth="8"
             />
             <circle
-              className="text-primary stroke-current progress-ring__circle"
+              className="text-primary-green stroke-current progress-ring__circle"
               cx="50"
               cy="50"
               fill="transparent"
@@ -51,10 +51,10 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold font-mono text-text-primary leading-none">
+            <span className="text-3xl font-bold font-mono text-primary-green leading-none">
               {readiness.score !== null ? `${readiness.score}%` : "--"}
             </span>
-            <span className="text-label-xs text-primary-text font-mono mt-1 px-2 py-0.5 bg-primary/10 rounded uppercase">
+            <span className="text-label-xs text-bright-green font-mono mt-1 px-2 py-0.5 bg-dark-green/50 border border-green-border rounded uppercase">
               {readiness.level || "UNTESTED"}
             </span>
           </div>
@@ -63,7 +63,7 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
 
       {/* Breakdown Bars */}
       {readiness.breakdown && (
-        <div className="space-y-3 border-t border-border pt-4 font-mono text-label-xs">
+        <div className="space-y-3 border-t border-neutral-border pt-4 font-mono text-label-xs">
           <div>
             <div className="flex justify-between mb-1">
               <span className="text-text-muted">Aptitude</span>
@@ -71,9 +71,9 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
                 {readiness.breakdown.aptitude}%
               </span>
             </div>
-            <div className="h-1.5 w-full bg-surface-high rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-input-bg border border-neutral-border/40 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-primary-green"
                 style={{ width: `${readiness.breakdown.aptitude}%` }}
               />
             </div>
@@ -86,9 +86,9 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
                 {readiness.breakdown.dsa}%
               </span>
             </div>
-            <div className="h-1.5 w-full bg-surface-high rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-input-bg border border-neutral-border/40 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-primary-green"
                 style={{ width: `${readiness.breakdown.dsa}%` }}
               />
             </div>
@@ -101,9 +101,9 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
                 {readiness.breakdown.coreCs}%
               </span>
             </div>
-            <div className="h-1.5 w-full bg-surface-high rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-input-bg border border-neutral-border/40 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-primary-green"
                 style={{ width: `${readiness.breakdown.coreCs}%` }}
               />
             </div>
@@ -116,9 +116,9 @@ export function ReadinessGaugeCard({ readiness }: { readiness: AnalyticsData["re
                 {readiness.breakdown.sql}%
               </span>
             </div>
-            <div className="h-1.5 w-full bg-surface-high rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-input-bg border border-neutral-border/40 rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-primary-green"
                 style={{ width: `${readiness.breakdown.sql}%` }}
               />
             </div>
@@ -143,7 +143,7 @@ export function PerformanceTrendsChart({
   const hasTrend = performanceOverTime.length > 1;
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-border bg-surface p-5 sm:p-6">
+    <div className="flex flex-col justify-between rounded-cards border border-neutral-border bg-card-standard p-5 sm:p-6">
       <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-title-md font-semibold text-text-primary">
@@ -155,7 +155,7 @@ export function PerformanceTrendsChart({
         </div>
         <div className="flex items-center gap-2">
           {overallTrend && (
-            <span className="font-mono text-label-xs font-semibold px-2.5 py-1 rounded bg-surface-high border border-border text-secondary uppercase">
+            <span className="font-mono text-label-xs font-semibold px-2.5 py-1 rounded bg-dark-green/40 border border-green-border text-bright-green uppercase">
               Trend: {overallTrend}
             </span>
           )}
@@ -175,39 +175,40 @@ export function PerformanceTrendsChart({
               >
                 <defs>
                   <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4d8eff" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#4d8eff" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#8CFF5A" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#8CFF5A" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#273027" />
                 <XAxis
                   dataKey="date"
-                  stroke="#8c909f"
+                  stroke="#687267"
                   fontSize={11}
                   tickLine={false}
                 />
                 <YAxis
-                  stroke="#8c909f"
+                  stroke="#687267"
                   fontSize={11}
                   domain={[0, maxScore]}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#121212",
-                    borderColor: "#262626",
+                    backgroundColor: "#0D0F0D",
+                    borderColor: "#35552F",
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontFamily: "JetBrains Mono",
+                    color: "#E8F0E5",
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="score"
-                  stroke="#adc6ff"
+                  stroke="#8CFF5A"
                   strokeWidth={2}
-                  dot={{ r: 4, fill: "#4d8eff", stroke: "#adc6ff", strokeWidth: 2 }}
-                  activeDot={{ r: 6, fill: "#4d8eff", stroke: "#ffffff", strokeWidth: 2 }}
+                  dot={{ r: 4, fill: "#19351A", stroke: "#8CFF5A", strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: "#8CFF5A", stroke: "#B4FF7A", strokeWidth: 2 }}
                   fillOpacity={1}
                   fill="url(#scoreGradient)"
                   name="Score"
@@ -221,7 +222,7 @@ export function PerformanceTrendsChart({
             )}
           </div>
         ) : (
-          <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-border px-4 text-center text-body-sm font-mono text-text-muted">
+          <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-neutral-border px-4 text-center text-body-sm font-mono text-text-muted">
             No attempts in this period.
           </div>
         )}
@@ -236,7 +237,7 @@ export function DifficultyPerformanceCard({
   difficultyPerformance: AnalyticsData["difficultyPerformance"];
 }) {
   return (
-    <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-6">
+    <div className="space-y-6 rounded-cards border border-neutral-border bg-card-standard p-5 sm:p-6">
       <h3 className="text-title-md font-semibold text-text-primary">
         Difficulty Performance
       </h3>
@@ -254,14 +255,14 @@ export function DifficultyPerformanceCard({
                   : "Not attempted"}
               </span>
             </div>
-            <div className="h-2 w-full bg-surface-high rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-input-bg border border-neutral-border/40 rounded-full overflow-hidden">
               <div
                 className={`h-full ${
                   diff.difficulty === "easy"
-                    ? "bg-secondary"
+                    ? "bg-primary-green"
                     : diff.difficulty === "medium"
-                    ? "bg-primary"
-                    : "bg-tertiary"
+                    ? "bg-bright-green"
+                    : "bg-[#ffd37a]"
                 }`}
                 style={{ width: `${diff.accuracy}%` }}
               />
@@ -281,7 +282,7 @@ export function TopicStrengthMatrixCard({
   weakestTopics: AnalyticsData["weakestTopics"];
 }) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-5 sm:p-6">
+    <div className="rounded-cards border border-neutral-border bg-card-standard p-5 sm:p-6">
       <h3 className="mb-5 text-title-md font-semibold text-text-primary">
         Topic Strength Matrix
       </h3>
@@ -289,7 +290,7 @@ export function TopicStrengthMatrixCard({
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Strongest */}
         <div>
-          <span className="text-label-xs text-secondary uppercase font-mono font-bold block mb-3">
+          <span className="text-label-xs text-primary-green uppercase font-mono font-bold block mb-3">
             Top Performing Topics
           </span>
           {strongestTopics.length > 0 ? (
@@ -297,12 +298,12 @@ export function TopicStrengthMatrixCard({
               {strongestTopics.map((t, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded bg-surface-high border border-border flex justify-between items-center text-body-sm"
+                  className="p-2.5 rounded bg-card-elevated border border-neutral-border flex justify-between items-center text-body-sm"
                 >
                   <span className="text-text-primary truncate mr-2">
                     {t.topicName}
                   </span>
-                  <span className="text-label-xs font-mono font-bold text-secondary">
+                  <span className="text-label-xs font-mono font-bold text-primary-green">
                     {t.accuracy}%
                   </span>
                 </div>
@@ -325,7 +326,7 @@ export function TopicStrengthMatrixCard({
               {weakestTopics.map((t, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded bg-surface-high border border-border flex justify-between items-center text-body-sm"
+                  className="p-2.5 rounded bg-card-elevated border border-neutral-border flex justify-between items-center text-body-sm"
                 >
                   <span className="text-text-primary truncate mr-2">
                     {t.topicName}

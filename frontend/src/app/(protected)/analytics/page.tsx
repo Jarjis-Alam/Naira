@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getAnalyticsData } from "@/server/analytics";
 import { getStudentIntelligence } from "@/server/student-intelligence";
+import { getPlacementIntelligence2 } from "@/server/placement-intelligence-2";
 import { db } from "@/db";
 import { tests } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,15 +13,18 @@ import {
   DifficultyPerformanceCard,
   TopicStrengthMatrixCard,
 } from "@/components/analytics/analytics-charts";
+import { PlacementIntelligence2View } from "@/components/analytics/placement-intelligence-2-view";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function AnalyticsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/auth/login");
 
   const userId = session.user.id;
-  const [analytics, intelligence] = await Promise.all([
+  const [analytics, intelligence, placementIntelligence2] = await Promise.all([
     getAnalyticsData(userId),
     getStudentIntelligence(userId),
+    getPlacementIntelligence2(userId).catch(() => null),
   ]);
 
   // Baseline test id for empty state CTA
@@ -34,24 +38,24 @@ export default async function AnalyticsPage() {
   // Empty State
   if (!analytics.hasData || !intelligence.dataSufficiency.hasCompletedBaseline) {
     return (
-      <div className="py-16 text-center max-w-xl mx-auto space-y-6">
-        <div className="w-16 h-16 rounded-full bg-surface-high border border-border flex items-center justify-center text-primary-text mx-auto">
+      <div className="py-20 text-center max-w-xl mx-auto space-y-6">
+        <div className="w-16 h-16 rounded-full bg-[#191c1b] border border-[#3f4a38]/40 flex items-center justify-center text-lime-pulse mx-auto shadow-md">
           <span className="material-symbols-outlined text-[32px]">insights</span>
         </div>
 
         <div>
-          <h2 className="text-headline-lg font-bold text-text-primary">
+          <h2 className="text-2xl font-bold font-heading text-phosphor-white">
             Your analytics will appear here.
           </h2>
-          <p className="text-body-md text-text-secondary mt-2 leading-relaxed">
-            Complete your baseline assessment to unlock personalized recommendations, readiness driver attribution, and trend detection.
+          <p className="text-[13px] text-sage-40 mt-2 leading-relaxed">
+            Complete your baseline assessment to unlock personalized recommendations, readiness driver attribution, and trajectory tracking.
           </p>
         </div>
 
         <div className="pt-4">
           <Link
-            href={baselineId ? `/tests/${baselineId}` : "/tests"}
-            className="bg-primary text-text-inverse font-semibold text-body-sm px-8 py-3 rounded hover:bg-primary-text transition-colors inline-flex items-center gap-2 shadow-sm"
+            href={baselineId ? `/tests` : "/tests"}
+            className="bg-lime-pulse text-void-black font-semibold text-xs px-8 py-3 rounded-full hover:bg-mint-frost transition-all inline-flex items-center gap-2 shadow-[0_0_20px_rgba(127,238,100,0.25)]"
           >
             <span className="material-symbols-outlined text-[18px]">play_arrow</span>
             Start Baseline Assessment
@@ -61,97 +65,225 @@ export default async function AnalyticsPage() {
     );
   }
 
-  const { trend, readiness, recommendations, discipline } = intelligence;
+  const { trend, readiness, recommendations } = intelligence;
+
+  const breadcrumbs = [
+    { label: "NEXORA", href: "/dashboard" },
+    { label: "PREPARATION", href: "/tests" },
+    { label: "ANALYTICS INTELLIGENCE" },
+  ];
 
   return (
-    <div className="space-y-10 pb-28 pr-28 lg:pr-0 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-mono font-medium text-text-muted uppercase tracking-wider">
-              Student Intelligence & Performance
-            </span>
-            {intelligence.dataSufficiency.status === "limited_data" && (
-              <span className="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary-text font-mono text-[10px] font-semibold">
-                EARLY SIGNAL
-              </span>
-            )}
-          </div>
-          <h1 className="text-headline-xl font-bold text-text-primary">
-            Performance & Placement Intelligence
-          </h1>
-          <p className="text-body-md text-text-secondary mt-1">
-            Deterministic drivers, personalized next actions, and domain benchmarks.
-          </p>
-        </div>
+    <div className="space-y-8 pb-24 max-w-7xl mx-auto">
+      {/* ── Top Header & Filter Pills ── */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+        <PageHeader
+          breadcrumbs={breadcrumbs}
+          title="Placement Trajectory & Competency Analytics"
+          subtitle="Longitudinal benchmarking against Tier-1 engineering cohorts, velocity telemetry, and algorithmic mastery projections."
+        />
 
-        <div className="flex items-center gap-3">
-          <label htmlFor="analytics-range" className="sr-only">Analytics time range</label>
-          <select
-            id="analytics-range"
-            className="h-10 rounded-lg border border-border bg-surface px-3 text-label-xs font-mono text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30"
+        {/* Filter Pills Bar */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-[#191c1b] p-1.5 rounded-full border border-[#3f4a38]/40 self-start lg:self-auto shrink-0 shadow-inner">
+          <button
+            type="button"
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-lime-pulse text-void-black shadow-sm"
           >
-            <option>All Time</option>
-            <option>Last 30 Days</option>
-            <option>Last 7 Days</option>
-          </select>
+            All Time
+          </button>
+          <button
+            type="button"
+            className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-transparent text-sage-40 hover:text-phosphor-white hover:bg-[#282b29] transition-colors"
+          >
+            Last 30 Days
+          </button>
+          <div className="h-4 w-px bg-[#3f4a38]/60 mx-0.5" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-sage-40 font-mono">
+            <span className="w-2 h-2 rounded-full bg-lime-pulse" />
+            <span>Tier-1 Median Benchmark</span>
+          </div>
         </div>
       </div>
 
-      {/* 01. READINESS */}
-      <section aria-labelledby="readiness-section-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
+      {/* ── Top KPI Summary Strip ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {/* Card 1: Aggregate Placement Readiness */}
+        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+          <div className="flex items-start justify-between mb-3">
+            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
+              Placement Readiness
+            </span>
+            <div className="w-8 h-8 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse">
+              <span className="material-symbols-outlined text-[18px]">verified</span>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+                {analytics.readiness.score ?? "--"}%
+              </span>
+              <span className="text-[11px] font-mono text-lime-pulse flex items-center">
+                <span className="material-symbols-outlined text-[13px]">arrow_upward</span>
+                {readiness.level?.label || "CALIBRATED"}
+              </span>
+            </div>
+            <p className="text-[11px] text-sage-40 mt-1">
+              Deterministic across 7 placement domains
+            </p>
+          </div>
+          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-lime-pulse h-full rounded-full transition-all duration-500"
+              style={{ width: `${analytics.readiness.score ?? 0}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Card 2: Tests Completed Velocity */}
+        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+          <div className="flex items-start justify-between mb-3">
+            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
+              Execution Velocity
+            </span>
+            <div className="w-8 h-8 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <span className="material-symbols-outlined text-[18px]">speed</span>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+                {analytics.overview.testsCompleted}
+              </span>
+              <span className="text-[11px] font-mono text-sage-40">tests evaluated</span>
+            </div>
+            <p className="text-[11px] text-sage-40 mt-1">
+              {analytics.overview.questionsAttempted} questions solved across topics
+            </p>
+          </div>
+          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-purple-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, analytics.overview.testsCompleted * 10)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Card 3: Overall Accuracy */}
+        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+          <div className="flex items-start justify-between mb-3">
+            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
+              Accuracy Index
+            </span>
+            <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+              <span className="material-symbols-outlined text-[18px]">track_changes</span>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+                {analytics.overview.avgAccuracy}%
+              </span>
+              <span className="text-[11px] font-mono text-blue-400">
+                {analytics.overview.questionsCorrect} correct
+              </span>
+            </div>
+            <p className="text-[11px] text-sage-40 mt-1">
+              Average across all attempted evaluation sessions
+            </p>
+          </div>
+          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-blue-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${analytics.overview.avgAccuracy}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Card 4: Average Score */}
+        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
+          <div className="flex items-start justify-between mb-3">
+            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
+              Average Score
+            </span>
+            <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <span className="material-symbols-outlined text-[18px]">psychology</span>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+                {analytics.overview.avgScore}%
+              </span>
+              <span className="text-[11px] font-mono text-amber-400">
+                {analytics.overview.questionsAttempted} graded
+              </span>
+            </div>
+            <p className="text-[11px] text-sage-40 mt-1">
+              Normalized scoring benchmark across subjects
+            </p>
+          </div>
+          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-amber-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${analytics.overview.avgScore}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── 01. READINESS SECTION ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary-text border border-primary/20">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30">
               01
             </span>
-            <h2 id="readiness-section-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              READINESS
+            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+              READINESS CALIBRATION
             </h2>
           </div>
-          <span className="text-label-xs font-mono text-text-muted">Dynamic Calibration</span>
+          <span className="text-[11px] font-mono text-sage-40">Dynamic Calibration</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-5">
             <ReadinessGaugeCard readiness={analytics.readiness} />
           </div>
-          <div className="lg:col-span-7 flex flex-col justify-between rounded-xl border border-border bg-surface p-5 sm:p-6 space-y-4">
+          <div className="lg:col-span-7 flex flex-col justify-between rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 space-y-4 shadow-md">
             <div>
-              <span className="text-label-xs font-mono uppercase text-text-muted block mb-1">
+              <span className="text-[11px] font-mono uppercase text-sage-40 block mb-1">
                 Readiness Model Overview
               </span>
-              <h3 className="text-title-md font-semibold text-text-primary">
+              <h3 className="text-base font-semibold text-phosphor-white">
                 Comprehensive Multi-Domain Calibration
               </h3>
-              <p className="mt-2 text-body-sm text-text-secondary leading-relaxed">
+              <p className="mt-2 text-xs text-sage-40 leading-relaxed">
                 Placement readiness is deterministically calculated across Aptitude, DSA, Core CS, and SQL benchmarks. Rather than a simple average, Nexora weights critical domain competencies against technical placement requirements.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border/60 text-center font-mono">
-              <div className="p-3 rounded-lg bg-surface-high border border-border/70">
-                <span className="text-label-xs text-text-muted block">DSA</span>
-                <span className="text-body-md font-bold text-primary-text">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#3f4a38]/30 text-center font-mono">
+              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
+                <span className="text-[10px] text-sage-40 block">DSA</span>
+                <span className="text-base font-bold text-lime-pulse">
                   {analytics.readiness.breakdown?.dsa ?? 0}%
                 </span>
               </div>
-              <div className="p-3 rounded-lg bg-surface-high border border-border/70">
-                <span className="text-label-xs text-text-muted block">Core CS</span>
-                <span className="text-body-md font-bold text-primary-text">
+              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
+                <span className="text-[10px] text-sage-40 block">Core CS</span>
+                <span className="text-base font-bold text-lime-pulse">
                   {analytics.readiness.breakdown?.coreCs ?? 0}%
                 </span>
               </div>
-              <div className="p-3 rounded-lg bg-surface-high border border-border/70">
-                <span className="text-label-xs text-text-muted block">SQL</span>
-                <span className="text-body-md font-bold text-primary-text">
+              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
+                <span className="text-[10px] text-sage-40 block">SQL</span>
+                <span className="text-base font-bold text-lime-pulse">
                   {analytics.readiness.breakdown?.sql ?? 0}%
                 </span>
               </div>
-              <div className="p-3 rounded-lg bg-surface-high border border-border/70">
-                <span className="text-label-xs text-text-muted block">Aptitude</span>
-                <span className="text-body-md font-bold text-primary-text">
+              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
+                <span className="text-[10px] text-sage-40 block">Aptitude</span>
+                <span className="text-base font-bold text-lime-pulse">
                   {analytics.readiness.breakdown?.aptitude ?? 0}%
                 </span>
               </div>
@@ -160,121 +292,47 @@ export default async function AnalyticsPage() {
         </div>
       </section>
 
-      {/* 02. PERFORMANCE */}
-      <section aria-labelledby="performance-section-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
+      {/* ── 02. DIFFICULTY BREAKDOWN ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary-text border border-primary/20">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
               02
             </span>
-            <h2 id="performance-section-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              PERFORMANCE
+            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+              DIFFICULTY CALIBRATION
             </h2>
           </div>
-          <span className="text-label-xs font-mono text-text-muted">Aggregate Metrics</span>
+          <span className="text-[11px] font-mono text-sage-40">Easy • Medium • Hard</span>
         </div>
 
-        {/* 5 Overview Metric Cards */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-4">
-          <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-label-xs text-text-muted font-mono uppercase">
-                Avg Score
-              </span>
-              <span className="material-symbols-outlined text-primary-text text-[18px]">
-                analytics
-              </span>
-            </div>
-            <span className="text-3xl font-bold font-mono text-text-primary">
-              {analytics.overview.avgScore}%
-            </span>
-          </div>
-
-          <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-label-xs text-text-muted font-mono uppercase">
-                Avg Accuracy
-              </span>
-              <span className="material-symbols-outlined text-secondary text-[18px]">
-                track_changes
-              </span>
-            </div>
-            <span className="text-3xl font-bold font-mono text-text-primary">
-              {analytics.overview.avgAccuracy}%
-            </span>
-          </div>
-
-          <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-label-xs text-text-muted font-mono uppercase">
-                Tests Completed
-              </span>
-              <span className="material-symbols-outlined text-text-muted text-[18px]">
-                task
-              </span>
-            </div>
-            <span className="text-3xl font-bold font-mono text-text-primary">
-              {analytics.overview.testsCompleted}
-            </span>
-          </div>
-
-          <div className="rounded-lg border border-border bg-surface p-4 sm:p-5">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-label-xs text-text-muted font-mono uppercase">
-                Attempted
-              </span>
-              <span className="material-symbols-outlined text-text-muted text-[18px]">
-                format_list_numbered
-              </span>
-            </div>
-            <span className="text-3xl font-bold font-mono text-text-primary">
-              {analytics.overview.questionsAttempted}
-            </span>
-          </div>
-
-          <div className="col-span-2 rounded-lg border border-border bg-surface p-4 sm:col-span-1 sm:p-5">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-label-xs text-text-muted font-mono uppercase">
-                Correct
-              </span>
-              <span className="material-symbols-outlined text-secondary text-[18px]">
-                check_circle
-              </span>
-            </div>
-            <span className="text-3xl font-bold font-mono text-secondary">
-              {analytics.overview.questionsCorrect}
-            </span>
-          </div>
-        </div>
-
-        {/* Difficulty Breakdown */}
         <DifficultyPerformanceCard difficultyPerformance={analytics.difficultyPerformance} />
       </section>
 
-      {/* 03. SUBJECTS */}
-      <section aria-labelledby="subjects-section-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
+      {/* ── 03. SUBJECT ATTRIBUTION DRIVERS ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary-text border border-primary/20">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
               03
             </span>
-            <h2 id="subjects-section-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              SUBJECTS
+            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+              DOMAIN ATTRIBUTION DRIVERS
             </h2>
           </div>
-          <span className="text-label-xs font-mono text-text-muted">Domain Attribution Drivers</span>
+          <span className="text-[11px] font-mono text-sage-40">Helping vs Holding Back</span>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-5 sm:p-6">
+        <div className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Positive Contributors */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-label-xs font-mono font-semibold text-secondary uppercase">
+              <div className="flex items-center justify-between text-xs font-mono font-semibold text-lime-pulse uppercase">
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">add_circle</span>
                   Helping Your Readiness
                 </span>
-                <span className="text-[10px] text-text-muted">High Benchmark Impact</span>
+                <span className="text-[10px] text-sage-40">Benchmark Exceeded</span>
               </div>
 
               {readiness.positiveContributors.length > 0 ? (
@@ -282,37 +340,37 @@ export default async function AnalyticsPage() {
                   {readiness.positiveContributors.slice(0, 3).map((c) => (
                     <div
                       key={c.code}
-                      className="p-3 rounded-lg bg-surface-high border border-border/80 flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex items-center justify-between"
                     >
                       <div>
-                        <div className="text-body-sm font-medium text-text-primary">
+                        <div className="text-xs font-medium text-phosphor-white">
                           {c.name}
                         </div>
-                        <div className="text-[11px] font-mono text-text-muted mt-0.5">
+                        <div className="text-[10px] font-mono text-sage-40 mt-0.5">
                           {c.status} • Weight: {(c.weight * 100).toFixed(0)}%
                         </div>
                       </div>
-                      <span className="text-lg font-bold font-mono text-secondary">
+                      <span className="text-base font-bold font-mono text-lime-pulse">
                         +{c.score}%
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-label-xs font-mono text-text-muted py-2">
-                  Complete more tests to elevate domain scores into strong positive contributors.
+                <p className="text-xs font-mono text-sage-40 py-2">
+                  Complete more tests to elevate domain scores into positive contributors.
                 </p>
               )}
             </div>
 
             {/* Negative Contributors */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-label-xs font-mono font-semibold text-error uppercase">
+              <div className="flex items-center justify-between text-xs font-mono font-semibold text-rose-400 uppercase">
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">remove_circle</span>
                   Holding Your Readiness Back
                 </span>
-                <span className="text-[10px] text-text-muted">Targeted Deficits</span>
+                <span className="text-[10px] text-sage-40">Targeted Deficits</span>
               </div>
 
               {readiness.negativeContributors.length > 0 ? (
@@ -320,25 +378,25 @@ export default async function AnalyticsPage() {
                   {readiness.negativeContributors.slice(0, 3).map((c) => (
                     <div
                       key={c.code}
-                      className="p-3 rounded-lg bg-surface-high border border-border/80 flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex items-center justify-between"
                     >
                       <div>
-                        <div className="text-body-sm font-medium text-text-primary">
+                        <div className="text-xs font-medium text-phosphor-white">
                           {c.name}
                         </div>
-                        <div className="text-[11px] font-mono text-text-muted mt-0.5">
+                        <div className="text-[10px] font-mono text-sage-40 mt-0.5">
                           {c.status} • Weight: {(c.weight * 100).toFixed(0)}%
                         </div>
                       </div>
-                      <span className="text-lg font-bold font-mono text-error">
+                      <span className="text-base font-bold font-mono text-rose-400">
                         {c.score}%
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-label-xs font-mono text-secondary py-2">
-                  No significant domain deficits detected. All domains meet benchmark baseline.
+                <p className="text-xs font-mono text-lime-pulse py-2">
+                  No significant domain deficits detected. All tested domains meet benchmark.
                 </p>
               )}
             </div>
@@ -346,18 +404,18 @@ export default async function AnalyticsPage() {
         </div>
       </section>
 
-      {/* 04. TOPICS */}
-      <section aria-labelledby="topics-section-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
+      {/* ── 04. TOPIC STRENGTH MATRIX ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary-text border border-primary/20">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30">
               04
             </span>
-            <h2 id="topics-section-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              TOPICS
+            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+              GRANULAR TOPIC MATRIX
             </h2>
           </div>
-          <span className="text-label-xs font-mono text-text-muted">Granular Topic Matrix</span>
+          <span className="text-[11px] font-mono text-sage-40">Strengths vs Weaknesses</span>
         </div>
 
         <TopicStrengthMatrixCard
@@ -366,18 +424,18 @@ export default async function AnalyticsPage() {
         />
       </section>
 
-      {/* 05. TRENDS */}
-      <section aria-labelledby="trends-section-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
+      {/* ── 05. PERFORMANCE OVER TIME ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary-text border border-primary/20">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
               05
             </span>
-            <h2 id="trends-section-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              TRENDS
+            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+              HISTORICAL TRAJECTORY
             </h2>
           </div>
-          <span className="text-label-xs font-mono text-text-muted">Historical Trajectory</span>
+          <span className="text-[11px] font-mono text-sage-40">Performance Progression</span>
         </div>
 
         <PerformanceTrendsChart
@@ -386,120 +444,85 @@ export default async function AnalyticsPage() {
         />
       </section>
 
-      {/* 06. INTELLIGENCE */}
-      <section aria-labelledby="intelligence-section-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary-text border border-primary/20">
-              06
-            </span>
-            <h2 id="intelligence-section-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              INTELLIGENCE
-            </h2>
-          </div>
-          <span className="text-label-xs font-mono text-text-muted">Prescriptive Recommendations</span>
-        </div>
-
-        {/* Actionable Recommendations Panel */}
-        {recommendations.length > 0 && (
-          <div className="rounded-xl border border-primary/20 bg-surface p-5 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-title-md font-semibold text-text-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-primary">recommend</span>
-                Recommended Next Actions
-              </h3>
-              <span className="text-label-xs font-mono text-text-muted">
-                {recommendations.length} PRIORITIZED ACTIONS
+      {/* ── 06. PRESCRIPTIVE RECOMMENDATIONS ── */}
+      {recommendations.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30">
+                06
               </span>
+              <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+                PRESCRIPTIVE RECOMMENDATIONS
+              </h2>
             </div>
+            <span className="text-[11px] font-mono text-sage-40">
+              {recommendations.length} Prioritized Actions
+            </span>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {recommendations.slice(0, 3).map((rec) => (
-                <div
-                  key={rec.id}
-                  className="p-4 rounded-xl bg-surface-high border border-border/80 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span
-                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
-                          rec.priority === "Critical"
-                            ? "bg-error/20 text-error"
-                            : rec.priority === "High"
-                            ? "bg-tertiary/20 text-tertiary"
-                            : "bg-surface-highest text-text-muted"
-                        }`}
-                      >
-                        {rec.priority}
-                      </span>
-                      <span className="text-[11px] font-mono text-secondary font-medium">
-                        {rec.metric}
-                      </span>
-                    </div>
-                    <h4 className="text-body-sm font-semibold text-text-primary mb-1">
-                      {rec.title}
-                    </h4>
-                    <p className="text-[12px] text-text-secondary leading-relaxed mb-4">
-                      {rec.reason}
-                    </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recommendations.slice(0, 3).map((rec) => (
+              <div
+                key={rec.id}
+                className="p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 flex flex-col justify-between shadow-md group hover:border-[#88957f]/60 transition-all"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span
+                      className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                        rec.priority === "Critical"
+                          ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                          : rec.priority === "High"
+                          ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                          : "bg-[#282b29] text-sage-40 border border-[#3f4a38]/40"
+                      }`}
+                    >
+                      {rec.priority}
+                    </span>
+                    <span className="text-[11px] font-mono text-lime-pulse font-medium">
+                      {rec.metric}
+                    </span>
                   </div>
-
-                  <Link
-                    href={rec.route}
-                    className="text-primary-text hover:text-primary font-mono text-[12px] font-medium inline-flex items-center gap-1.5 transition-colors pt-2 border-t border-border/60"
-                  >
-                    <span>{rec.ctaText}</span>
-                    <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                  </Link>
+                  <h4 className="text-sm font-semibold text-phosphor-white mb-1">
+                    {rec.title}
+                  </h4>
+                  <p className="text-xs text-sage-40 leading-relaxed mb-4">
+                    {rec.reason}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* Exam Strategy & Discipline Bar */}
-        {(discipline.hasNegativeMarkingIssue || discipline.hasUnansweredIssue) && (
-          <div className="p-4 rounded-xl bg-surface border border-tertiary/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-body-sm">
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-tertiary text-[24px]">flag</span>
-              <div>
-                <span className="font-semibold text-text-primary block">
-                  Exam Strategy Advisory
-                </span>
-                <span className="text-text-secondary text-label-xs font-mono">
-                  {discipline.hasNegativeMarkingIssue && `Penalty loss: ~${discipline.negativeMarkingLossAvg.toFixed(1)} marks/test. `}
-                  {discipline.hasUnansweredIssue && `Blank rate: ${discipline.unansweredRate}%. Calibrate test speed.`}
-                </span>
+                <Link
+                  href={rec.route || "/tests"}
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-lime-pulse/10 text-lime-pulse border border-lime-pulse/30 hover:bg-lime-pulse hover:text-void-black transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>{rec.ctaText || "Take Action"}</span>
+                  <span className="text-sm leading-none">→</span>
+                </Link>
               </div>
-            </div>
-            <Link
-              href="/tests"
-              className="text-primary-text font-mono text-[12px] font-semibold hover:text-primary transition-colors flex items-center gap-1 self-end sm:self-auto"
-            >
-              <span>Practice Timed Tests</span>
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
+            ))}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      {/* Navigation Footer */}
-      <div className="flex flex-wrap justify-end gap-3 pt-2">
-        <Link
-          href="/roadmap"
-          className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-5 text-body-sm font-semibold text-text-primary transition-colors hover:border-primary hover:bg-surface-high focus:outline-none focus:ring-2 focus:ring-primary/60"
-        >
-          <span className="material-symbols-outlined text-[18px]">map</span>
-          View Roadmap
-        </Link>
-        <Link
-          href="/tests"
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60"
-        >
-          Practice Tests
-          <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
-        </Link>
-      </div>
+      {/* ── 07. PHASE 23 INTELLIGENCE 2.0 FULL VIEW ── */}
+      {placementIntelligence2 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30">
+                07
+              </span>
+              <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
+                INTELLIGENCE 2.0 — MULTI-DIMENSIONAL COMPETENCY MATRIX
+              </h2>
+            </div>
+            <span className="text-[11px] font-mono text-sage-40">14 Dimensions</span>
+          </div>
+
+          <PlacementIntelligence2View intelligence={placementIntelligence2} />
+        </section>
+      )}
     </div>
   );
 }

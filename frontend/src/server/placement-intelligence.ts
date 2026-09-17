@@ -12,6 +12,12 @@ import {
 import { eq, and, sql, desc } from "drizzle-orm";
 import { calculateReadiness } from "./readiness";
 import { getStudentPlacementTargets } from "./company-role-intelligence";
+import {
+  getPlacementIntelligence2,
+  type PlacementIntelligenceSnapshot2,
+} from "./placement-intelligence-2";
+
+export * from "./placement-intelligence-2";
 
 // ============================================================================
 // 1. DATA CONTRACTS & ACTION TYPES
@@ -89,6 +95,7 @@ export interface PlacementIntelligence {
     ctaLabel: string;
     ctaHref: string;
   } | null;
+  intelligence2?: PlacementIntelligenceSnapshot2;
 }
 
 // ============================================================================
@@ -385,6 +392,7 @@ export async function getPlacementIntelligence(userId: string): Promise<Placemen
         ctaLabel: "Start Assessment",
         ctaHref: baselineTestId ? `/tests/${baselineTestId}` : "/assessment",
       },
+      intelligence2: await getPlacementIntelligence2(userId).catch(() => undefined),
     };
   }
 
@@ -640,5 +648,6 @@ export async function getPlacementIntelligence(userId: string): Promise<Placemen
     },
     emptyState: null,
     baselineAction: null,
+    intelligence2: await getPlacementIntelligence2(userId).catch(() => undefined),
   };
 }

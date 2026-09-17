@@ -1,5 +1,5 @@
 import { Sidebar } from "@/components/layout/sidebar";
-import { DeveloperFooter } from "@/components/layout/developer-footer";
+import { TopHeader } from "@/components/layout/top-header";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { tests } from "@/db/schema";
@@ -23,14 +23,19 @@ export default async function ProtectedLayout({
   const baselineTestId = baseline[0]?.id || null;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-transparent text-text-primary tech-grid">
+    <div className="flex min-h-screen bg-void-black text-sage-60 tech-grid">
       <Sidebar baselineTestId={baselineTestId} isAdmin={isAdmin} />
-      <main className="flex-1 md:ml-64 min-h-screen flex flex-col justify-between overflow-y-auto">
-        <div className="container-fluid py-6 md:py-10 flex-1">
-          {children}
-        </div>
-        <DeveloperFooter />
-      </main>
+      <div className="flex-1 md:ml-60 min-h-screen flex flex-col overflow-x-hidden">
+        <TopHeader session={session} />
+        <main
+          className="flex-1 flex flex-col"
+          id="main-content"
+        >
+          <div className="container-fluid py-6 md:py-8 flex-1">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

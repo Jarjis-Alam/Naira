@@ -140,11 +140,11 @@ export function PlacementTargetsEditor({
   const isBusy = pendingAction !== null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-5 sm:p-6 space-y-5">
+    <div className="rounded-cards border border-neutral-border bg-card-standard p-5 sm:p-6 space-y-5">
       {/* Section Header */}
-      <div className="flex items-center justify-between gap-4 border-b border-border/80 pb-4">
+      <div className="flex items-center justify-between gap-4 border-b border-neutral-border/80 pb-4">
         <div className="flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-[20px] text-primary">target</span>
+          <span className="material-symbols-outlined text-[20px] text-primary-green">target</span>
           <div>
             <h3 className="text-title-md font-semibold text-text-primary">
               Placement Targets
@@ -155,13 +155,23 @@ export function PlacementTargetsEditor({
           </div>
         </div>
 
-        <button
-          onClick={openEditor}
-          className="px-3.5 py-1.5 rounded-lg border border-border bg-surface-high hover:bg-surface-highest text-text-primary text-body-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
-        >
-          <span className="material-symbols-outlined text-[16px]">edit</span>
-          <span>{targets.configured ? "Edit Targets" : "Set Placement Target"}</span>
-        </button>
+        {targets.configured ? (
+          <button
+            onClick={openEditor}
+            className="px-3.5 py-1.5 rounded-buttons border border-green-border bg-card-elevated hover:border-primary-green text-text-primary hover:text-primary-green text-body-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary-green"
+          >
+            <span className="material-symbols-outlined text-[16px]">edit</span>
+            <span>Edit Targets</span>
+          </button>
+        ) : (
+          <button
+            onClick={openEditor}
+            className="px-4 py-2 rounded-buttons bg-primary-green text-void-black hover:bg-bright-green text-body-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-none focus:outline-none focus:ring-1 focus:ring-bright-green"
+          >
+            <span className="material-symbols-outlined text-[16px]">add_task</span>
+            <span>Set Placement Target</span>
+          </button>
+        )}
       </div>
 
       {/* Targets View State */}
@@ -173,13 +183,13 @@ export function PlacementTargetsEditor({
               Primary Role
             </span>
             {targets.primaryRole ? (
-              <div className="p-3.5 rounded-lg bg-surface-high/70 border border-primary/25 flex items-start justify-between gap-3">
+              <div className="p-3.5 rounded-md bg-card-elevated border border-green-border flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-body-md font-bold text-text-primary">
                       {targets.primaryRole.name}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary/15 text-primary-text border border-primary/30">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-dark-green text-bright-green border border-green-border font-semibold">
                       PRIMARY
                     </span>
                     {!targets.primaryRole.isActive && (
@@ -197,7 +207,7 @@ export function PlacementTargetsEditor({
                     </p>
                   )}
                 </div>
-                <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                <span className="material-symbols-outlined text-primary-green text-[20px]">check_circle</span>
               </div>
             ) : (
               <p className="text-body-sm text-text-muted font-mono italic">
@@ -223,11 +233,11 @@ export function PlacementTargetsEditor({
                   .map((r) => (
                     <div
                       key={r.id}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-high border border-border text-body-sm font-medium text-text-primary"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card-elevated border border-neutral-border text-body-sm font-medium text-text-primary"
                     >
-                      <span className="material-symbols-outlined text-[16px] text-primary">badge</span>
+                      <span className="material-symbols-outlined text-[16px] text-primary-green">badge</span>
                       <span>{r.name}</span>
-                      <span className="text-[11px] font-mono text-text-muted uppercase px-1.5 py-0.5 rounded bg-surface border border-border/60">
+                      <span className="text-[11px] font-mono text-text-muted uppercase px-1.5 py-0.5 rounded bg-card-standard border border-neutral-border/60">
                         {r.category}
                       </span>
                       {!r.isActive && (
@@ -247,13 +257,13 @@ export function PlacementTargetsEditor({
               Primary Company
             </span>
             {targets.primaryCompany ? (
-              <div className="p-3.5 rounded-lg bg-surface-high/70 border border-primary/25 flex items-start justify-between gap-3">
+              <div className="p-3.5 rounded-md bg-card-elevated border border-green-border flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-body-md font-bold text-text-primary">
                       {targets.primaryCompany.name}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-primary/15 text-primary-text border border-primary/30">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-dark-green text-bright-green border border-green-border font-semibold">
                       PRIMARY
                     </span>
                     {!targets.primaryCompany.isActive && (
@@ -266,7 +276,7 @@ export function PlacementTargetsEditor({
                     Industry: {targets.primaryCompany.industry}
                   </span>
                 </div>
-                <span className="material-symbols-outlined text-primary text-[20px]">domain</span>
+                <span className="material-symbols-outlined text-primary-green text-[20px]">domain</span>
               </div>
             ) : (
               <p className="text-body-sm text-text-muted font-mono italic">
@@ -290,11 +300,11 @@ export function PlacementTargetsEditor({
                 {targets.targetCompanies.slice(1).map((c, idx) => (
                   <div
                     key={c.id}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-high border border-border text-body-sm font-medium text-text-primary"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card-elevated border border-neutral-border text-body-sm font-medium text-text-primary"
                   >
-                    <span className="material-symbols-outlined text-[16px] text-primary">domain</span>
+                    <span className="material-symbols-outlined text-[16px] text-primary-green">domain</span>
                     <span>{c.name}</span>
-                    <span className="text-[11px] font-mono text-text-muted uppercase px-1.5 py-0.5 rounded bg-surface border border-border/60">
+                    <span className="text-[11px] font-mono text-text-muted uppercase px-1.5 py-0.5 rounded bg-card-standard border border-neutral-border/60">
                       #{idx + 2} · {c.industry}
                     </span>
                     {!c.isActive && (
@@ -310,8 +320,8 @@ export function PlacementTargetsEditor({
         </div>
       ) : (
         /* Empty Onboarding State */
-        <div className="p-5 rounded-xl bg-surface-high/40 border border-border/80 text-center flex flex-col items-center justify-center space-y-3">
-          <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+        <div className="p-6 rounded-cards bg-card-elevated/60 border border-neutral-border text-center flex flex-col items-center justify-center space-y-3">
+          <div className="w-12 h-12 rounded-full bg-dark-green/50 border border-green-border flex items-center justify-center text-primary-green">
             <span className="material-symbols-outlined text-[24px]">flag</span>
           </div>
           <div className="max-w-md">
@@ -324,9 +334,9 @@ export function PlacementTargetsEditor({
           </div>
           <button
             onClick={openEditor}
-            className="mt-1 bg-primary text-text-inverse font-medium text-body-sm px-5 py-2 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 cursor-pointer shadow-sm"
+            className="mt-2 bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 cursor-pointer shadow-none focus-visible:ring-1 focus-visible:ring-bright-green"
           >
-            <span className="material-symbols-outlined text-[16px]">add_task</span>
+            <span className="material-symbols-outlined text-[18px]">add_task</span>
             <span>Set Placement Target</span>
           </button>
         </div>
@@ -338,11 +348,11 @@ export function PlacementTargetsEditor({
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-targets-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
         >
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-card-standard border border-neutral-border rounded-cards w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="p-5 border-b border-border flex items-center justify-between">
+            <div className="p-5 border-b border-neutral-border bg-sidebar-bg flex items-center justify-between">
               <div>
                 <h3 id="modal-targets-title" className="text-title-md font-bold text-text-primary">
                   Manage Placement Targets
@@ -442,12 +452,12 @@ export function PlacementTargetsEditor({
                         placeholder="Search roles by name or category..."
                         value={roleSearchQuery}
                         onChange={(e) => setRoleSearchQuery(e.target.value)}
-                        className="w-full bg-surface-high border border-border rounded-lg pl-9 pr-3 py-2 text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full bg-input-bg border border-neutral-border rounded-inputs pl-9 pr-3 py-2 text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30"
                       />
                     </div>
 
                     {roleSearchQuery.trim().length > 0 && (
-                      <div className="max-h-44 overflow-y-auto rounded-lg border border-border bg-surface-high divide-y divide-border/60">
+                      <div className="max-h-44 overflow-y-auto rounded-cards border border-neutral-border bg-card-elevated divide-y divide-neutral-border/60">
                         {filteredRoles.length > 0 ? (
                           filteredRoles.map((role) => (
                             <button
@@ -455,13 +465,13 @@ export function PlacementTargetsEditor({
                               type="button"
                               onClick={() => handleAddRole(role.id)}
                               disabled={isBusy}
-                              className="w-full text-left px-3.5 py-2 hover:bg-surface-highest flex items-center justify-between transition-colors cursor-pointer disabled:opacity-40"
+                              className="w-full text-left px-3.5 py-2 hover:bg-card-standard flex items-center justify-between transition-colors cursor-pointer disabled:opacity-40"
                             >
                               <div className="flex items-center gap-2">
                                 <span className="text-body-sm font-medium text-text-primary">{role.name}</span>
                                 <span className="text-[11px] font-mono text-text-muted uppercase">({role.category})</span>
                               </div>
-                              <span className="material-symbols-outlined text-primary text-[18px]">add</span>
+                              <span className="material-symbols-outlined text-primary-green text-[18px]">add</span>
                             </button>
                           ))
                         ) : (
@@ -545,12 +555,12 @@ export function PlacementTargetsEditor({
                         placeholder="Search companies by name or industry..."
                         value={companySearchQuery}
                         onChange={(e) => setCompanySearchQuery(e.target.value)}
-                        className="w-full bg-surface-high border border-border rounded-lg pl-9 pr-3 py-2 text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full bg-input-bg border border-neutral-border rounded-inputs pl-9 pr-3 py-2 text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-green focus:ring-1 focus:ring-primary-green/30"
                       />
                     </div>
 
                     {companySearchQuery.trim().length > 0 && (
-                      <div className="max-h-44 overflow-y-auto rounded-lg border border-border bg-surface-high divide-y divide-border/60">
+                      <div className="max-h-44 overflow-y-auto rounded-cards border border-neutral-border bg-card-elevated divide-y divide-neutral-border/60">
                         {filteredCompanies.length > 0 ? (
                           filteredCompanies.map((comp) => (
                             <button
@@ -558,13 +568,13 @@ export function PlacementTargetsEditor({
                               type="button"
                               onClick={() => handleAddCompany(comp.id)}
                               disabled={isBusy}
-                              className="w-full text-left px-3.5 py-2 hover:bg-surface-highest flex items-center justify-between transition-colors cursor-pointer disabled:opacity-40"
+                              className="w-full text-left px-3.5 py-2 hover:bg-card-standard flex items-center justify-between transition-colors cursor-pointer disabled:opacity-40"
                             >
                               <div className="flex items-center gap-2">
                                 <span className="text-body-sm font-medium text-text-primary">{comp.name}</span>
                                 <span className="text-[11px] font-mono text-text-muted uppercase">({comp.industry})</span>
                               </div>
-                              <span className="material-symbols-outlined text-primary text-[18px]">add</span>
+                              <span className="material-symbols-outlined text-primary-green text-[18px]">add</span>
                             </button>
                           ))
                         ) : (

@@ -9,7 +9,7 @@ import {
 import { searchCompanies, searchRoles } from "@/server/company-role-intelligence";
 import { ApplicationsNewDialog } from "@/components/applications/applications-new-dialog";
 import { STATUS_META } from "@/lib/applications/status-meta";
-import { Eyebrow } from "@/components/ui/eyebrow";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function ApplicationsPage() {
   const session = await auth();
@@ -22,90 +22,191 @@ export default async function ApplicationsPage() {
   ]);
   const countsByStatus = new Map(board.pipeline.map((p) => [p.status, p.count]));
 
+  const breadcrumbs = [
+    { label: "NEXORA", href: "/dashboard" },
+    { label: "CORE OS", href: "/dashboard" },
+    { label: "APPLICATIONS PIPELINE" },
+  ];
+
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-circuit-border/60 pb-6">
-        <div>
-          <Eyebrow system="NEXORA" category="APPLICATION OS">
-            PIPELINE & TRACKING
-          </Eyebrow>
-          <h1 className="font-heading text-headline-lg font-semibold text-phosphor-white tracking-tight">
-            Applications
-          </h1>
-          <p className="text-body-sm text-sage-60 mt-1 max-w-2xl">
-            Where you are applying, stage tracking, deadline counters, and readiness alignment.
-          </p>
+    <div className="space-y-6 pb-20 max-w-7xl mx-auto">
+      {/* ── Top Header & New Application CTA ── */}
+      <PageHeader
+        breadcrumbs={breadcrumbs}
+        title="Applications Pipeline"
+        subtitle="Where you are applying, stage tracking, deadline counters, and readiness alignment."
+        actions={
+          <ApplicationsNewDialog
+            companies={companies}
+            roles={roles}
+            defaults={board.defaults}
+          />
+        }
+      />
+
+      {/* ── Metric Strip: 4 Semantic Cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {/* Card 1: Active Applications (Green) */}
+        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
+          <div className="flex items-start justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+              Active Applications
+            </span>
+            <div className="w-8 h-8 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse">
+              <span className="material-symbols-outlined text-[18px]">work_history</span>
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+              {board.totals.activeApplications}
+            </span>
+            <span className="text-[11px] font-mono text-lime-pulse">
+              in flight
+            </span>
+          </div>
+          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-lime-pulse h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, board.totals.activeApplications * 10)}%` }}
+            />
+          </div>
         </div>
-        <ApplicationsNewDialog companies={companies} roles={roles} defaults={board.defaults} />
-      </header>
 
-      {/* Totals Grid */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Stat label="Active Applications" value={board.totals.activeApplications} icon="work" />
-        <Stat label="Assessments" value={board.totals.assessments} icon="fact_check" />
-        <Stat label="Interviews" value={board.totals.interviews} icon="record_voice_over" />
-        <Stat label="Offers" value={board.totals.offers} icon="emoji_events" highlight />
-      </section>
+        {/* Card 2: Assessments / OA (Purple) */}
+        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
+          <div className="flex items-start justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+              Assessments & OAs
+            </span>
+            <div className="w-8 h-8 rounded-full bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <span className="material-symbols-outlined text-[18px]">terminal</span>
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+              {board.totals.assessments}
+            </span>
+            <span className="text-[11px] font-mono text-purple-400">active rounds</span>
+          </div>
+          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-purple-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, board.totals.assessments * 25)}%` }}
+            />
+          </div>
+        </div>
 
-      {/* Pipeline Status Strip */}
-      <section className="rounded-cards border border-circuit-border bg-ground-iron p-5 shadow-none">
-        <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
-          Pipeline Progression
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {PIPELINE_ORDER.map((status) => {
-            const meta = STATUS_META[status];
-            const count = countsByStatus.get(status) ?? 0;
-            const hasCount = count > 0;
-            return (
+        {/* Card 3: Interviews (Amber) */}
+        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
+          <div className="flex items-start justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+              Interview Rounds
+            </span>
+            <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <span className="material-symbols-outlined text-[18px]">videocam</span>
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+              {board.totals.interviews}
+            </span>
+            <span className="text-[11px] font-mono text-amber-400">live stages</span>
+          </div>
+          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-amber-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, board.totals.interviews * 25)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Card 4: Offers Received (Blue) */}
+        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
+          <div className="flex items-start justify-between">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
+              Offers Received
+            </span>
+            <div className="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+              <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+            </div>
+          </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+              {board.totals.offers}
+            </span>
+            <span className="text-[11px] font-mono text-blue-400">secured</span>
+          </div>
+          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
+            <div
+              className="bg-blue-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, board.totals.offers * 50)}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Filter Navigation Pills ── */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        {PIPELINE_ORDER.map((status) => {
+          const meta = STATUS_META[status];
+          const count = countsByStatus.get(status) ?? 0;
+          const hasCount = count > 0;
+          return (
+            <div
+              key={status}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-mono transition-all shrink-0 ${
+                hasCount
+                  ? "border-lime-pulse/30 bg-lime-pulse/10 text-lime-pulse font-semibold"
+                  : "border-[#3f4a38]/40 bg-[#191c1b] text-sage-40"
+              }`}
+              title={meta?.description ?? STATUS_LABELS[status]}
+            >
               <span
-                key={status}
-                className={`inline-flex items-center gap-1.5 rounded-pills border px-3 py-1 text-caption font-mono transition-colors ${
-                  hasCount
-                    ? "border-circuit-border bg-carbon-veil text-phosphor-white"
-                    : "border-circuit-border/40 bg-transparent text-sage-40"
+                className={`w-1.5 h-1.5 rounded-full ${
+                  hasCount ? "bg-lime-pulse" : "bg-sage-40/40"
                 }`}
-                title={meta?.description ?? STATUS_LABELS[status]}
+              />
+              <span>{meta?.label ?? STATUS_LABELS[status]}</span>
+              <span
+                className={`font-bold ml-0.5 ${
+                  hasCount ? "text-phosphor-white" : "text-sage-40/60"
+                }`}
               >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    hasCount ? "bg-lime-pulse" : "bg-circuit-border"
-                  }`}
-                />
-                <span className="text-sage-60">{meta?.label ?? STATUS_LABELS[status]}</span>
-                <span className={`font-bold font-mono ${hasCount ? "text-phosphor-white" : "text-sage-40"}`}>
-                  {count}
-                </span>
+                ({count})
               </span>
-            );
-          })}
-        </div>
-      </section>
+            </div>
+          );
+        })}
+      </div>
 
-      {/* Upcoming Events */}
+      {/* ── Upcoming Deadlines & Events ── */}
       {board.upcoming.length > 0 && (
-        <section className="rounded-cards border border-circuit-border bg-ground-iron p-5 shadow-none">
-          <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
-            Upcoming Deadlines & Interviews
-          </h2>
+        <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md">
+          <div className="flex items-center gap-2 mb-3.5">
+            <span className="material-symbols-outlined text-[18px] text-amber-400">
+              schedule
+            </span>
+            <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold">
+              Upcoming Deadlines & Interviews
+            </h2>
+          </div>
           <ul className="space-y-2">
             {board.upcoming.slice(0, 6).map((event) => (
               <li key={`${event.applicationId}-${event.kind}-${event.date}`}>
                 <Link
                   href={`/applications/${event.applicationId}`}
-                  className="flex items-center justify-between gap-3 rounded-md border border-circuit-border/60 hover:border-lime-pulse/60 bg-carbon-veil/50 px-3.5 py-2.5 transition-all"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[#3f4a38]/30 hover:border-lime-pulse/50 bg-[#111413] px-4 py-2.5 transition-all group"
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse shrink-0" />
-                    <span className="text-body-sm text-phosphor-white font-medium truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse shrink-0 group-hover:scale-125 transition-transform" />
+                    <span className="text-xs text-phosphor-white font-medium truncate">
                       {event.companyName} — {event.label}
                     </span>
                   </span>
-                  <span className="text-caption font-mono text-sage-40 shrink-0">
+                  <span className="text-[11px] font-mono text-sage-40 shrink-0">
                     {formatDay(event.date)}
                     {event.daysRemaining !== null ? (
-                      <span className="text-lime-pulse ml-1.5 font-semibold">
+                      <span className="text-lime-pulse ml-2 font-semibold">
                         · {event.daysRemaining}d remaining
                       </span>
                     ) : (
@@ -119,13 +220,16 @@ export default async function ApplicationsPage() {
         </section>
       )}
 
-      {/* Application Cards / Empty State */}
+      {/* ── Application Pipeline Cards ── */}
       {board.cards.length === 0 ? (
-        <section className="rounded-cards border border-dashed border-circuit-border bg-ground-iron/40 p-12 text-center">
-          <p className="font-heading text-title-md font-semibold text-phosphor-white">
+        <section className="rounded-2xl border border-dashed border-[#3f4a38]/60 bg-[#191c1b]/40 p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-[#191c1b] border border-[#3f4a38]/40 flex items-center justify-center text-sage-40 mx-auto mb-3">
+            <span className="material-symbols-outlined text-[24px]">send</span>
+          </div>
+          <p className="font-heading text-lg font-semibold text-phosphor-white">
             {board.emptyState?.title ?? "No applications recorded"}
           </p>
-          <p className="text-body-sm text-sage-60 mt-2 max-w-md mx-auto">
+          <p className="text-xs text-sage-40 mt-1.5 max-w-md mx-auto leading-relaxed">
             {board.emptyState?.message ??
               "Track your first application — it automatically inherits your target company and role preferences."}
           </p>
@@ -137,18 +241,16 @@ export default async function ApplicationsPage() {
             return (
               <article
                 key={card.id}
-                className="rounded-cards border border-circuit-border bg-ground-iron p-5 flex flex-col gap-3 hover:border-lime-pulse/50 transition-all duration-200"
+                className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 flex flex-col gap-3.5 hover:border-[#88957f]/70 transition-all duration-200 shadow-md group"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="font-heading text-title-md font-semibold text-phosphor-white truncate">
+                    <h3 className="font-heading text-base font-bold text-phosphor-white truncate group-hover:text-lime-pulse transition-colors">
                       {card.companyName}
                     </h3>
-                    <p className="text-body-sm text-sage-60 truncate">{card.roleName}</p>
+                    <p className="text-xs text-sage-40 truncate">{card.roleName}</p>
                   </div>
-                  <span
-                    className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-pills font-medium border border-circuit-border bg-carbon-veil text-moss-80 shrink-0"
-                  >
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full font-medium border border-[#3f4a38]/40 bg-[#111413] text-lime-pulse shrink-0">
                     {meta?.label ?? card.statusLabel}
                   </span>
                 </div>
@@ -164,18 +266,18 @@ export default async function ApplicationsPage() {
                 </div>
 
                 {card.nextEvent && (
-                  <p className="text-caption font-mono text-sage-40 flex items-center gap-1.5">
-                    <span className="w-1 h-1 rounded-full bg-lime-pulse" />
+                  <p className="text-[11px] font-mono text-sage-40 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse" />
                     <span>Next: {card.nextEvent.label} · {formatDay(card.nextEvent.date)}</span>
                   </p>
                 )}
 
                 <Link
                   href={`/applications/${card.id}`}
-                  className="mt-auto inline-flex items-center justify-center gap-2 rounded-buttons border border-circuit-border hover:border-lime-pulse bg-carbon-veil text-phosphor-white px-4 py-2 text-body-sm font-medium transition-all"
+                  className="mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-[#3f4a38]/40 hover:border-lime-pulse bg-[#111413] text-phosphor-white px-4 py-2 text-xs font-semibold transition-all group-hover:bg-lime-pulse/10"
                 >
                   <span>Open Application</span>
-                  <span className="material-symbols-outlined text-[16px] text-lime-pulse">
+                  <span className="material-symbols-outlined text-[15px] text-lime-pulse">
                     arrow_forward
                   </span>
                 </Link>
@@ -184,34 +286,6 @@ export default async function ApplicationsPage() {
           })}
         </section>
       )}
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  icon,
-  highlight = false,
-}: {
-  label: string;
-  value: number;
-  icon: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="rounded-cards border border-circuit-border bg-ground-iron p-4 shadow-none">
-      <div className="flex items-center justify-between">
-        <span className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium">
-          {label}
-        </span>
-        <span className={`material-symbols-outlined text-[18px] ${highlight ? "text-lime-pulse" : "text-sage-40"}`}>
-          {icon}
-        </span>
-      </div>
-      <p className={`text-headline-sm font-heading font-bold mt-1 ${highlight ? "text-lime-pulse" : "text-phosphor-white"}`}>
-        {value}
-      </p>
     </div>
   );
 }
@@ -228,9 +302,9 @@ function Metric({
   isPercent?: boolean;
 }) {
   return (
-    <div className="rounded-md bg-carbon-veil/70 border border-circuit-border/40 px-2 py-1.5">
-      <p className="text-[10px] font-mono uppercase tracking-wide text-sage-40">{label}</p>
-      <p className="text-body font-mono font-bold text-phosphor-white mt-0.5">
+    <div className="rounded-xl bg-[#111413] border border-[#3f4a38]/30 px-2 py-1.5">
+      <p className="text-[9px] font-mono uppercase tracking-wide text-sage-40">{label}</p>
+      <p className="text-xs font-mono font-bold text-phosphor-white mt-0.5">
         {value !== null ? (isPercent ? `${value}%` : value) : note ?? "—"}
       </p>
     </div>

@@ -43,13 +43,13 @@ export default async function PracticeLauncherPage({
         <div className="pt-2 flex justify-center gap-3">
           <Link
             href="/dashboard"
-            className="px-5 py-2.5 rounded-lg border border-border bg-surface hover:bg-surface-high text-body-sm font-semibold text-text-primary transition-colors"
+            className="px-5 py-2.5 rounded-buttons border border-neutral-border bg-card-elevated hover:border-green-border text-body-sm font-semibold text-text-primary transition-colors"
           >
             Dashboard
           </Link>
           <Link
             href="/tests"
-            className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-text text-body-sm font-semibold text-text-inverse transition-colors"
+            className="px-5 py-2.5 rounded-buttons bg-primary-green hover:bg-bright-green text-body-sm font-semibold text-void-black transition-colors"
           >
             View Catalog
           </Link>
