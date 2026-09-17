@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <!-- Rounded container -->
+  <rect width="500" height="500" rx="100" fill="#141414" stroke="#2a2a2a" stroke-width="4"/>
+  
+  <!-- Left Shape: sharp peak at (100, 100), slope down-right, solid pillar at bottom -->
+  <path d="M100 100 L240 240 V400 H100 Z" fill="#D4D4D8"/>
+  
+  <!-- Center Diagonal Connector -->
+  <polygon points="240,210 270,240 270,290 240,260" fill="#D4D4D8"/>
+  
+  <!-- Right Shape: solid pillar at top, slope down-right to sharp peak at (400, 400) -->
+  <path d="M270 100 H400 V260 L270 390 Z" fill="#D4D4D8"/>
+  
+  <!-- Satellite Orb at top-right -->
+  <circle cx="400" cy="100" r="30" fill="#FFFFFF"/>
+</svg>

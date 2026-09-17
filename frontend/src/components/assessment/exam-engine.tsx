@@ -9,6 +9,7 @@ import {
   submitTestAttemptAction,
 } from "@/server/actions";
 import { formatTimerDisplay } from "@/lib/utils";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 
 interface ExamEngineProps {
   initialState: {
@@ -346,11 +347,7 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
       {/* Top Header */}
       <header className="flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface-high">
-            <span className="material-symbols-outlined text-primary-text text-[18px]">
-              terminal
-            </span>
-          </div>
+          <NexoraLogo size="sm" />
           <div className="min-w-0">
             <p className="text-label-xs font-mono uppercase tracking-wider text-text-muted">Nexora • Active Exam</p>
             <h1 className="max-w-[11rem] truncate text-body-sm font-bold text-text-primary sm:max-w-md">

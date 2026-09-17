@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 
 function LoginForm() {
   const router = useRouter();
@@ -119,7 +120,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-transparent tech-grid px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 flex flex-col items-center">
+          <NexoraLogo size="lg" priority className="mb-4 shadow-md" />
           <h1 className="text-headline-lg text-text-primary font-bold">
             Nexora
           </h1>

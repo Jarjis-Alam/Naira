@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -64,7 +65,8 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-transparent tech-grid px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
+          <NexoraLogo size="lg" priority className="mb-4 shadow-md" />
           <h1 className="text-headline-lg text-text-primary font-bold">
             Nexora
           </h1>

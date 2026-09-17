@@ -4,6 +4,7 @@ import { LandingNav } from "@/components/layout/landing-nav";
 import { DeveloperFooter } from "@/components/layout/developer-footer";
 import { DevButton } from "@/components/layout/dev-modal";
 import { Eyebrow } from "@/components/ui/eyebrow";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -19,19 +20,15 @@ export default async function LandingPage() {
       {/* Top Navigation */}
       <header className="border-b border-phosphor-blue-black sticky top-0 z-50 bg-carbon-veil/90 backdrop-blur-md w-full">
         <div className="container-fluid h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-ground-iron flex items-center justify-center border border-circuit-border">
-              <span className="material-symbols-outlined text-lime-pulse text-[18px]">
-                terminal
-              </span>
-            </div>
+          <Link href="/" className="flex items-center space-x-3 group">
+            <NexoraLogo size={32} priority className="group-hover:border-white transition-colors" />
             <div className="flex items-center gap-1.5">
               <span className="font-heading font-semibold text-title-md text-phosphor-white tracking-tight">
                 Nexora
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white" />
             </div>
-          </div>
+          </Link>
 
           <LandingNav items={navItems} />
 

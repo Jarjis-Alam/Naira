@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import LogoLoop, { LogoItem } from "@/components/ui/logo-loop";
 import { DevModal } from "@/components/layout/dev-modal";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 
 export function DeveloperFooter() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,8 +72,8 @@ export function DeveloperFooter() {
       href: "https://github.com/Jarjis-Alam/nexora",
       title: "Nexora Engine",
       node: (
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface/90 border border-border text-text-secondary hover:text-text-primary transition-all duration-300 shadow-sm cursor-pointer">
-          <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface/90 border border-border text-text-secondary hover:text-text-primary hover:border-white/40 transition-all duration-300 shadow-sm cursor-pointer group">
+          <NexoraLogo size="xs" />
           <span className="text-[12px] font-mono">Nexora • Precision Prep</span>
         </div>
       ),

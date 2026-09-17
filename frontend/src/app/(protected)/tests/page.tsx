@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { getPublishedTests } from "@/server/tests";
 import { TestCatalog } from "@/components/tests/test-catalog";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 import Link from "next/link";
 
 export default async function TestCatalogPage() {
@@ -15,7 +16,8 @@ export default async function TestCatalogPage() {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div className="flex flex-col max-w-3xl">
           <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono mb-1">
-            <span className="font-semibold text-lime-pulse">NEXORA</span>
+            <NexoraLogo size={16} />
+            <span className="font-semibold text-white">NEXORA</span>
             <span className="text-border">/</span>
             <span>PREPARATION</span>
             <span className="text-border">/</span>
@@ -39,7 +41,7 @@ export default async function TestCatalogPage() {
           </Link>
           <Link
             href="/roadmap"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 active:scale-95 transition-all shadow-md"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 active:scale-95 transition-all shadow-md"
           >
             <span className="material-symbols-outlined text-[16px]">alt_route</span>
             <span>View Roadmap</span>

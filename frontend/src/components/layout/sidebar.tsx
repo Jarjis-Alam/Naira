@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 import { useState } from "react";
 import { DevModal } from "@/components/layout/dev-modal";
 
@@ -151,12 +152,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
         className="flex items-center gap-2.5 px-2.5 py-2 mb-4 group"
       >
         {/* Emblem */}
-        <div className="w-7 h-7 rounded-[6px] bg-surface-container border border-outline-variant flex items-center justify-center group-hover:border-white transition-colors shrink-0">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1L12.5 4.5V9.5L7 13L1.5 9.5V4.5L7 1Z" stroke="#ffffff" strokeWidth="1.2" fill="none"/>
-            <path d="M7 4L10 5.75V9.25L7 11L4 9.25V5.75L7 4Z" fill="#ffffff" fillOpacity="0.3" stroke="#ffffff" strokeWidth="0.8"/>
-          </svg>
-        </div>
+        <NexoraLogo size="sm" className="group-hover:border-white transition-colors" />
         <div>
           <div className="font-heading font-semibold text-[15px] text-white leading-none tracking-tight">
             Nexora
@@ -262,12 +258,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
       {/* ── Mobile top bar ── */}
       <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-void-black border-b border-outline-variant backdrop-blur-sm">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[5px] bg-surface-container border border-outline-variant flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1L12.5 4.5V9.5L7 13L1.5 9.5V4.5L7 1Z" stroke="#ffffff" strokeWidth="1.2" fill="none"/>
-              <path d="M7 4L10 5.75V9.25L7 11L4 9.25V5.75L7 4Z" fill="#ffffff" fillOpacity="0.3" stroke="#ffffff" strokeWidth="0.8"/>
-            </svg>
-          </div>
+          <NexoraLogo size={24} />
           <span className="font-heading font-semibold text-[14px] text-white">Nexora</span>
         </Link>
         <button

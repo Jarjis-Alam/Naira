@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { NexoraLogo } from "@/components/ui/nexora-logo";
 
 export interface PreviewSection {
   id: string;
@@ -207,6 +208,7 @@ export function AdminTestPreview({ initialDraft }: { initialDraft?: PreviewDraft
     <div className="fixed inset-0 z-50 flex h-dvh min-h-0 flex-col overflow-hidden bg-base text-text-primary">
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3 sm:px-6">
         <div className="min-w-0 flex items-center gap-3">
+          <NexoraLogo size="sm" />
           <div>
             <p className="text-label-xs font-mono uppercase tracking-wider text-primary-text">Nexora · Preview Mode</p>
             <h1 className="truncate text-body-sm font-bold">{draft.title || "Untitled test"}</h1>
