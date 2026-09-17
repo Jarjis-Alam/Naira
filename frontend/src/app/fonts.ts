@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 export const mileast = localFont({
   src: [
     {
-      path: "../../public/fonts/Mileast Italic.otf",
+      path: "../../public/fonts/mileast-italic.otf",
       weight: "400",
       style: "italic",
     },

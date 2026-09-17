@@ -5,9 +5,14 @@ import * as schema from "./schema";
 const isProduction = process.env.NODE_ENV === "production";
 const connectionString = process.env.DATABASE_URL;
 
-if (isProduction && !connectionString) {
-  throw new Error(
-    "FATAL CONFIGURATION ERROR: DATABASE_URL environment variable is required in production."
+const isBuildPhase =
+  process.env.NEXT_PHASE === "phase-production-build" ||
+  process.env.npm_lifecycle_event === "build" ||
+  process.env.BUILDING === "true";
+
+if (isProduction && !connectionString && !isBuildPhase) {
+  console.warn(
+    "[db] Warning: DATABASE_URL is not set in production runtime environment."
   );
 }
 

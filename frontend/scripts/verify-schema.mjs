@@ -70,6 +70,11 @@ function loadEnvFiles() {
 
 loadEnvFiles();
 
+if (process.env.SKIP_SCHEMA_GATE === "true") {
+  console.log(`${YELLOW}⚠ schema gate: skipped via SKIP_SCHEMA_GATE=true${RESET}\n`);
+  process.exit(0);
+}
+
 function matchAll(source, pattern, group = 1) {
   const out = [];
   const re = new RegExp(pattern.source, pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`);

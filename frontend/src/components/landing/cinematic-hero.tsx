@@ -67,12 +67,7 @@ export function CinematicHero({ isAuthenticated }: CinematicHeroProps) {
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover object-[center_35%] z-0 pointer-events-none motion-reduce:hidden"
       >
-        {/* Primary video source */}
-        <source
-          src="/video/Character_animation_with_cosmic_…_20260917193547_gwr_video_mvp.mp4"
-          type="video/mp4"
-        />
-        {/* Fallback alias source */}
+        {/* Cosmic hero background video */}
         <source src="/video/cosmic-hero.mp4" type="video/mp4" />
       </video>
 
