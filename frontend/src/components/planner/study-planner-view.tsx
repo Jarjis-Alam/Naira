@@ -87,7 +87,7 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
       <div className="space-y-8 pb-16">
         <div className="flex items-center gap-2 text-text-muted text-[12px] font-mono mb-1">
           <NexoraLogo size={16} />
-          <span className="font-semibold text-white">NEXORA</span>
+          <span className="font-semibold text-white">NAIRA</span>
           <span className="text-zinc-600">/</span>
           <span>PREPARATION</span>
           <span className="text-zinc-600">/</span>
@@ -155,7 +155,7 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
         <div className="flex flex-col max-w-3xl">
           <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono mb-1">
             <NexoraLogo size={16} />
-            <span className="font-semibold text-white">NEXORA</span>
+            <span className="font-semibold text-white">NAIRA</span>
             <span className="text-zinc-600">/</span>
             <span>PREPARATION</span>
             <span className="text-zinc-600">/</span>

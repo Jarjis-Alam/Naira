@@ -69,12 +69,12 @@ export function DeveloperFooter() {
       ),
     },
     {
-      href: "https://github.com/Jarjis-Alam/nexora",
-      title: "Nexora Engine",
+      href: "https://github.com/Jarjis-Alam/Naira",
+      title: "Naira Engine",
       node: (
         <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface/90 border border-border text-text-secondary hover:text-text-primary hover:border-white/40 transition-all duration-300 shadow-sm cursor-pointer group">
           <NexoraLogo size="xs" />
-          <span className="text-[12px] font-mono">Nexora • Precision Prep</span>
+          <span className="text-[12px] font-mono">Naira • Precision Prep</span>
         </div>
       ),
     },
@@ -132,7 +132,7 @@ export function DeveloperFooter() {
           </div>
 
           <p className="text-label-xs text-text-muted font-mono">
-            Nexora © {new Date().getFullYear()} • Your Operating System for Placements
+            Naira © {new Date().getFullYear()} • Your Operating System for Placements
           </p>
         </div>
       </footer>

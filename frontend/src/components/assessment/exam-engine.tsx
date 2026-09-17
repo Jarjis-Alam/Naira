@@ -349,9 +349,9 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           <NexoraLogo size="sm" />
           <div className="min-w-0">
-            <p className="text-label-xs font-mono uppercase tracking-wider text-text-muted">Nexora • Active Exam</p>
+            <p className="text-label-xs font-mono uppercase tracking-wider text-text-muted">Naira • Active Exam</p>
             <h1 className="max-w-[11rem] truncate text-body-sm font-bold text-text-primary sm:max-w-md">
-              Nexora • {testTitle}
+              Naira • {testTitle}
             </h1>
           </div>
         </div>

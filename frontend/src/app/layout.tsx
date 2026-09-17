@@ -5,9 +5,9 @@ import { mileast } from "@/app/fonts";
 import { ClickSpark } from "@/components/ui/click-spark";
 
 export const metadata: Metadata = {
-  title: "Nexora — Placement Operating System",
+  title: "NAIRA — Placement Operating System",
   description:
-    "Assess your skills, identify weaknesses, practice with precision, and measure placement readiness with high-precision metrics.",
+    "Your intelligent companion for placement preparation. Assess your skills, identify weaknesses, practice with precision, and measure placement readiness with high-precision metrics.",
   icons: {
     icon: [
       { url: "/logo.png", sizes: "any" },

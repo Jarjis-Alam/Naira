@@ -155,7 +155,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
         <NexoraLogo size="sm" className="group-hover:border-white transition-colors" />
         <div>
           <div className="font-heading font-semibold text-[15px] text-white leading-none tracking-tight">
-            Nexora
+            Naira
           </div>
           <div className="font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted mt-0.5">
             Placement OS
@@ -224,7 +224,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
       <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-void-black border-b border-outline-variant backdrop-blur-sm">
         <Link href="/dashboard" className="flex items-center gap-2">
           <NexoraLogo size={24} />
-          <span className="font-heading font-semibold text-[14px] text-white">Nexora</span>
+          <span className="font-heading font-semibold text-[14px] text-white">Naira</span>
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

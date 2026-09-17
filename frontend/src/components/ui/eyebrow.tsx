@@ -7,7 +7,7 @@ export interface EyebrowProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Eyebrow({
   children,
-  system = "NEXORA",
+  system = "NAIRA",
   category,
   className = "",
   ...props

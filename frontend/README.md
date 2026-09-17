@@ -1,4 +1,4 @@
-# Nexora (Frontend)
+# NAIRA (Frontend)
 
 Please refer to the main repository [README.md](../README.md) for full architectural documentation, production configuration, and security models.
 

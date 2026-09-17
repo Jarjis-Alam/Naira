@@ -70,7 +70,7 @@ export function TopHeader({ session }: TopHeaderProps) {
               {userName}
             </span>
             <span className="text-[10px] font-mono text-text-muted leading-tight truncate max-w-[120px]">
-              {userEmail || "CST • Nexora"}
+              {userEmail || "CST • Naira"}
             </span>
           </div>
           <span className="material-symbols-outlined text-text-muted text-[16px] ml-0.5 group-hover:text-white transition-colors">

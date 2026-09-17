@@ -1,10 +1,10 @@
 <div align="center">
 
-# 🎓 Nexora
+# 🎓 NAIRA
 
 ### The Operating System for Engineering Placements
 
-An industrial-grade placement-preparation platform engineered for engineering students, career coaches, and university placement cells. Nexora evaluates technical foundations, diagnoses concept vulnerabilities under timed conditions, tracks application pipelines, runs multi-round mock hiring simulations, and provides deterministic ATS resume intelligence with end-to-end placement outcome analytics.
+An industrial-grade placement-preparation platform engineered for engineering students, career coaches, and university placement cells. NAIRA evaluates technical foundations, diagnoses concept vulnerabilities under timed conditions, tracks application pipelines, runs multi-round mock hiring simulations, and provides deterministic ATS resume intelligence with end-to-end placement outcome analytics.
 
 <br />
 
@@ -19,10 +19,10 @@ An industrial-grade placement-preparation platform engineered for engineering st
 [![License](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
 
 <!-- Quality & Verification Badges -->
-[![Build](https://img.shields.io/badge/Build-50%2F50_Routes_Passing-22c55e?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Jarjis-Alam/nexora)
+[![Build](https://img.shields.io/badge/Build-50%2F50_Routes_Passing-22c55e?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/Jarjis-Alam/Naira)
 [![Type_Checking](https://img.shields.io/badge/Type_Safety-Strict_TS-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![ESLint](https://img.shields.io/badge/Linter-ESLint_9-4B32C3?style=flat-square&logo=eslint&logoColor=white)](https://eslint.org/)
-[![Database](https://img.shields.io/badge/Database-18_Migrations_Applied-0284c7?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Database](https://img.shields.io/badge/Database-20_Migrations_Applied-0284c7?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Security](https://img.shields.io/badge/Security-Strict_CSP_&_RBAC-f43f5e?style=flat-square&logo=securityscorecard&logoColor=white)](#-security-model--compliance)
 
 <br />
@@ -37,7 +37,7 @@ An industrial-grade placement-preparation platform engineered for engineering st
 
 Placement preparation is often fragmented: students practice generic coding quizzes, receive superficial percentage scores with zero diagnosis of root concept weaknesses, upload resumes without deterministic keyword feedback, track applications in ad-hoc spreadsheets, and lack visibility into offer compensations.
 
-**Nexora solves this by delivering a closed-loop placement operating system:**
+**NAIRA solves this by delivering a closed-loop placement operating system:**
 
 ```
 Assess & Diagnose ──► Target Roles & Companies ──► Execution OS & Roadmap ──► Mock Hiring Simulation ──► ATS Resume Intelligence ──► Application Tracker ──► Outcome Analytics
@@ -233,13 +233,22 @@ The database uses a normalized PostgreSQL architecture with **31 core tables** o
 │   ├── resume_suggestions            # Actionable suggestions with accept/reject states
 │   └── resume_versions               # Immutable revision history for resume variants
 │
-└── 8. Applications & Placement Outcomes (Phases 19 & 20)
-    ├── applications                  # Student job applications (company, role, stage, status)
-    ├── application_events            # Audit timeline of stage transitions & events
-    ├── application_interviews        # Interview rounds (type, date, interviewer, questions)
-    ├── application_assessments       # OA assessment tracking and scores
-    ├── application_offers            # Detailed offer metrics (base, bonus, equity, total CTC)
-    └── application_reflections       # Candidate post-interview reflection logs
+├── 8. Applications & Placement Outcomes (Phases 19 & 20)
+│   ├── applications                  # Student job applications (company, role, stage, status)
+│   ├── application_events            # Audit timeline of stage transitions & events
+│   ├── application_interviews        # Interview rounds (type, date, interviewer, questions)
+│   ├── application_assessments       # OA assessment tracking and scores
+│   ├── application_offers            # Detailed offer metrics (base, bonus, equity, total CTC)
+│   └── application_reflections       # Candidate post-interview reflection logs
+│
+├── 9. Adaptive Study Planner (Phase 24)
+│   ├── adaptive_study_plans          # Personalized dynamic study schedules & target milestones
+│   └── study_plan_items              # Actionable revision & practice tasks with priority tracking
+│
+└── 10. AI Interview Coach (Phase 26)
+    ├── interview_sessions            # Real-time multi-turn conversational interview sessions
+    ├── interview_turns               # Timestamped AI questions and student transcripts
+    └── interview_evaluations         # Multi-rubric scoring (technical, communication, depth)
 ```
 
 ---
@@ -247,7 +256,7 @@ The database uses a normalized PostgreSQL architecture with **31 core tables** o
 ## 📁 Project Structure
 
 ```
-nexora/
+naira/
 ├── README.md                              # Comprehensive project documentation
 ├── LICENSE                                # MIT license
 ├── phase-18-implementation-report.md      # Resume Intelligence verification report
@@ -257,6 +266,7 @@ nexora/
     ├── package.json                       # Scripts and dependencies
     ├── next.config.ts                     # Next.js configuration & CSP security headers
     ├── drizzle.config.ts                  # Drizzle Kit migration configuration
+    ├── vercel.json                        # Vercel deployment configuration
     ├── .env.example                       # Environment variable template
     ├── .env.local                         # Local environment secrets (git-ignored)
     └── src/
@@ -289,8 +299,8 @@ nexora/
         │   ├── simulation/                # Simulation runner & round controllers
         │   └── ui/                        # Accessible core primitives (buttons, modals, badges)
         ├── db/                            # Database infrastructure
-        │   ├── schema.ts                  # Drizzle ORM schema (31 tables)
-        │   ├── migrations/                # Drizzle migration files (0000 - 0017)
+        │   ├── schema.ts                  # Drizzle ORM schema (36 tables)
+        │   ├── migrations/                # Drizzle migration files (0000 - 0019)
         │   ├── index.ts                   # PostgreSQL connection pool with fail-fast
         │   ├── bootstrap.ts               # Idempotent canonical seed & admin bootstrapper
         │   └── seed.ts                    # Development demo dataset generator
@@ -309,7 +319,7 @@ nexora/
         │   ├── application-intelligence.ts # Application pipeline & interview scheduler
         │   ├── outcome-intelligence.ts    # Offer comparison & rejection analytics
         │   └── admin-analytics.ts         # Instructor analytics & discrimination index
-        └── test/                          # Automated verification suites (Phases 1-20)
+        └── test/                          # Automated verification suites (Phases 1-26)
 ```
 
 ---
@@ -322,8 +332,8 @@ nexora/
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/Jarjis-Alam/nexora.git
-cd nexora/frontend
+git clone https://github.com/Jarjis-Alam/Naira.git
+cd Naira/frontend
 npm install
 ```
 
@@ -342,7 +352,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ### 3. Run Migrations & Bootstrap Data
-Apply all 18 database migrations (`0000_violet_kid_colt` through `0017_phase_17_simulation_schema`) and bootstrap canonical reference data:
+Apply all 20 database migrations (`0000_violet_kid_colt` through `0019_phase_26_ai_interview_coach`) and bootstrap canonical reference data:
 ```bash
 # Execute Drizzle migrations
 npm run db:migrate

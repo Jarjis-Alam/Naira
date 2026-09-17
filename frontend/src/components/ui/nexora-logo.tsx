@@ -66,7 +66,7 @@ export function NexoraLogo({
       >
         <Image
           src="/logo.png"
-          alt="Nexora"
+          alt="Naira"
           width={pixelSize * 2}
           height={pixelSize * 2}
           priority={priority}
@@ -84,7 +84,7 @@ export function NexoraLogo({
       {emblem}
       <div className="flex flex-col">
         <span className="font-heading font-semibold text-[15px] text-white leading-none tracking-tight">
-          Nexora
+          Naira
         </span>
         {subtitle && (
           <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted mt-0.5">

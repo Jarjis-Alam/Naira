@@ -325,7 +325,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white mb-1">
-            Nexora
+            Naira
           </h1>
           <p className="text-[11px] font-mono tracking-widest uppercase text-zinc-400">
             Your Operating System For Placements

@@ -22,7 +22,7 @@ export default async function LandingPage() {
               <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
-              <span className="text-caption text-moss-70 ml-3 font-mono">nexora-intelligence-terminal</span>
+              <span className="text-caption text-moss-70 ml-3 font-mono">naira-intelligence-terminal</span>
             </div>
             <div className="text-caption text-lime-pulse font-mono flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-pulse" />
@@ -80,11 +80,11 @@ export default async function LandingPage() {
       <section id="how-it-works" className="container-fluid py-20 scroll-mt-20 border-t border-phosphor-blue-black relative">
         <span id="loop" className="absolute -top-20" aria-hidden="true" />
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <Eyebrow system="NEXORA" category="EXECUTION ARCHITECTURE" className="justify-center">
+          <Eyebrow system="NAIRA" category="EXECUTION ARCHITECTURE" className="justify-center">
             CLOSED-LOOP PREPARATION
           </Eyebrow>
           <h2 className="font-heading text-headline-lg font-semibold text-phosphor-white">
-            How Nexora Operates
+            How Naira Operates
           </h2>
           <p className="text-body-sm text-sage-60 mt-2 max-w-xl mx-auto leading-relaxed">
             A deterministic engineering feedback loop designed to move students from uncalibrated to placement-ready.
@@ -124,7 +124,7 @@ export default async function LandingPage() {
       <section id="about" className="py-20 container-fluid border-t border-phosphor-blue-black scroll-mt-20 relative">
         <span id="curriculum" className="absolute -top-20" aria-hidden="true" />
         <div className="mb-12 text-center md:text-left">
-          <Eyebrow system="NEXORA" category="CURRICULUM">
+          <Eyebrow system="NAIRA" category="CURRICULUM">
             STANDARDIZED SYLLABUS
           </Eyebrow>
           <h2 className="font-heading text-headline-lg font-semibold text-phosphor-white mb-2">
