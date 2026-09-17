@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/components/providers/auth-provider";
-import { DevButton } from "@/components/layout/dev-modal";
 import { mileast } from "@/app/fonts";
+import { ClickSpark } from "@/components/ui/click-spark";
 
 export const metadata: Metadata = {
   title: "Nexora — Placement Operating System",
@@ -36,13 +36,20 @@ export default function RootLayout({
         {/* Phosphor terminal canvas with subtle green bloom & precision grid */}
         <div className="fixed inset-0 pointer-events-none -z-10 w-full h-full min-h-screen bg-void-black tech-grid ambient-glow" />
 
-        <div className="relative z-10 min-h-screen flex flex-col justify-between">
-          <AuthProvider>
-            {children}
-            {/* Quick Access Floating DEV Profile Trigger */}
-            <DevButton variant="floating" />
-          </AuthProvider>
-        </div>
+        <ClickSpark
+          sparkColor="#ffffff"
+          sparkCount={8}
+          sparkSize={10}
+          sparkRadius={20}
+          duration={380}
+          easing="ease-out"
+        >
+          <div className="relative z-10 min-h-screen flex flex-col justify-between">
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </div>
+        </ClickSpark>
       </body>
     </html>
   );

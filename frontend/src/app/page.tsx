@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { DeveloperFooter } from "@/components/layout/developer-footer";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { CinematicHero } from "@/components/landing/cinematic-hero";
+import { LandingFooter } from "@/components/landing/landing-footer";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -224,8 +224,8 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Developer Details & Footer */}
-      <DeveloperFooter />
+      {/* ── Footer with animated logo loop ───────────────── */}
+      <LandingFooter />
     </div>
   );
 }

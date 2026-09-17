@@ -3,7 +3,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { NexoraLogo } from "@/components/ui/nexora-logo";
-import { DevButton } from "@/components/layout/dev-modal";
 
 interface CinematicHeroProps {
   isAuthenticated: boolean;
@@ -88,9 +87,15 @@ export function CinematicHero({ isAuthenticated }: CinematicHeroProps) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/50 via-black/15 to-transparent z-[1]"
       />
+      {/* Bottom atmospheric gradient — cinematic fade rising from the bottom edge */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/60 via-black/15 to-transparent z-[1]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1]"
+        style={{
+          height: "48vh",
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.62) 16%, rgba(0,0,0,0.32) 36%, rgba(0,0,0,0.12) 58%, transparent 100%)",
+        }}
       />
 
       {/* 4. Minimal Floating Navbar Layered Over Video */}
@@ -137,8 +142,6 @@ export function CinematicHero({ isAuthenticated }: CinematicHeroProps) {
 
         {/* Right: Actions & Authentication */}
         <div className="hidden sm:flex items-center space-x-4 sm:space-x-5">
-          <DevButton variant="nav" />
-
           {isAuthenticated ? (
             <Link
               href="/dashboard"
@@ -166,7 +169,6 @@ export function CinematicHero({ isAuthenticated }: CinematicHeroProps) {
 
         {/* Mobile Navigation Toggle */}
         <div className="flex items-center space-x-3 sm:hidden">
-          <DevButton variant="nav" />
           <button
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             className="w-9 h-9 rounded-full flex items-center justify-center text-white hover:text-neutral-300 transition-colors"
@@ -244,11 +246,39 @@ export function CinematicHero({ isAuthenticated }: CinematicHeroProps) {
         </div>
       )}
 
-      {/* 5. Brand Name "Naira" in Mileast Italic — Bottom Left (Matches Attached Reference) */}
-      <div className="absolute left-[4vw] sm:left-[5vw] bottom-[4vh] sm:bottom-[5vh] z-20 pointer-events-none select-none">
-        <h1 className="font-mileast italic font-normal text-white text-[64px] sm:text-[96px] md:text-[132px] lg:text-[168px] xl:text-[204px] leading-[0.82] tracking-[-0.02em] drop-shadow-[0_8px_36px_rgba(0,0,0,0.6)]">
+      {/* 5. Brand Name "Naira" + Description + Start Assessment CTA — Bottom Left */}
+      <div className="absolute left-[4vw] sm:left-[5vw] bottom-[4vh] sm:bottom-[5vh] z-20 select-none flex flex-col items-start">
+        {/* Naira title — reduced ~17% from previous sizes */}
+        <h1 className="font-mileast italic font-normal text-white text-[54px] sm:text-[80px] md:text-[110px] lg:text-[140px] xl:text-[170px] leading-[0.85] tracking-[-0.02em] drop-shadow-[0_8px_36px_rgba(0,0,0,0.6)] pointer-events-none">
           Naira
         </h1>
+
+        {/* One-line description */}
+        <p className="mt-2 sm:mt-3 font-sans font-normal text-white text-sm sm:text-base md:text-lg leading-snug pointer-events-none" style={{ color: '#ffffff' }}>
+          Your intelligent companion for placement preparation.
+        </p>
+
+        {/* Start Assessment CTA — pill-shaped, beneath description */}
+        <Link
+          href="/assessment"
+          className="
+            mt-4 sm:mt-5
+            inline-flex items-center
+            px-5 sm:px-6 py-2 sm:py-2.5
+            rounded-full
+            bg-white/90 hover:bg-white
+            text-black
+            text-sm sm:text-base font-medium tracking-wide
+            shadow-[0_2px_16px_rgba(0,0,0,0.35)]
+            transition-all duration-200
+            hover:shadow-[0_4px_24px_rgba(0,0,0,0.5)]
+            hover:scale-[1.03]
+            active:scale-[0.98]
+            pointer-events-auto
+          "
+        >
+          Start Assessment
+        </Link>
       </div>
 
       {/* 6. Subtle Optional Explore Cue at Bottom Right */}
