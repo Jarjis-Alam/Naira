@@ -421,6 +421,37 @@ const ROLE_DOMAIN_REQUIREMENTS: Record<
 };
 
 /**
+ * Phase 18 integration: expose the authoritative domain requirements for a role
+ * so ATS resume intelligence can reuse this role curriculum instead of
+ * duplicating company/role intelligence elsewhere in the platform.
+ */
+export function getRoleDomainRequirements(params: {
+  roleSlug: string | null;
+  industry?: string | null;
+}): DomainRequirement[] {
+  const base = params.roleSlug ? ROLE_DOMAIN_REQUIREMENTS[params.roleSlug] : null;
+
+  const resolved = base
+    ? applyCompanyIndustryModifiers(base, params.industry ?? null)
+    : {
+        DSA: { need: "HIGH" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+        DBMS: { need: "HIGH" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+        OS: { need: "HIGH" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+        OOP: { need: "MEDIUM" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+        SQL: { need: "MEDIUM" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+        CN: { need: "STANDARD" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+        APT: { need: "STANDARD" as TargetNeedLevel, rationale: "Standard placement benchmark." },
+      };
+
+  return Object.entries(resolved).map(([code, item]) => ({
+    domain: code,
+    domainName: AUTHORITATIVE_SUBJECT_NAMES[code] || code,
+    targetNeed: item.need,
+    rationale: item.rationale,
+  }));
+}
+
+/**
  * Company industry adjustments.
  * Enhances domain needs when a company has specific institutional hiring patterns.
  */

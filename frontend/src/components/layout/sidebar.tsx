@@ -27,6 +27,10 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
   const mainNavItems = [
     { label: "Dashboard", href: "/dashboard", icon: "dashboard" },
     { label: "Target Strategy", href: "/target", icon: "track_changes" },
+    { label: "Resume", href: "/resume", icon: "description" },
+    { label: "Applications", href: "/applications", icon: "work" },
+    { label: "Outcomes", href: "/outcomes", icon: "insights" },
+    { label: "Simulation", href: "/simulation", icon: "terminal" },
     { label: "Assessment", href: assessmentHref, icon: "assignment" },
     { label: "Tests", href: "/tests", icon: "quiz" },
     { label: "Roadmap", href: "/roadmap", icon: "alt_route" },
@@ -35,7 +39,8 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
   ];
 
   const adminNavItems = [
-    { label: "Question Bank", href: "/admin/questions", icon: "database" },
+    { label: "Question Bank", href: "/admin/questions", icon: "inventory_2" },
+    { label: "Tests", href: "/admin/tests", icon: "quiz" },
     { label: "Test Builder", href: "/admin/tests/new", icon: "build" },
     { label: "Analytics", href: "/admin/analytics", icon: "monitoring" },
     { label: "Companies", href: "/admin/companies", icon: "domain" },

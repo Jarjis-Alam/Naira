@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { TestStatus, EffectiveStatus } from "@/lib/lifecycle";
 
-interface AdminTestItem {
+export interface AdminTestItem {
   id: string;
   title: string;
   description: string | null;
@@ -15,18 +15,27 @@ interface AdminTestItem {
   totalMarks: number;
   status: TestStatus;
   effectiveStatus: EffectiveStatus;
+  attemptLimit: number | null;
+  negativeMarkingEnabled: boolean;
+  negativeMarkRate: number;
+  randomizeQuestions: boolean;
+  randomizeOptions: boolean;
   scheduledStartAt: Date | string | null;
   scheduledEndAt: Date | string | null;
   scheduleTimezone: string | null;
   isPublished: boolean;
   questionCount: number;
-  createdAt: Date;
+  sectionCount: number;
+  attemptCount: number;
+  createdAt: Date | string;
+  updatedAt: Date | string | null;
 }
 
 export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] }) {
   const router = useRouter();
   const [tests, setTests] = useState<AdminTestItem[]>(initialTests);
   const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterType, setFilterType] = useState<string>("all");
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
@@ -34,13 +43,32 @@ export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const filteredTests = tests.filter((t) => {
-    const matchesSearch =
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      (t.description && t.description.toLowerCase().includes(search.toLowerCase()));
-    const matchesType = filterType === "all" || t.type === filterType;
-    return matchesSearch && matchesType;
-  });
+  const hasFilters = Boolean(search || filterStatus !== "all" || filterType !== "all");
+
+  const filteredTests = useMemo(() => {
+    return tests.filter((t) => {
+      const matchesSearch =
+        !search ||
+        t.title.toLowerCase().includes(search.toLowerCase()) ||
+        (t.description && t.description.toLowerCase().includes(search.toLowerCase())) ||
+        t.id.toLowerCase().includes(search.toLowerCase());
+
+      const matchesStatus =
+        filterStatus === "all" ||
+        t.status === filterStatus ||
+        t.effectiveStatus === filterStatus;
+
+      const matchesType = filterType === "all" || t.type === filterType;
+
+      return matchesSearch && matchesStatus && matchesType;
+    });
+  }, [tests, search, filterStatus, filterType]);
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setFilterStatus("all");
+    setFilterType("all");
+  };
 
   const handleUpdateStatus = async (testId: string, newStatus: TestStatus) => {
     setTogglingId(testId);
@@ -69,14 +97,16 @@ export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] 
                 status: newStatus,
                 effectiveStatus:
                   newStatus === "published"
-                    ? (t.scheduledStartAt && new Date().getTime() < new Date(t.scheduledStartAt).getTime() ? "scheduled" : "active")
+                    ? t.scheduledStartAt && new Date().getTime() < new Date(t.scheduledStartAt).getTime()
+                      ? "scheduled"
+                      : "active"
                     : newStatus,
                 isPublished: newStatus === "published",
               }
             : t
         )
       );
-      setSuccessMessage(`Assessment transitioned to ${newStatus.toUpperCase()}`);
+      setSuccessMessage(`Assessment status updated to ${newStatus.toUpperCase()}`);
       router.refresh();
     } catch (err: any) {
       console.error(err);
@@ -98,297 +128,454 @@ export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] 
         body: JSON.stringify({ action: "duplicate", id: testId }),
       });
       const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        throw new Error(data.error || "Unable to duplicate this test. Please try again.");
+        throw new Error(data.error || "Failed to duplicate assessment.");
       }
 
-      const source = tests.find((t) => t.id === testId);
-      const newTestItem: AdminTestItem = {
-        id: data.test.id,
-        title: data.test.title,
-        description: data.test.description ?? (source?.description || null),
-        type: data.test.type,
-        duration: data.test.duration,
-        difficulty: data.test.difficulty ?? (source?.difficulty || null),
-        totalMarks: data.test.totalMarks,
-        status: "draft",
-        effectiveStatus: "draft",
-        scheduledStartAt: null,
-        scheduledEndAt: null,
-        scheduleTimezone: null,
-        isPublished: false,
-        questionCount: data.questionCount,
-        createdAt: new Date(data.test.createdAt),
-      };
-
-      setTests((previous) => [newTestItem, ...previous]);
-      setHighlightedTestId(data.test.id);
-      setSuccessMessage(`Test duplicated successfully: ${data.test.title}`);
-      router.refresh();
-    } catch (error) {
-      console.error("Duplicate test failed:", error);
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to duplicate this test. Please try again."
-      );
+      if (data?.test) {
+        const newTest: AdminTestItem = {
+          ...data.test,
+          effectiveStatus: "draft",
+          questionCount: data.test.questionCount ?? 0,
+          sectionCount: data.test.sectionCount ?? 1,
+          attemptCount: 0,
+          negativeMarkRate: Number(data.test.negativeMarkRate || 0),
+        };
+        setTests((prev) => [newTest, ...prev]);
+        setHighlightedTestId(newTest.id);
+        setSuccessMessage(`Assessment duplicated successfully: "${newTest.title}" (Draft)`);
+      } else {
+        setSuccessMessage("Assessment duplicated successfully as Draft.");
+        router.refresh();
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMessage(err.message || "Failed to duplicate test.");
     } finally {
       setDuplicatingId(null);
     }
   };
 
   return (
-    <div className="space-y-5 pb-4">
+    <div className="space-y-6">
+      {/* Alert Banners */}
       {successMessage && (
-        <div
-          role="status"
-          className="flex items-center justify-between rounded-lg border border-secondary/20 bg-secondary/10 px-4 py-3 text-body-sm text-secondary animate-fade-in"
-        >
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">check_circle</span>
+        <div className="p-4 rounded-xl border border-secondary/40 bg-secondary/10 text-secondary flex items-center justify-between gap-3 text-body-sm font-medium">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[20px]">check_circle</span>
             <span>{successMessage}</span>
           </div>
           <button
-            type="button"
             onClick={() => setSuccessMessage(null)}
-            className="text-label-xs font-mono text-secondary/70 hover:text-secondary focus:outline-none"
+            className="text-text-muted hover:text-text-primary"
           >
-            Dismiss
+            <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
       )}
 
       {errorMessage && (
-        <div
-          role="alert"
-          className="flex items-center justify-between rounded-lg border border-critical/20 bg-critical/10 px-4 py-3 text-body-sm text-critical animate-fade-in"
-        >
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">error</span>
+        <div className="p-4 rounded-xl border border-error/40 bg-error/10 text-error flex items-center justify-between gap-3 text-body-sm font-medium">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[20px]">error</span>
             <span>{errorMessage}</span>
           </div>
           <button
-            type="button"
             onClick={() => setErrorMessage(null)}
-            className="text-label-xs font-mono text-critical/70 hover:text-critical focus:outline-none"
+            className="text-text-muted hover:text-text-primary"
           >
-            Dismiss
+            <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
       )}
-      {/* Search & Filter Toolbar */}
-      <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="relative min-w-0 flex-1">
-          <label htmlFor="test-management-search" className="sr-only">Search managed tests</label>
-          <input
-            id="test-management-search"
-            type="text"
-            placeholder="Search assessments by title or keywords..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-11 w-full rounded-lg border border-border bg-base px-10 text-body-sm text-text-primary outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30"
-          />
-          <span className="material-symbols-outlined pointer-events-none absolute left-3 top-3 text-[18px] text-text-muted">
-            search
-          </span>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            aria-label="Filter managed tests by type"
-            className="h-10 rounded-lg border border-border bg-base px-3 text-label-xs font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-          >
-            <option value="all">All Types</option>
-            <option value="baseline">Baseline</option>
-            <option value="aptitude">Aptitude</option>
-            <option value="cs_fundamentals">CS Fundamentals</option>
-            <option value="mixed">Mixed</option>
-          </select>
+      {/* Action Header & Search Toolbar */}
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-border/70">
+          <div className="flex items-center gap-2 text-label-xs font-mono text-text-muted">
+            <span className="material-symbols-outlined text-[18px] text-primary">
+              quiz
+            </span>
+            <span>
+              Total Assessments: <strong className="text-text-primary">{tests.length}</strong>
+            </span>
+            <span>·</span>
+            <span>
+              Published:{" "}
+              <strong className="text-secondary">
+                {tests.filter((t) => t.status === "published").length}
+              </strong>
+            </span>
+            <span>·</span>
+            <span>
+              Drafts:{" "}
+              <strong className="text-tertiary">
+                {tests.filter((t) => t.status === "draft").length}
+              </strong>
+            </span>
+          </div>
 
           <Link
             href="/admin/tests/new"
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-4 text-body-sm font-semibold text-text-inverse shadow-sm transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60"
+            id="btn-admin-create-test"
+            className="inline-flex items-center justify-center gap-2 bg-primary text-text-inverse font-semibold text-body-sm px-4 py-2 rounded-lg hover:bg-primary-text transition-colors shadow-sm self-start sm:self-auto"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            Create Test
+            <span>Build New Test</span>
           </Link>
+        </div>
+
+        {/* Discovery Filter Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+          {/* Search */}
+          <div className="relative min-w-0 flex-1">
+            <label htmlFor="test-search-input" className="sr-only">
+              Search assessments
+            </label>
+            <input
+              id="test-search-input"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search assessments by title, description, or ID..."
+              className="h-10 w-full rounded-lg border border-border bg-base px-10 pr-4 text-body-sm text-text-primary outline-none transition-colors placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30 font-sans"
+            />
+            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-2.5 text-[18px] text-text-muted">
+              search
+            </span>
+          </div>
+
+          {/* Status Filter */}
+          <select
+            id="filter-test-status"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            aria-label="Filter by lifecycle status"
+            className="h-10 rounded-lg border border-border bg-base px-3 text-label-xs font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+          >
+            <option value="all">All Statuses</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published / Active</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="closed">Closed</option>
+            <option value="archived">Archived</option>
+          </select>
+
+          {/* Type Filter */}
+          <select
+            id="filter-test-type"
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            aria-label="Filter by category"
+            className="h-10 rounded-lg border border-border bg-base px-3 text-label-xs font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+          >
+            <option value="all">All Tracks</option>
+            <option value="mixed">Mixed Placement</option>
+            <option value="aptitude">Aptitude Track</option>
+            <option value="cs_fundamentals">CS Fundamentals</option>
+            <option value="baseline">Baseline Assessment</option>
+          </select>
+
+          {/* Clear Filters */}
+          {hasFilters && (
+            <button
+              id="btn-clear-test-filters"
+              onClick={handleClearFilters}
+              type="button"
+              className="h-10 rounded-lg border border-border bg-surface-high px-3.5 text-label-xs font-mono text-text-secondary hover:text-text-primary transition-colors hover:border-primary whitespace-nowrap"
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Tests Table */}
-      <div className="overflow-hidden rounded-xl border border-border bg-surface">
-        <div className="flex items-center justify-between border-b border-border bg-surface-high px-5 py-3 text-label-xs font-mono uppercase text-text-muted">
-          <span>Managed assessments</span>
-          <span>{filteredTests.length} / {tests.length}</span>
-        </div>
-        <div className="min-w-[900px] overflow-x-auto">
-        <div className="grid grid-cols-12 gap-4 border-b border-border bg-surface-high px-5 py-3 text-label-xs font-mono uppercase text-text-muted">
-          <div className="col-span-4">Assessment Title</div>
-          <div className="col-span-2">Type</div>
-          <div className="col-span-1 text-center">Questions</div>
-          <div className="col-span-1 text-center">Duration</div>
-          <div className="col-span-1 text-center">Status</div>
-          <div className="col-span-3 text-right">Actions</div>
-        </div>
+      {/* Tests Inventory List */}
+      <div className="space-y-3.5">
+        {filteredTests.length > 0 ? (
+          filteredTests.map((t) => {
+            const isHighlighted = highlightedTestId === t.id;
+            const isDuplicating = duplicatingId === t.id;
+            const isToggling = togglingId === t.id;
 
-        <div className="divide-y divide-border">
-          {filteredTests.length > 0 ? (
-            filteredTests.map((t) => (
+            // Status styling
+            const statusColor =
+              t.effectiveStatus === "active" || t.status === "published"
+                ? "bg-secondary/15 text-secondary border-secondary/30"
+                : t.effectiveStatus === "scheduled"
+                ? "bg-tertiary/15 text-tertiary border-tertiary/30"
+                : t.status === "draft"
+                ? "bg-surface-high text-text-muted border-border"
+                : t.status === "closed"
+                ? "bg-error/15 text-error border-error/30"
+                : "bg-surface-highest text-text-muted border-border";
+
+            const categoryLabel =
+              t.type === "cs_fundamentals"
+                ? "CS Fundamentals"
+                : t.type === "aptitude"
+                ? "Aptitude"
+                : t.type === "baseline"
+                ? "Baseline Benchmark"
+                : "Mixed Placement";
+
+            return (
               <div
                 key={t.id}
-                className={`grid grid-cols-12 gap-4 px-5 py-4 items-center transition-colors text-body-sm ${
-                  t.id === highlightedTestId
-                    ? "bg-primary/10 border-l-4 border-l-primary"
-                    : "hover:bg-surface-high/50"
+                className={`rounded-xl border bg-surface p-5 transition-all shadow-sm ${
+                  isHighlighted
+                    ? "border-primary ring-1 ring-primary/40 bg-surface-high/40"
+                    : "border-border hover:border-border-variant"
                 }`}
               >
-                {/* Title & Desc */}
-                <div className="col-span-4 min-w-0 pr-2">
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-text-primary font-medium truncate">{t.title}</h4>
-                    {t.id === highlightedTestId && (
-                      <span className="shrink-0 rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-mono uppercase text-primary-text font-semibold">
-                        New Draft
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                  {/* Test Info */}
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold border ${statusColor}`}
+                      >
+                        {t.effectiveStatus === "active"
+                          ? "PUBLISHED · ACTIVE"
+                          : t.effectiveStatus.toUpperCase()}
                       </span>
+
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-high text-primary-text border border-border uppercase font-semibold">
+                        {categoryLabel}
+                      </span>
+
+                      {t.negativeMarkingEnabled && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-error/10 text-error border border-error/20 font-bold">
+                          -{(t.negativeMarkRate * 100).toFixed(0)}% NEGATIVE
+                        </span>
+                      )}
+
+                      {(t.randomizeQuestions || t.randomizeOptions) && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-high text-text-muted border border-border">
+                          {t.randomizeQuestions && t.randomizeOptions
+                            ? "SHUFFLED (Q & OPTS)"
+                            : t.randomizeQuestions
+                            ? "SHUFFLED QUESTIONS"
+                            : "SHUFFLED OPTIONS"}
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 className="text-title-md font-bold text-text-primary tracking-tight">
+                      {t.title}
+                    </h2>
+
+                    {t.description && (
+                      <p className="text-body-sm text-text-secondary line-clamp-2 max-w-3xl leading-relaxed">
+                        {t.description}
+                      </p>
+                    )}
+
+                    {/* Meta Specifications */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-label-xs font-mono text-text-muted pt-1">
+                      <span className="flex items-center gap-1 text-text-primary font-semibold">
+                        <span className="material-symbols-outlined text-[15px] text-primary">timer</span>
+                        {t.duration} mins
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[15px]">format_list_numbered</span>
+                        {t.questionCount} {t.questionCount === 1 ? "question" : "questions"}
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[15px]">grade</span>
+                        {t.totalMarks} marks
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[15px]">layers</span>
+                        {t.sectionCount} {t.sectionCount === 1 ? "section" : "sections"}
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[15px]">replay</span>
+                        {t.attemptLimit === null ? "Unlimited attempts" : `${t.attemptLimit} max attempts`}
+                      </span>
+
+                      {t.attemptCount > 0 && (
+                        <span className="text-secondary font-semibold">
+                          {t.attemptCount} {t.attemptCount === 1 ? "student attempt" : "student attempts"}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Schedule availability window if scheduled */}
+                    {t.scheduledStartAt && (
+                      <div className="text-[11px] font-mono text-tertiary flex items-center gap-1.5 pt-0.5">
+                        <span className="material-symbols-outlined text-[14px]">event</span>
+                        <span>
+                          Window: {new Date(t.scheduledStartAt).toLocaleString()}
+                          {t.scheduledEndAt && ` → ${new Date(t.scheduledEndAt).toLocaleString()}`}
+                          {t.scheduleTimezone && ` (${t.scheduleTimezone})`}
+                        </span>
+                      </div>
                     )}
                   </div>
-                  <p className="text-text-secondary text-label-xs line-clamp-1 mt-0.5">
-                    {t.description || "No description provided."}
-                  </p>
-                </div>
 
-                {/* Type */}
-                <div className="col-span-2">
-                  <span className="text-label-xs px-2.5 py-0.5 rounded font-mono uppercase bg-surface-high border border-border text-text-primary">
-                    {t.type.replace("_", " ")}
-                  </span>
-                </div>
+                  {/* Actions Toolbar */}
+                  <div className="flex flex-wrap lg:flex-col items-end gap-2 shrink-0 pt-2 lg:pt-0">
+                    <div className="flex items-center gap-1.5">
+                      {/* Preview Button */}
+                      <Link
+                        href={`/admin/tests/preview?testId=${t.id}`}
+                        id={`btn-preview-test-${t.id}`}
+                        className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-surface-high px-2.5 text-label-xs font-mono text-text-primary hover:border-primary hover:text-primary-text transition-colors"
+                        title="Confidence preview without creating attempts"
+                      >
+                        <span className="material-symbols-outlined text-[15px]">visibility</span>
+                        <span>Preview</span>
+                      </Link>
 
-                {/* Questions */}
-                <div className="col-span-1 text-center font-mono text-label-xs text-text-primary">
-                  {t.questionCount} Qs
-                </div>
+                      {/* Duplicate Button */}
+                      <button
+                        type="button"
+                        id={`btn-duplicate-test-${t.id}`}
+                        disabled={isDuplicating}
+                        onClick={() => handleDuplicate(t.id)}
+                        className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-surface-high px-2.5 text-label-xs font-mono text-text-primary hover:border-primary hover:text-primary-text transition-colors disabled:opacity-50"
+                        title="Create Draft Copy of this test"
+                      >
+                        <span className="material-symbols-outlined text-[15px]">
+                          {isDuplicating ? "sync" : "content_copy"}
+                        </span>
+                        <span>{isDuplicating ? "Copying..." : "Duplicate"}</span>
+                      </button>
 
-                {/* Duration */}
-                <div className="col-span-1 text-center font-mono text-label-xs text-text-muted">
-                  {t.duration}m
-                </div>
+                      {/* Analytics Button (if attempts exist) */}
+                      {t.attemptCount > 0 && (
+                        <Link
+                          href={`/admin/analytics/tests/${t.id}`}
+                          id={`btn-analytics-test-${t.id}`}
+                          className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-surface-high px-2.5 text-label-xs font-mono text-secondary hover:border-secondary transition-colors"
+                          title="View student performance and item analysis"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">monitoring</span>
+                          <span>Analytics</span>
+                        </Link>
+                      )}
+                    </div>
 
-                {/* Status */}
-                <div className="col-span-1 text-center">
-                  <span
-                    className={`text-label-xs px-2 py-0.5 rounded font-mono uppercase ${
-                      t.effectiveStatus === "active"
-                        ? "bg-secondary/10 text-secondary border border-secondary/20 font-semibold"
-                        : t.effectiveStatus === "scheduled"
-                        ? "bg-primary/10 text-primary-text border border-primary/20 font-semibold"
-                        : t.effectiveStatus === "closed"
-                        ? "bg-tertiary/10 text-tertiary border border-tertiary/20"
-                        : t.effectiveStatus === "archived"
-                        ? "bg-surface-high text-text-muted/60 border border-border/50"
-                        : "bg-surface-high text-text-muted border border-border"
-                    }`}
-                  >
-                    {t.effectiveStatus === "active"
-                      ? "Active"
-                      : t.effectiveStatus === "scheduled"
-                      ? "Scheduled"
-                      : t.effectiveStatus === "closed"
-                      ? "Closed"
-                      : t.effectiveStatus === "archived"
-                      ? "Archived"
-                      : "Draft"}
-                  </span>
-                </div>
+                    {/* Lifecycle Transitions */}
+                    <div className="flex items-center gap-1.5 pt-1">
+                      {t.status === "draft" && (
+                        <button
+                          type="button"
+                          id={`btn-publish-test-${t.id}`}
+                          disabled={isToggling}
+                          onClick={() => handleUpdateStatus(t.id, "published")}
+                          className="inline-flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-label-xs font-mono font-semibold text-text-inverse hover:bg-primary-text transition-colors disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">publish</span>
+                          <span>Publish</span>
+                        </button>
+                      )}
 
-                {/* Actions */}
-                <div className="col-span-3 flex items-center justify-end gap-1.5 flex-wrap">
-                  {t.status === "draft" && (
-                    <button
-                      type="button"
-                      onClick={() => handleUpdateStatus(t.id, "published")}
-                      disabled={togglingId === t.id}
-                      className="rounded border border-primary/30 bg-primary/10 px-2 py-1 text-label-xs font-mono text-primary-text hover:bg-primary/20 disabled:opacity-50"
-                    >
-                      {togglingId === t.id ? "..." : "Publish"}
-                    </button>
-                  )}
+                      {t.status === "published" && (
+                        <>
+                          <button
+                            type="button"
+                            id={`btn-close-test-${t.id}`}
+                            disabled={isToggling}
+                            onClick={() => handleUpdateStatus(t.id, "closed")}
+                            className="inline-flex h-8 items-center gap-1 rounded-md border border-error/40 bg-error/10 px-2.5 text-label-xs font-mono text-error hover:bg-error/20 transition-colors disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">lock</span>
+                            <span>Close</span>
+                          </button>
 
-                  {t.status === "published" && (
-                    <button
-                      type="button"
-                      onClick={() => handleUpdateStatus(t.id, "closed")}
-                      disabled={togglingId === t.id}
-                      className="rounded border border-border px-2 py-1 text-label-xs font-mono text-text-secondary hover:bg-surface-high hover:text-text-primary disabled:opacity-50"
-                    >
-                      {togglingId === t.id ? "..." : "Close"}
-                    </button>
-                  )}
+                          <button
+                            type="button"
+                            id={`btn-archive-test-${t.id}`}
+                            disabled={isToggling}
+                            onClick={() => handleUpdateStatus(t.id, "archived")}
+                            className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-surface-high px-2.5 text-label-xs font-mono text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">archive</span>
+                            <span>Archive</span>
+                          </button>
+                        </>
+                      )}
 
-                  {t.status === "closed" && (
-                    <button
-                      type="button"
-                      onClick={() => handleUpdateStatus(t.id, "published")}
-                      disabled={togglingId === t.id}
-                      className="rounded border border-secondary/30 bg-secondary/10 px-2 py-1 text-label-xs font-mono text-secondary hover:bg-secondary/20 disabled:opacity-50"
-                    >
-                      {togglingId === t.id ? "..." : "Reopen"}
-                    </button>
-                  )}
+                      {t.status === "closed" && (
+                        <>
+                          <button
+                            type="button"
+                            id={`btn-reopen-test-${t.id}`}
+                            disabled={isToggling}
+                            onClick={() => handleUpdateStatus(t.id, "published")}
+                            className="inline-flex h-8 items-center gap-1 rounded-md border border-secondary/40 bg-secondary/10 px-2.5 text-label-xs font-mono text-secondary hover:bg-secondary/20 transition-colors disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">lock_open</span>
+                            <span>Reopen</span>
+                          </button>
 
-                  {t.status !== "archived" && (
-                    <button
-                      type="button"
-                      onClick={() => handleUpdateStatus(t.id, "archived")}
-                      disabled={togglingId === t.id}
-                      className="rounded border border-border px-2 py-1 text-label-xs font-mono text-text-muted hover:bg-surface-high hover:text-text-primary disabled:opacity-50"
-                    >
-                      Archive
-                    </button>
-                  )}
+                          <button
+                            type="button"
+                            id={`btn-archive-test-${t.id}`}
+                            disabled={isToggling}
+                            onClick={() => handleUpdateStatus(t.id, "archived")}
+                            className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-surface-high px-2.5 text-label-xs font-mono text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">archive</span>
+                            <span>Archive</span>
+                          </button>
+                        </>
+                      )}
 
-                  <button
-                    type="button"
-                    onClick={() => handleDuplicate(t.id)}
-                    disabled={duplicatingId !== null}
-                    aria-label={`Duplicate test ${t.title}`}
-                    className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-label-xs font-mono text-text-secondary transition-colors hover:bg-surface-high hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {duplicatingId === t.id ? (
-                      <span className="material-symbols-outlined text-[14px] animate-spin">progress_activity</span>
-                    ) : (
-                      <span className="material-symbols-outlined text-[14px]">content_copy</span>
-                    )}
-                  </button>
-
-                  <Link
-                    href={`/admin/analytics/tests/${t.id}`}
-                    title="View detailed test analytics"
-                    className="flex items-center gap-1 rounded border border-primary/30 bg-primary/10 px-2 py-1 text-label-xs font-mono text-primary-text transition-colors hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                  >
-                    <span className="material-symbols-outlined text-[13px]">monitoring</span>
-                    Analytics
-                  </Link>
-
-                  <Link
-                    href={`/tests/${t.id}`}
-                    className="flex items-center gap-1 rounded border border-border bg-surface-high px-2 py-1 text-label-xs font-mono text-text-secondary transition-colors hover:bg-surface-highest hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/60"
-                  >
-                    View
-                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                  </Link>
+                      {t.status === "archived" && (
+                        <button
+                          type="button"
+                          id={`btn-revert-draft-test-${t.id}`}
+                          disabled={isToggling}
+                          onClick={() => handleUpdateStatus(t.id, "draft")}
+                          className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-surface-high px-2.5 text-label-xs font-mono text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">unarchive</span>
+                          <span>Revert to Draft</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="p-8 text-center text-text-muted text-body-sm font-mono">
-              No assessments matching the current filter.
-            </div>
-          )}
-        </div>
-        </div>
+            );
+          })
+        ) : (
+          <div className="p-12 rounded-xl border border-border bg-surface text-center flex flex-col items-center justify-center space-y-3">
+            <span className="material-symbols-outlined text-4xl text-text-muted">
+              quiz
+            </span>
+            <p className="text-title-sm font-semibold text-text-primary">
+              No assessments match your filter criteria
+            </p>
+            <p className="text-body-sm text-text-muted max-w-md">
+              Try adjusting your search terms, lifecycle status, or track filter to locate assessments.
+            </p>
+            {hasFilters ? (
+              <button
+                onClick={handleClearFilters}
+                className="mt-2 text-label-xs font-mono text-primary hover:underline"
+              >
+                Reset all filters
+              </button>
+            ) : (
+              <Link
+                href="/admin/tests/new"
+                className="mt-3 inline-flex items-center gap-2 bg-primary text-text-inverse px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-primary-text transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">add</span>
+                Build First Assessment
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

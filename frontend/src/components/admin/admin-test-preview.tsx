@@ -74,15 +74,21 @@ function randomizePreviewQuestions(questions: PreviewQuestion[]): PreviewQuestio
   return randomized;
 }
 
-export function AdminTestPreview() {
-  const [draft, setDraft] = useState<PreviewDraft | null>(null);
+export function AdminTestPreview({ initialDraft }: { initialDraft?: PreviewDraft }) {
+  const [draft, setDraft] = useState<PreviewDraft | null>(initialDraft || null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    initialDraft ? Math.max(0, initialDraft.duration || 0) * 60 : 0
+  );
   const [answers, setAnswers] = useState<Record<string, LocalAnswer>>({});
   const [reviewed, setReviewed] = useState<Record<string, boolean>>({});
   const [ended, setEnded] = useState(false);
 
   useEffect(() => {
+    if (initialDraft) {
+      return;
+    }
+
     const hydration = window.setTimeout(() => {
       try {
         const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -110,7 +116,7 @@ export function AdminTestPreview() {
       }
     }, 0);
     return () => window.clearTimeout(hydration);
-  }, []);
+  }, [initialDraft]);
 
   useEffect(() => {
     if (!draft || ended || remainingSeconds <= 0) return;

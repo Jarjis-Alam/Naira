@@ -601,6 +601,20 @@ export default async function AssessmentResultPage({
             <span className="material-symbols-outlined text-[17px]">map</span>
           </Link>
           <Link
+            href="/analytics"
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-body-sm font-semibold text-text-primary transition-colors hover:border-primary hover:bg-surface-high focus:outline-none focus:ring-2 focus:ring-primary/60"
+          >
+            View Analytics
+            <span className="material-symbols-outlined text-[17px]">insights</span>
+          </Link>
+          <Link
+            href={`/tests/${testId}`}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-body-sm font-semibold text-text-primary transition-colors hover:border-primary hover:bg-surface-high focus:outline-none focus:ring-2 focus:ring-primary/60"
+          >
+            Practice Again
+            <span className="material-symbols-outlined text-[17px]">refresh</span>
+          </Link>
+          <Link
             href={attempt.testType === "baseline" ? "/dashboard" : "/tests"}
             className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-body-sm font-semibold text-text-primary transition-colors hover:border-primary hover:bg-surface-high focus:outline-none focus:ring-2 focus:ring-primary/60"
           >

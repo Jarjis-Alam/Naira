@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { questions } from "@/db/schema";
+import { questions, topics } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { createQuestionSchema } from "@/lib/validations/question";
 
 export async function POST(request: NextRequest) {
   const session = await auth();
-  const isAdmin = (session?.user as any)?.isAdmin;
+  const isAdmin = (session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
 
   if (!isAdmin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -22,82 +24,50 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
-    const {
-      question,
-      questionType,
-      options,
-      correctAnswer,
-      subjectId,
-      topicId,
-      difficulty,
-      marks,
-      expectedTime,
-      explanation,
-    } = body;
+    const rawBody = await request.json();
+    const parsed = createQuestionSchema.safeParse(rawBody);
 
-    // Validate question
-    if (typeof question !== "string" || !question.trim()) {
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
       return NextResponse.json(
-        { error: "Question content is required." },
+        { error: issue?.message || "Invalid question input payload." },
         { status: 400 }
       );
     }
 
-    // Validate options
-    if (!Array.isArray(options) || options.filter((o: any) => typeof o === "string" && o.trim().length > 0).length < 2) {
-      return NextResponse.json(
-        { error: "At least two valid option strings are required." },
-        { status: 400 }
-      );
-    }
-    const cleanOptions = options.map((o: any) => String(o).trim()).filter((o: string) => o.length > 0);
+    const data = parsed.data;
 
-    // Validate correct answer
-    if (!correctAnswer) {
-      return NextResponse.json(
-        { error: "Correct answer key is required." },
-        { status: 400 }
-      );
-    }
-    const cleanAnswer = typeof correctAnswer === "string" ? correctAnswer.trim() : correctAnswer;
-    if (typeof cleanAnswer === "string" && !cleanOptions.includes(cleanAnswer)) {
-      return NextResponse.json(
-        { error: "Correct answer must match one of the provided options exactly." },
-        { status: 400 }
-      );
-    }
+    // Verify subject/topic relationship
+    const topicRecord = await db
+      .select({ id: topics.id })
+      .from(topics)
+      .where(and(eq(topics.id, data.topicId), eq(topics.subjectId, data.subjectId)))
+      .limit(1);
 
-    // Validate subject & topic
-    if (!subjectId || !topicId) {
+    if (topicRecord.length === 0) {
       return NextResponse.json(
-        { error: "Subject and Topic are required." },
+        { error: "Selected topic does not belong to the specified subject." },
         { status: 400 }
       );
     }
-
-    const qType = questionType === "multiple_choice" ? "multiple_choice" : "single_choice";
-    const diff = ["easy", "medium", "hard"].includes(difficulty) ? difficulty : "medium";
-    const qMarks = Number(marks) > 0 ? Number(marks) : 2;
-    const qTime = Number(expectedTime) > 0 ? Number(expectedTime) : 60;
 
     const newQ = await db
       .insert(questions)
       .values({
-        question: question.trim(),
-        questionType: qType,
-        options: cleanOptions,
-        correctAnswer: cleanAnswer,
-        subjectId,
-        topicId,
-        difficulty: diff,
-        marks: qMarks,
-        expectedTime: qTime,
-        explanation: explanation ? String(explanation).trim() : null,
+        question: data.question,
+        questionType: data.questionType,
+        options: data.options,
+        correctAnswer: data.correctAnswer,
+        subjectId: data.subjectId,
+        topicId: data.topicId,
+        difficulty: data.difficulty,
+        marks: data.marks,
+        expectedTime: data.expectedTime,
+        explanation: data.explanation || null,
       })
       .returning();
 
-    return NextResponse.json({ success: true, question: newQ[0] });
+    return NextResponse.json({ success: true, question: newQ[0] }, { status: 201 });
   } catch (error) {
     console.error("Failed to create question:", error);
     return NextResponse.json(

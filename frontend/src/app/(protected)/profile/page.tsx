@@ -7,12 +7,16 @@ import { eq, desc, and } from "drizzle-orm";
 import { calculateReadiness, detectWeakAreas } from "@/server/readiness";
 import { formatDate } from "@/lib/utils";
 import { ProfileEditor } from "@/components/profile/profile-editor";
+import { getOutcomeHistorySummary } from "@/server/outcome-intelligence";
 import { PlacementTargetsEditor } from "@/components/profile/placement-targets-editor";
 import {
   getStudentPlacementTargets,
   searchCompanies,
   searchRoles,
 } from "@/server/company-role-intelligence";
+import { getPlacementTargetStrategy } from "@/server/placement-target-strategy";
+import { getStudentSimulationHistory } from "@/server/placement-simulation";
+import { getResumeHealth } from "@/server/resume-intelligence";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -78,6 +82,60 @@ export default async function ProfilePage() {
   const placementTargets = await getStudentPlacementTargets(session.user.id);
   const allRoles = await searchRoles({ includeInactive: true, limit: 100 });
   const allCompanies = await searchCompanies({ includeInactive: true, limit: 100 });
+
+  // Placement profile dimensions. These are deliberately separate measurements:
+  // preparation (measured assessment accuracy), target (Phase 16 requirement
+  // alignment), resume (Phase 18 ATS compatibility), and interview (Phase 17
+  // simulation). The ATS score is never folded into the readiness formula.
+  const [targetStrategy, simulationHistory, resumeHealth] = await Promise.all([
+    getPlacementTargetStrategy(session.user.id).catch(() => null),
+    getStudentSimulationHistory(session.user.id).catch(() => []),
+    getResumeHealth(session.user.id).catch(() => null),
+  ]);
+
+  const completedSimulation = simulationHistory.find((simulation) => simulation.status === "completed") ?? null;
+
+  const profileDimensions = [
+    {
+      id: "preparation",
+      label: "Preparation Readiness",
+      value: readiness.readinessScore,
+      href: "/roadmap",
+      note: readiness.hasCompletedBaseline
+        ? "Measured assessment accuracy across the curriculum."
+        : "Complete the baseline assessment to measure this.",
+    },
+    {
+      id: "target",
+      label: "Target Readiness",
+      value: targetStrategy?.readiness.targetScore ?? null,
+      href: "/target",
+      note: placementTargets.configured
+        ? "Alignment with your target company and role requirements."
+        : "Select a target company and role to measure this.",
+    },
+    {
+      id: "resume",
+      label: "Resume ATS Compatibility",
+      value: resumeHealth?.hasResume ? resumeHealth.atsScore : null,
+      href: "/resume",
+      note: resumeHealth?.hasResume
+        ? "How reliably an ATS can parse and match your resume. Not a hiring prediction."
+        : "Upload a resume to measure ATS compatibility.",
+    },
+    {
+      id: "interview",
+      label: "Interview Readiness",
+      value: completedSimulation?.overallReadinessScore ?? null,
+      href: "/simulation",
+      note: completedSimulation
+        ? "Latest completed placement simulation verdict."
+        : "Complete a placement simulation to measure this.",
+    },
+  ];
+
+  // Phase 20 — descriptive outcome history (counts only, never a success score).
+  const outcomeHistory = await getOutcomeHistorySummary(session.user.id).catch(() => null);
 
   return (
     <div className="space-y-8 pb-28 pr-28 lg:pr-0">
@@ -145,30 +203,74 @@ export default async function ProfilePage() {
               Placement Profile
             </div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-              <div>
-                <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
-                  Overall Readiness
-                </span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold font-mono text-text-primary">
-                    {readiness.readinessScore !== null
-                      ? `${readiness.readinessScore}%`
-                      : "--"}
+            {/* Distinct placement dimensions — never merged into one number. */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
+              {profileDimensions.map((dimension) => (
+                <div key={dimension.id} className="min-w-0">
+                  <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
+                    {dimension.label}
                   </span>
-                  <span className="text-label-xs font-mono uppercase text-primary-text">
-                    {readiness.level?.label || "Not assessed"}
-                  </span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold font-mono text-text-primary">
+                      {dimension.value !== null ? `${dimension.value}%` : "--"}
+                    </span>
+                  </div>
+                  <div className="w-full bg-surface-high h-1.5 rounded-full mt-2 overflow-hidden">
+                    <div className="bg-primary h-full" style={{ width: `${dimension.value ?? 0}%` }} />
+                  </div>
+                  <p className="mt-2 text-[11px] font-mono text-text-muted leading-relaxed">
+                    {dimension.note}
+                  </p>
+                  <Link
+                    href={dimension.href}
+                    className="mt-2 inline-flex items-center gap-1 text-[11px] font-mono text-primary-text hover:underline"
+                  >
+                    <span>Open</span>
+                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                  </Link>
                 </div>
-                <div className="w-full bg-surface-high h-1.5 rounded-full mt-3 overflow-hidden">
-                  <div
-                    className="bg-primary h-full"
-                    style={{ width: `${readiness.readinessScore || 0}%` }}
-                  />
-                </div>
-              </div>
+              ))}
+            </div>
 
-              <div className="border-t border-border pt-4 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
+            <p className="mt-5 text-[11px] font-mono text-text-muted leading-relaxed border-t border-border/60 pt-4">
+              These dimensions measure different things on purpose. Preparation is measured question accuracy, target
+              readiness is requirement alignment, resume ATS compatibility is document readability, and interview
+              readiness is simulation performance. They are reported side by side rather than averaged together.
+            </p>
+
+            {/* Placement Outcome History (Phase 20) — descriptive counts only. */}
+            {outcomeHistory && outcomeHistory.applications > 0 && (
+              <div className="mt-5 border-t border-border/60 pt-4">
+                <div className="flex items-center gap-2 mb-3 text-label-xs text-text-muted font-mono uppercase font-bold">
+                  <span className="material-symbols-outlined text-[15px]">history</span>
+                  Placement Outcome History
+                </div>
+                <div className="grid grid-cols-4 gap-3 text-center">
+                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
+                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Applications</p>
+                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.applications}</p>
+                  </div>
+                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
+                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Interviews</p>
+                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.interviews}</p>
+                  </div>
+                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
+                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Offers</p>
+                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.offers}</p>
+                  </div>
+                  <div className="rounded-lg bg-surface-high/50 px-2 py-2">
+                    <p className="text-[9px] font-mono uppercase text-text-muted font-bold">Rejections</p>
+                    <p className="text-body-md font-bold text-text-primary">{outcomeHistory.rejections}</p>
+                  </div>
+                </div>
+                <p className="mt-2 text-[10px] font-mono text-text-muted">
+                  Descriptive history of recorded application outcomes — not a success score.
+                </p>
+              </div>
+            )}
+
+            <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 border-t border-border/60 pt-5">
+              <div>
                 <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
                   Strongest Skill
                 </span>
@@ -180,7 +282,7 @@ export default async function ProfilePage() {
                 </div>
               </div>
 
-              <div className="border-t border-border pt-4 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
+              <div>
                 <span className="text-label-xs text-text-muted uppercase font-mono block mb-1">
                   Current Focus Area
                 </span>
@@ -192,6 +294,28 @@ export default async function ProfilePage() {
                 </div>
               </div>
             </div>
+
+            {resumeHealth?.hasResume && (
+              <div className="mt-5 rounded-lg border border-border/70 bg-surface-high/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
+                    Resume Intelligence
+                  </span>
+                  <span className="text-body-sm text-text-primary">
+                    {resumeHealth.label} · ATS {resumeHealth.atsScore ?? "--"} · Match{" "}
+                    {resumeHealth.matchScore === null ? "--" : `${resumeHealth.matchScore}%`}
+                  </span>
+                </div>
+                <Link
+                  id="profile-view-resume-intelligence-btn"
+                  href="/resume"
+                  className="px-4 py-2 rounded-lg bg-surface-high border border-primary/30 text-primary-text hover:bg-surface-highest text-[12px] font-mono font-medium transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto"
+                >
+                  <span>Open Resume Intelligence</span>
+                  <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Placement Roadmap Entry (Phase 12) */}

@@ -38,6 +38,25 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  /**
+   * The resume parsers must never be bundled into a server chunk.
+   *
+   * `pdf-parse` delegates to `pdfjs-dist`, whose legacy build resolves its
+   * worker module relative to its own module URL (`GlobalWorkerOptions.workerSrc
+   * ||= "./pdf.worker.mjs"`). When Next.js inlines pdfjs into
+   * `.next/server/chunks/<hash>_pdfjs-dist_*.js` and emits no worker file, that
+   * relative specifier is resolved against the chunk directory and the request
+   * dies with "Setting up fake worker failed: Cannot find module
+   * '.../.next/server/chunks/pdfw...'" even though the uploaded PDF is valid.
+   *
+   * Loading these packages natively from `node_modules` at runtime keeps every
+   * internal path resolution pointing at real files. `pdfjs-dist` is listed
+   * explicitly so the worker subpath it imports is external too, and
+   * `@napi-rs/canvas` (a dependency of pdf-parse that ships a native binary)
+   * stays out of the bundler entirely.
+   */
+  serverExternalPackages: ["pdf-parse", "pdfjs-dist", "@napi-rs/canvas", "mammoth"],
+
   async headers() {
     return [
       {

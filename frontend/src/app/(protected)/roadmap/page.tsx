@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getStudentPlacementRoadmap } from "@/server/roadmap";
 import { getDailyExecutionPlan } from "@/server/placement-execution";
+import { getStudentSimulationHistory } from "@/server/placement-simulation";
+import { getUpcomingApplicationEvents } from "@/server/application-intelligence";
+import { getOutcomePlanContext } from "@/server/outcome-intelligence";
 import { getScoreColor } from "@/lib/utils";
 
 export default async function RoadmapPage() {
@@ -11,10 +14,15 @@ export default async function RoadmapPage() {
     redirect("/auth/login?callbackUrl=/roadmap");
   }
 
-  const [roadmap, dailyPlan] = await Promise.all([
+  const [roadmap, dailyPlan, simulationHistory, upcomingApplicationEvents, outcomePlanContext] = await Promise.all([
     getStudentPlacementRoadmap(session.user.id),
     getDailyExecutionPlan(session.user.id),
+    getStudentSimulationHistory(session.user.id),
+    getUpcomingApplicationEvents(session.user.id, 30).catch(() => []),
+    getOutcomePlanContext(session.user.id).catch(() => null),
   ]);
+  const nextApplicationEvent = upcomingApplicationEvents[0] ?? null;
+  const latestSimulation = simulationHistory[0] || null;
   const baselineHref = roadmap.baselineTestId
     ? `/tests/${roadmap.baselineTestId}`
     : "/assessment";
@@ -123,6 +131,71 @@ export default async function RoadmapPage() {
               Take Baseline Assessment
             </Link>
           </div>
+        </section>
+      )}
+
+      {/* Application-driven preparation strip (Phase 19) — reuses the Phase 15
+          execution actions; it never creates a second preparation engine. */}
+      {nextApplicationEvent && dailyPlan.actions.length > 0 && (
+        <section className="p-4 sm:p-5 rounded-2xl border border-primary/25 bg-primary/5 space-y-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="text-body-sm font-semibold text-text-primary">
+              {nextApplicationEvent.companyName} {nextApplicationEvent.label.toLowerCase()} in{" "}
+              {nextApplicationEvent.daysRemaining !== null ? `${nextApplicationEvent.daysRemaining} day${nextApplicationEvent.daysRemaining === 1 ? "" : "s"}` : "soon"}.
+            </p>
+            <Link
+              href={`/applications/${nextApplicationEvent.applicationId}`}
+              className="text-[11px] font-mono text-primary-text hover:underline"
+            >
+              Open application
+            </Link>
+          </div>
+          <p className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-bold">
+            Recommended focus (from your Phase 15 plan)
+          </p>
+          <ul className="space-y-1.5">
+            {dailyPlan.actions.slice(0, 3).map((action) => (
+              <li key={action.id} className="flex items-center justify-between gap-3">
+                <span className="text-body-sm text-text-secondary">
+                  <span className="font-mono text-[10px] font-bold text-primary">{action.type}</span>{" "}
+                  {action.title}
+                </span>
+                <Link
+                  href={action.ctaHref}
+                  className="text-[11px] font-mono font-semibold text-primary-text hover:underline whitespace-nowrap"
+                >
+                  Practice Now →
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Outcome-driven preparation feedback (Phase 20) — only when the
+          recorded outcomes surface an evidence-backed gap. Practice links
+          reuse the existing Phase 15 flow. */}
+      {outcomePlanContext && dailyPlan.actions.length > 0 && (
+        <section className="p-4 sm:p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-bold">
+            Recent application feedback
+          </p>
+          <p className="text-body-sm text-text-secondary">{outcomePlanContext.headline}</p>
+          <ul className="space-y-1.5">
+            {outcomePlanContext.focusCandidates.map((f) => (
+              <li key={f.topic} className="flex items-center justify-between gap-3">
+                <span className="text-body-sm text-text-secondary">
+                  <span className="font-mono text-[10px] font-bold text-primary">{f.actionType}</span>{" "}
+                  {f.topic}
+                  <span className="text-[10px] text-text-muted"> — {f.reason}</span>
+                </span>
+                <span className="text-[10px] font-mono text-text-muted whitespace-nowrap">
+                  (Phase 15 plan drives practice)
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[10px] text-text-muted">{outcomePlanContext.note}</p>
         </section>
       )}
 
@@ -391,6 +464,80 @@ export default async function RoadmapPage() {
               </div>
             )}
           </section>
+
+          {/* Card 4: PLACEMENT SIMULATION MILESTONE (Phase 17) */}
+          <section
+            aria-labelledby="simulation-milestone-heading"
+            className="rounded-xl border border-primary/30 bg-surface p-5 sm:p-6 space-y-3 relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between">
+              <span
+                id="simulation-milestone-heading"
+                className="text-[11px] font-mono tracking-wider uppercase text-primary font-bold flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[16px]">terminal</span>
+                Placement Simulation
+              </span>
+              <span
+                className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${
+                  latestSimulation?.status === "completed"
+                    ? "bg-secondary/10 border-secondary/30 text-secondary"
+                    : latestSimulation
+                    ? "bg-primary/10 border-primary/30 text-primary"
+                    : "bg-surface-high border-border text-text-muted"
+                }`}
+              >
+                {latestSimulation?.status === "completed"
+                  ? "CALIBRATED"
+                  : latestSimulation
+                  ? `ROUND ${latestSimulation.currentRoundOrder}/5`
+                  : "NOT SIMULATED"}
+              </span>
+            </div>
+
+            {latestSimulation ? (
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-body-md font-bold text-text-primary">
+                    {latestSimulation.companyName ? `${latestSimulation.companyName} — ` : ""}{latestSimulation.roleName}
+                  </h3>
+                  <p className="text-[12px] font-mono text-text-secondary mt-0.5">
+                    {latestSimulation.status === "completed"
+                      ? `Simulation Readiness: ${latestSimulation.overallReadinessScore}% • Verdict: ${latestSimulation.readinessLevel || "Evaluated"}`
+                      : "Simulation in progress across 5 sequential rounds."}
+                  </p>
+                </div>
+                <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                  <Link
+                    href={`/simulation/${latestSimulation.id}`}
+                    className="inline-flex items-center gap-1 text-[12px] font-mono font-semibold text-primary-text hover:underline"
+                  >
+                    <span>{latestSimulation.status === "completed" ? "View Readiness Report" : "Resume Simulation"}</span>
+                    <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                  </Link>
+                  <Link
+                    href="/simulation"
+                    className="text-[11px] font-mono text-text-muted hover:text-text-primary transition-colors"
+                  >
+                    All Simulations
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-[12px] font-mono text-text-secondary leading-relaxed">
+                  Put your preparation to the test with an end-to-end 5-round hiring simulation (Screening, Coding, Debugging, AI Tech &amp; HR).
+                </p>
+                <Link
+                  href="/simulation"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-text-inverse font-semibold text-body-sm hover:bg-primary-text transition-colors shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-[17px]">play_circle</span>
+                  <span>Start Placement Simulation</span>
+                </Link>
+              </div>
+            )}
+          </section>
         </div>
 
         {/* ================================================================= */}
@@ -432,7 +579,8 @@ export default async function RoadmapPage() {
                   <span>
                     {todayActiveAction.status === "COMPLETED"
                       ? "PRACTICE AGAIN"
-                      : todayActiveAction.status === "IN_PROGRESS"
+                      : todayActiveAction.status === "IN_PROGRESS" ||
+                        todayActiveAction.status === "PARTIALLY_COMPLETED"
                       ? "CONTINUE PRACTICE"
                       : todayActiveAction.type === "REVIEW"
                       ? "START REVIEW"

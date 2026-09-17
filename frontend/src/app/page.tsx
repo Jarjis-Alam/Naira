@@ -83,7 +83,7 @@ export default async function LandingPage() {
         </p>
 
         <p className="text-body-sm text-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
-          Nexora assesses students through standardized benchmarks, analyzes performance across 7 placement domains, identifies topic weaknesses, considers your target companies, and generates a personalized preparation roadmap.
+          Nexora evaluates placement readiness, identifies weaknesses, tracks performance across core placement domains, understands placement targets, recommends what to work on next, and builds your actionable preparation roadmap.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -392,7 +392,7 @@ export default async function LandingPage() {
                 Placement Tests
               </h3>
               <p className="text-body-sm text-text-secondary mb-6 max-w-2xl leading-relaxed">
-                Curated mock tests covering Aptitude, CS Fundamentals, and Full-Stack Placement rounds designed to simulate exact interview environments with strict time limits and server-side evaluation.
+                Curated mock tests covering Aptitude, CS Fundamentals, and Full-Stack Placement rounds designed to simulate exact interview environments with strict time limits and verified evaluation.
               </p>
 
               {/* Ready Test Chips */}

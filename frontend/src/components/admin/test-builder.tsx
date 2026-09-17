@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { PreviewDraft, PreviewQuestion } from "@/components/admin/admin-test-preview";
 
-interface RepositoryQuestion {
+export interface RepositoryQuestion {
   id: string;
   question: string;
   questionType: "single_choice" | "multiple_choice";
@@ -17,13 +18,13 @@ interface RepositoryQuestion {
   topicName: string;
 }
 
-interface BuilderQuestionItem {
+export interface BuilderQuestionItem {
   id: string;
   question: RepositoryQuestion;
   marks: number;
 }
 
-interface BuilderPool {
+export interface BuilderPool {
   id: string;
   title: string;
   description: string;
@@ -32,7 +33,7 @@ interface BuilderPool {
   questions: BuilderQuestionItem[];
 }
 
-interface BuilderSection {
+export interface BuilderSection {
   id: string;
   title: string;
   description: string;
@@ -41,22 +42,68 @@ interface BuilderSection {
   pools: BuilderPool[];
 }
 
+const BUILDER_STEPS = [
+  { id: "basics", label: "01 Basics", icon: "badge" },
+  { id: "rules", label: "02 Rules", icon: "tune" },
+  { id: "instructions", label: "03 Instructions", icon: "description" },
+  { id: "sections", label: "04 Sections", icon: "layers" },
+  { id: "questions", label: "05 Questions", icon: "format_list_numbered" },
+  { id: "pools", label: "06 Pools", icon: "widgets" },
+  { id: "schedule", label: "07 Schedule", icon: "schedule" },
+  { id: "review", label: "08 Review", icon: "checklist" },
+] as const;
+
+type StepId = (typeof BUILDER_STEPS)[number]["id"];
+
 export function TestBuilder({
   repositoryQuestions,
 }: {
   repositoryQuestions: RepositoryQuestion[];
 }) {
   const router = useRouter();
+
+  // Active Wizard Step (non-blocking: can jump to any step anytime)
+  const [currentStep, setCurrentStep] = useState<StepId>("basics");
+
+  // Step 1: Basics
   const [title, setTitle] = useState("");
-  const [duration, setDuration] = useState(60);
   const [description, setDescription] = useState("");
-  const [testType, setTestType] = useState<"aptitude" | "cs_fundamentals" | "mixed" | "baseline">("mixed");
+  const [testType, setTestType] = useState<
+    "aptitude" | "cs_fundamentals" | "mixed" | "baseline"
+  >("mixed");
+
+  // Step 2: Rules
+  const [duration, setDuration] = useState(60);
   const [negativeMarkingEnabled, setNegativeMarkingEnabled] = useState(false);
   const [negativeMarkRate, setNegativeMarkRate] = useState(0.25);
   const [randomizeQuestions, setRandomizeQuestions] = useState(false);
   const [randomizeOptions, setRandomizeOptions] = useState(false);
   const [attemptLimit, setAttemptLimit] = useState<string>(""); // empty = unlimited
-  const [instructions, setInstructions] = useState<string>(""); // empty = no instructions
+
+  // Step 3: Instructions
+  const [instructions, setInstructions] = useState<string>(""); // max 5000 chars
+
+  // Step 4: Sections
+  const [sections, setSections] = useState<BuilderSection[]>([
+    {
+      id: "sec-init-1",
+      title: "Core Questions",
+      description: "",
+      sectionOrder: 1,
+      questions: [],
+      pools: [],
+    },
+  ]);
+  const [activeSectionId, setActiveSectionId] = useState<string>("sec-init-1");
+  const [activePoolId, setActivePoolId] = useState<string | null>(null);
+
+  // Step 5: Questions Search / Filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+
+  // Step 7: Schedule
   const [lifecycleStatus, setLifecycleStatus] = useState<"draft" | "published">("published");
   const [isScheduled, setIsScheduled] = useState<boolean>(false);
   const [scheduledStartAt, setScheduledStartAt] = useState<string>("");
@@ -67,37 +114,24 @@ export function TestBuilder({
       : "Asia/Kolkata"
   );
 
-  const [sections, setSections] = useState<BuilderSection[]>([
-    {
-      id: "sec-init-1",
-      title: "General",
-      description: "",
-      sectionOrder: 1,
-      questions: [],
-      pools: [],
-    },
-  ]);
-  const [activeSectionId, setActiveSectionId] = useState<string>("sec-init-1");
-  const [activePoolId, setActivePoolId] = useState<string | null>(null);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  // UI state
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
-  // Set of all selected question IDs across all sections and pools to prevent duplicates
+  // Computed: set of all selected question IDs across all sections and pools
   const allSelectedQuestionIds = useMemo(() => {
     const set = new Set<string>();
     for (const s of sections) {
       for (const q of s.questions) set.add(q.id);
-      for (const p of (s.pools || [])) {
+      for (const p of s.pools || []) {
         for (const pq of p.questions) set.add(pq.id);
       }
     }
     return set;
   }, [sections]);
 
+  // Computed totals
   const totalQuestions = useMemo(() => {
     return sections.reduce(
       (sum, s) =>
@@ -119,124 +153,114 @@ export function TestBuilder({
     }, 0);
   }, [sections]);
 
-  const filteredRepo = repositoryQuestions.filter((q) => {
-    const query = searchQuery.toLowerCase();
-    const matchesSearch =
-      !query ||
-      q.question.toLowerCase().includes(query) ||
-      q.topicName.toLowerCase().includes(query) ||
-      q.subjectName.toLowerCase().includes(query);
-    const matchesSubject = !selectedSubject || q.subjectName === selectedSubject;
-    const matchesDifficulty = !selectedDifficulty || q.difficulty === selectedDifficulty;
-    return matchesSearch && matchesSubject && matchesDifficulty;
-  });
+  // Available subjects from repository questions
+  const availableSubjects = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const q of repositoryQuestions) {
+      map.set(q.subjectName, q.subjectCode);
+    }
+    return Array.from(map.entries()).map(([name, code]) => ({ name, code }));
+  }, [repositoryQuestions]);
 
-  // Section Management
+  // Filtered repository questions
+  const filteredRepository = useMemo(() => {
+    return repositoryQuestions.filter((q) => {
+      const matchesSearch =
+        !searchQuery ||
+        q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.topicName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.subjectName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesSubject = !selectedSubject || q.subjectName === selectedSubject;
+      const matchesDifficulty = !selectedDifficulty || q.difficulty === selectedDifficulty;
+      const matchesType = !selectedType || q.questionType === selectedType;
+
+      return matchesSearch && matchesSubject && matchesDifficulty && matchesType;
+    });
+  }, [repositoryQuestions, searchQuery, selectedSubject, selectedDifficulty, selectedType]);
+
+  // Section Handlers
   const addSection = () => {
-    const newOrder = sections.length + 1;
-    const newSecId = `sec-${Date.now()}-${newOrder}`;
-    const newSection: BuilderSection = {
-      id: newSecId,
-      title: `Section ${newOrder}`,
+    const nextOrder = sections.length + 1;
+    const newSec: BuilderSection = {
+      id: `sec-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      title: `Section ${nextOrder}`,
       description: "",
-      sectionOrder: newOrder,
+      sectionOrder: nextOrder,
       questions: [],
       pools: [],
     };
-    setSections((prev) => [...prev, newSection]);
-    setActiveSectionId(newSecId);
+    setSections([...sections, newSec]);
+    setActiveSectionId(newSec.id);
     setActivePoolId(null);
-    setErrorMsg(null);
   };
 
-  const updateSectionTitle = (sectionId: string, newTitle: string) => {
-    setSections((prev) =>
-      prev.map((s) => (s.id === sectionId ? { ...s, title: newTitle } : s))
-    );
-  };
-
-  const updateSectionDescription = (sectionId: string, newDescription: string) => {
-    setSections((prev) =>
-      prev.map((s) => (s.id === sectionId ? { ...s, description: newDescription } : s))
-    );
-  };
-
-  const moveSectionUp = (idx: number) => {
-    if (idx <= 0) return;
-    setSections((prev) => {
-      const next = [...prev];
-      const temp = next[idx];
-      next[idx] = next[idx - 1];
-      next[idx - 1] = temp;
-      return next.map((s, i) => ({ ...s, sectionOrder: i + 1 }));
-    });
-  };
-
-  const moveSectionDown = (idx: number) => {
-    if (idx >= sections.length - 1) return;
-    setSections((prev) => {
-      const next = [...prev];
-      const temp = next[idx];
-      next[idx] = next[idx + 1];
-      next[idx + 1] = temp;
-      return next.map((s, i) => ({ ...s, sectionOrder: i + 1 }));
-    });
-  };
-
-  const removeSection = (sectionId: string) => {
+  const removeSection = (secId: string) => {
     if (sections.length <= 1) {
-      setErrorMsg("A test must contain at least one section.");
+      setErrorMsg("Assessment must contain at least one section.");
       return;
     }
-    const target = sections.find((s) => s.id === sectionId);
-    const targetHasQuestions =
-      target &&
-      (target.questions.length > 0 ||
-        (target.pools || []).some((p) => p.questions.length > 0));
-    if (targetHasQuestions) {
-      setErrorMsg(
-        `Cannot delete section "${target?.title}" because it contains assigned questions or pools. Move or remove all questions first.`
-      );
-      return;
-    }
-    setErrorMsg(null);
-    setSections((prev) => {
-      const filtered = prev.filter((s) => s.id !== sectionId);
-      return filtered.map((s, idx) => ({ ...s, sectionOrder: idx + 1 }));
-    });
-    if (activeSectionId === sectionId) {
-      const remaining = sections.filter((s) => s.id !== sectionId);
-      if (remaining.length > 0) {
-        setActiveSectionId(remaining[0].id);
-        setActivePoolId(null);
-      }
+    const updated = sections
+      .filter((s) => s.id !== secId)
+      .map((s, idx) => ({ ...s, sectionOrder: idx + 1 }));
+    setSections(updated);
+    if (activeSectionId === secId) {
+      setActiveSectionId(updated[0]?.id || "");
+      setActivePoolId(null);
     }
   };
 
-  // Pool Management
+  const updateSectionTitle = (secId: string, newTitle: string) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === secId ? { ...s, title: newTitle } : s))
+    );
+  };
+
+  const updateSectionDescription = (secId: string, newDesc: string) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === secId ? { ...s, description: newDesc } : s))
+    );
+  };
+
+  const moveSectionUp = (secIdx: number) => {
+    if (secIdx <= 0) return;
+    const next = [...sections];
+    const temp = next[secIdx];
+    next[secIdx] = next[secIdx - 1];
+    next[secIdx - 1] = temp;
+    setSections(next.map((s, idx) => ({ ...s, sectionOrder: idx + 1 })));
+  };
+
+  const moveSectionDown = (secIdx: number) => {
+    if (secIdx >= sections.length - 1) return;
+    const next = [...sections];
+    const temp = next[secIdx];
+    next[secIdx] = next[secIdx + 1];
+    next[secIdx + 1] = temp;
+    setSections(next.map((s, idx) => ({ ...s, sectionOrder: idx + 1 })));
+  };
+
+  // Pool Handlers
   const addPoolToSection = (sectionId: string) => {
     const sec = sections.find((s) => s.id === sectionId);
-    const currentPools = sec?.pools || [];
-    const newOrder = currentPools.length + 1;
-    const newPoolId = `pool-${Date.now()}-${newOrder}`;
+    if (!sec) return;
+    const nextPoolOrder = (sec.pools || []).length + 1;
     const newPool: BuilderPool = {
-      id: newPoolId,
-      title: `Pool ${newOrder}`,
+      id: `pool-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      title: `Question Pool ${nextPoolOrder}`,
       description: "",
       selectionCount: 1,
-      poolOrder: newOrder,
+      poolOrder: nextPoolOrder,
       questions: [],
     };
+
     setSections((prev) =>
       prev.map((s) =>
-        s.id === sectionId
-          ? { ...s, pools: [...(s.pools || []), newPool] }
-          : s
+        s.id === sectionId ? { ...s, pools: [...(s.pools || []), newPool] } : s
       )
     );
-    setActiveSectionId(sectionId);
-    setActivePoolId(newPoolId);
-    setErrorMsg(null);
+    setActivePoolId(newPool.id);
   };
 
   const updatePoolTitle = (sectionId: string, poolId: string, newTitle: string) => {
@@ -254,51 +278,18 @@ export function TestBuilder({
     );
   };
 
-  const updatePoolDescription = (sectionId: string, poolId: string, newDesc: string) => {
+  const updatePoolSelectionCount = (
+    sectionId: string,
+    poolId: string,
+    count: number
+  ) => {
     setSections((prev) =>
       prev.map((s) =>
         s.id === sectionId
           ? {
               ...s,
               pools: (s.pools || []).map((p) =>
-                p.id === poolId ? { ...p, description: newDesc } : p
-              ),
-            }
-          : s
-      )
-    );
-  };
-
-  const updatePoolSelectionCount = (sectionId: string, poolId: string, count: number) => {
-    const safeCount = Math.max(1, Math.floor(count) || 1);
-    setSections((prev) =>
-      prev.map((s) =>
-        s.id === sectionId
-          ? {
-              ...s,
-              pools: (s.pools || []).map((p) =>
-                p.id === poolId ? { ...p, selectionCount: safeCount } : p
-              ),
-            }
-          : s
-      )
-    );
-  };
-
-  const updatePoolUniformMarks = (sectionId: string, poolId: string, newMarks: number) => {
-    const validMarks = isNaN(newMarks) || newMarks < 0 ? 1 : newMarks;
-    setSections((prev) =>
-      prev.map((s) =>
-        s.id === sectionId
-          ? {
-              ...s,
-              pools: (s.pools || []).map((p) =>
-                p.id === poolId
-                  ? {
-                      ...p,
-                      questions: p.questions.map((q) => ({ ...q, marks: validMarks })),
-                    }
-                  : p
+                p.id === poolId ? { ...p, selectionCount: Math.max(1, count) } : p
               ),
             }
           : s
@@ -324,7 +315,11 @@ export function TestBuilder({
     }
   };
 
-  const removeQuestionFromPool = (sectionId: string, poolId: string, questionId: string) => {
+  const removeQuestionFromPool = (
+    sectionId: string,
+    poolId: string,
+    questionId: string
+  ) => {
     setSections((prev) =>
       prev.map((s) =>
         s.id === sectionId
@@ -358,7 +353,9 @@ export function TestBuilder({
           const targetPool = (sec.pools || []).find((p) => p.id === activePoolId);
           if (targetPool) {
             const uniformMarks =
-              targetPool.questions.length > 0 ? targetPool.questions[0].marks : q.marks;
+              targetPool.questions.length > 0
+                ? targetPool.questions[0].marks
+                : q.marks;
             return {
               ...sec,
               pools: (sec.pools || []).map((p) =>
@@ -378,7 +375,10 @@ export function TestBuilder({
 
         return {
           ...sec,
-          questions: [...sec.questions, { id: q.id, question: q, marks: q.marks }],
+          questions: [
+            ...sec.questions,
+            { id: q.id, question: q, marks: q.marks },
+          ],
         };
       })
     );
@@ -414,10 +414,10 @@ export function TestBuilder({
   };
 
   const moveQuestionDownInSection = (sectionId: string, qIdx: number) => {
+    if (qIdx >= sections.find((s) => s.id === sectionId)!.questions.length - 1) return;
     setSections((prev) =>
       prev.map((sec) => {
         if (sec.id !== sectionId) return sec;
-        if (qIdx >= sec.questions.length - 1) return sec;
         const nextQ = [...sec.questions];
         const temp = nextQ[qIdx];
         nextQ[qIdx] = nextQ[qIdx + 1];
@@ -467,13 +467,14 @@ export function TestBuilder({
         return {
           ...sec,
           questions: sec.questions.map((q) =>
-            q.id === questionId ? { ...q, marks: newMarks } : q
+            q.id === questionId ? { ...q, marks: Math.max(1, newMarks) } : q
           ),
         };
       })
     );
   };
 
+  // Preview Handler
   const handlePreview = () => {
     const flatQuestions: PreviewQuestion[] = sections.flatMap((sec, secIdx) => {
       const fixed: PreviewQuestion[] = sec.questions.map(({ question, marks }) => ({
@@ -502,7 +503,7 @@ export function TestBuilder({
     });
 
     const previewDraft: PreviewDraft = {
-      title: title.trim(),
+      title: title.trim() || "Untitled Placement Assessment",
       description,
       duration: Number(duration),
       testType,
@@ -523,87 +524,57 @@ export function TestBuilder({
     router.push("/admin/tests/preview");
   };
 
-  const handleCreateTest = async () => {
-    setErrorMsg(null);
+  // Validation before publish
+  const validationWarnings = useMemo(() => {
+    const warnings: string[] = [];
     if (!title.trim()) {
-      setErrorMsg("Please enter a valid test title.");
-      return;
+      warnings.push("Test title is required.");
     }
-    if (sections.length === 0) {
-      setErrorMsg("Please create at least one section.");
-      return;
+    if (totalQuestions === 0) {
+      warnings.push("At least one question or question pool must be added.");
     }
-    for (let i = 0; i < sections.length; i++) {
-      if (!sections[i].title.trim()) {
-        setErrorMsg(`Section ${i + 1} must have a valid title.`);
-        return;
-      }
-    }
-
-    // Validate pools across sections
     for (let sIdx = 0; sIdx < sections.length; sIdx++) {
       const s = sections[sIdx];
-      for (let pIdx = 0; pIdx < (s.pools || []).length; pIdx++) {
-        const p = s.pools[pIdx];
+      if (!s.title.trim()) {
+        warnings.push(`Section ${sIdx + 1} requires a valid name.`);
+      }
+      for (const p of s.pools || []) {
         if (!p.title.trim()) {
-          setErrorMsg(`Pool ${pIdx + 1} in section "${s.title}" must have a valid title.`);
-          return;
+          warnings.push(`A pool in section "${s.title}" has an empty title.`);
         }
-        if (p.selectionCount < 1) {
-          setErrorMsg(`Pool "${p.title}" must select at least 1 question.`);
-          return;
-        }
-        if (p.questions.length < p.selectionCount) {
-          setErrorMsg(
-            `Pool "${p.title}" in section "${s.title}" requires ${p.selectionCount} question(s) to be selected, but only contains ${p.questions.length} question(s). Please assign more questions to the pool.`
+        if (p.selectionCount > p.questions.length) {
+          warnings.push(
+            `Pool "${p.title}" requires ${p.selectionCount} questions but only ${p.questions.length} are added.`
           );
-          return;
-        }
-        const distinctMarks = new Set(p.questions.map((q) => q.marks));
-        if (distinctMarks.size > 1) {
-          setErrorMsg(
-            `All questions in pool "${p.title}" must have identical marks for deterministic scoring. Found conflicting marks: ${Array.from(distinctMarks).join(", ")}.`
-          );
-          return;
         }
       }
     }
+    if (isScheduled && scheduledStartAt && scheduledEndAt) {
+      if (new Date(scheduledEndAt).getTime() <= new Date(scheduledStartAt).getTime()) {
+        warnings.push("Scheduled end time must be after start time.");
+      }
+    }
+    return warnings;
+  }, [title, totalQuestions, sections, isScheduled, scheduledStartAt, scheduledEndAt]);
 
-    if (totalQuestions === 0) {
-      setErrorMsg("Please add at least one question (fixed or via a pool) to the test.");
+  const canPublish = validationWarnings.length === 0;
+
+  // Submit test to backend
+  const handleCreateTest = async () => {
+    setErrorMsg(null);
+
+    if (validationWarnings.length > 0) {
+      setErrorMsg(validationWarnings[0]);
+      setCurrentStep("review");
       return;
-    }
-
-    // Attempt limit: empty = unlimited; otherwise a whole number between 1 and 100.
-    let parsedAttemptLimit: number | null = null;
-    if (attemptLimit.trim() !== "") {
-      const parsed = Number(attemptLimit);
-      if (!Number.isInteger(parsed) || parsed < 1 || parsed > 100) {
-        setErrorMsg("Attempt limit must be a whole number between 1 and 100, or left empty for unlimited.");
-        return;
-      }
-      parsedAttemptLimit = parsed;
-    }
-
-    // Test instructions: optional plain text, max 5000 chars; empty/whitespace = none.
-    let parsedInstructions: string | null = null;
-    if (instructions.trim() !== "") {
-      if (instructions.trim().length > 5000) {
-        setErrorMsg("Test instructions cannot exceed 5000 characters.");
-        return;
-      }
-      parsedInstructions = instructions.trim();
     }
 
     setLoading(true);
-    if (isScheduled && scheduledStartAt && scheduledEndAt) {
-      if (new Date(scheduledEndAt).getTime() <= new Date(scheduledStartAt).getTime()) {
-        setErrorMsg("Scheduled end time must be strictly after scheduled start time.");
-        setLoading(false);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
-    }
+
+    const parsedAttemptLimit =
+      attemptLimit.trim() === "" ? null : parseInt(attemptLimit.trim(), 10);
+    const parsedInstructions =
+      instructions.trim() === "" ? null : instructions.trim().slice(0, 5000);
 
     try {
       const res = await fetch("/api/admin/tests", {
@@ -611,7 +582,7 @@ export function TestBuilder({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
-          description,
+          description: description.trim() || undefined,
           duration: Number(duration),
           type: testType,
           totalMarks,
@@ -622,8 +593,14 @@ export function TestBuilder({
           attemptLimit: parsedAttemptLimit,
           instructions: parsedInstructions,
           status: lifecycleStatus,
-          scheduledStartAt: isScheduled && scheduledStartAt ? new Date(scheduledStartAt).toISOString() : null,
-          scheduledEndAt: isScheduled && scheduledEndAt ? new Date(scheduledEndAt).toISOString() : null,
+          scheduledStartAt:
+            isScheduled && scheduledStartAt
+              ? new Date(scheduledStartAt).toISOString()
+              : null,
+          scheduledEndAt:
+            isScheduled && scheduledEndAt
+              ? new Date(scheduledEndAt).toISOString()
+              : null,
           scheduleTimezone: isScheduled ? scheduleTimezone : null,
           isPublished: lifecycleStatus === "published",
           sections: sections.map((s, sIdx) => ({
@@ -651,151 +628,344 @@ export function TestBuilder({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to create test");
+        throw new Error(data.error || "Failed to create test.");
       }
 
-      router.push("/tests");
+      router.push("/admin/tests");
       router.refresh();
     } catch (err: any) {
+      console.error(err);
       setErrorMsg(err.message || "Failed to create test.");
+      setShowPublishConfirm(false);
     } finally {
       setLoading(false);
     }
   };
 
-  const activeSection = sections.find((s) => s.id === activeSectionId) || sections[0];
+  const activeSection =
+    sections.find((s) => s.id === activeSectionId) || sections[0];
+
+  // Navigation helpers
+  const currentStepIndex = BUILDER_STEPS.findIndex((s) => s.id === currentStep);
+  const goToNextStep = () => {
+    if (currentStepIndex < BUILDER_STEPS.length - 1) {
+      setCurrentStep(BUILDER_STEPS[currentStepIndex + 1].id);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+  const goToPrevStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStep(BUILDER_STEPS[currentStepIndex - 1].id);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Top Configuration Card */}
-      <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-6">
-        <div>
-          <p className="text-label-xs font-mono font-bold uppercase tracking-wider text-primary-text">Configure</p>
-          <h3 className="mt-1 text-title-md font-semibold text-text-primary">
-            Assessment Parameters
-          </h3>
-          <p className="mt-1 text-body-sm text-text-muted">Configure the information students will see before starting the test.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div className="md:col-span-6">
-            <label className="text-label-xs text-text-muted uppercase font-mono block mb-2">
-              Test Nomenclature *
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. SDE Technical Screen — Graph & Dynamic Programming"
-              className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-            />
+    <div className="space-y-6 pb-24">
+      {/* 1. PERSISTENT TEST CONFIGURATION SUMMARY BAR */}
+      <div className="sticky top-0 z-20 rounded-xl border border-border bg-surface/95 backdrop-blur-md p-4 shadow-md">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[10px] font-mono uppercase text-text-muted font-bold tracking-wider block">
+                Test Summary
+              </span>
+              <h2 className="text-body-sm font-bold text-text-primary truncate">
+                {title.trim() || "Untitled Placement Assessment"}
+              </h2>
+            </div>
           </div>
 
-          <div className="md:col-span-3">
-            <label className="text-label-xs text-text-muted uppercase font-mono block mb-2">
-              Duration (Minutes) *
-            </label>
-            <input
-              type="number"
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-            />
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:items-center gap-x-4 gap-y-2 text-label-xs font-mono">
+            <div>
+              <span className="text-text-muted block text-[10px] uppercase">Questions</span>
+              <span className="font-bold text-text-primary">{totalQuestions} questions</span>
+            </div>
+            <div>
+              <span className="text-text-muted block text-[10px] uppercase">Sections</span>
+              <span className="font-bold text-text-primary">{sections.length} sections</span>
+            </div>
+            <div>
+              <span className="text-text-muted block text-[10px] uppercase">Duration</span>
+              <span className="font-bold text-text-primary">{duration} mins</span>
+            </div>
+            <div>
+              <span className="text-text-muted block text-[10px] uppercase">Marks</span>
+              <span className="font-bold text-primary-text">{totalMarks} total</span>
+            </div>
+            <div className="hidden sm:block">
+              <span className="text-text-muted block text-[10px] uppercase">Rules</span>
+              <span className="text-text-secondary">
+                {negativeMarkingEnabled ? `-${(negativeMarkRate * 100).toFixed(0)}% Neg` : "No Neg"} ·{" "}
+                {randomizeQuestions || randomizeOptions ? "Shuffled" : "Sequential"}
+              </span>
+            </div>
+            <div className="hidden lg:block">
+              <span className="text-text-muted block text-[10px] uppercase">Status</span>
+              <span
+                className={`font-bold uppercase ${
+                  lifecycleStatus === "published" ? "text-secondary" : "text-tertiary"
+                }`}
+              >
+                {lifecycleStatus}
+              </span>
+            </div>
           </div>
 
-          <div className="md:col-span-3">
-            <label className="text-label-xs text-text-muted uppercase font-mono block mb-2">
-              Test Category
-            </label>
-            <select
-              value={testType}
-              onChange={(e) => setTestType(e.target.value as any)}
-              className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              id="btn-builder-preview-draft"
+              onClick={handlePreview}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-surface-high px-3 text-label-xs font-mono text-text-primary hover:border-primary hover:text-primary-text transition-colors"
             >
-              <option value="mixed">Mixed Placement</option>
-              <option value="aptitude">Aptitude</option>
-              <option value="cs_fundamentals">CS Fundamentals</option>
-              <option value="baseline">Baseline Assessment</option>
-            </select>
-          </div>
+              <span className="material-symbols-outlined text-[16px]">visibility</span>
+              <span>Preview</span>
+            </button>
 
-          <div className="md:col-span-12">
-            <label className="text-label-xs text-text-muted uppercase font-mono block mb-2">
-              Context / Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={2}
-              placeholder="Describe the scope, target hiring tier, and focus areas..."
-              className="w-full rounded-lg border border-border bg-base p-4 text-body-sm text-text-primary outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30"
-            />
+            <button
+              type="button"
+              id="btn-builder-finish-review"
+              onClick={() => {
+                setCurrentStep("review");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-label-xs font-mono font-bold text-text-inverse hover:bg-primary-text transition-colors shadow-sm"
+            >
+              <span>Review & Deploy</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
           </div>
+        </div>
+      </div>
 
-          {/* Test Instructions (Phase 7E) */}
-          <div className="md:col-span-12">
-            <label className="text-label-xs text-text-muted uppercase font-mono block mb-2">
-              Test Instructions
-            </label>
-            <textarea
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-              rows={4}
-              maxLength={5000}
-              placeholder="e.g. This test has 4 sections. No negative marking. You may not use external resources..."
-              className="w-full rounded-lg border border-border bg-base p-4 text-body-sm text-text-primary outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30"
-            />
-            <p className="mt-1 text-body-xs text-text-muted">
-              Shown to students before they start. Duration, marks, sections, attempt limit, and negative marking are already displayed automatically.
+      {/* 2. BUILDER PROGRESS INDICATOR */}
+      <div className="rounded-xl border border-border bg-surface p-2 shadow-sm">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
+          {BUILDER_STEPS.map((step, idx) => {
+            const isActive = currentStep === step.id;
+            const isCompleted = idx < currentStepIndex;
+
+            return (
+              <button
+                key={step.id}
+                type="button"
+                id={`btn-step-${step.id}`}
+                onClick={() => setCurrentStep(step.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-label-xs font-mono whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-primary text-text-inverse font-bold shadow-sm"
+                    : isCompleted
+                    ? "bg-surface-high text-text-primary hover:bg-surface-highest"
+                    : "text-text-muted hover:text-text-primary hover:bg-surface-high/60"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">
+                  {step.icon}
+                </span>
+                <span>{step.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Error Banner */}
+      {errorMsg && (
+        <div className="p-4 rounded-xl border border-error/40 bg-error/10 text-error flex items-center justify-between gap-3 text-body-sm font-medium">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[20px]">error</span>
+            <span>{errorMsg}</span>
+          </div>
+          <button onClick={() => setErrorMsg(null)} className="text-text-muted hover:text-text-primary">
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+      )}
+
+      {/* 3. STEP CONTENT */}
+
+      {/* STEP 1: BASICS */}
+      {currentStep === "basics" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="border-b border-border/70 pb-4">
+            <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+              Step 01
+            </span>
+            <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+              Basic Assessment Information
+            </h3>
+            <p className="text-body-sm text-text-secondary mt-1">
+              Specify the title, curriculum classification, and candidate-facing context.
             </p>
           </div>
 
-          {/* Negative Marking Configuration */}
-          <div className="md:col-span-12 rounded-xl border border-border/70 bg-surface-raised p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
-                    Negative Marking
-                  </span>
-                  {negativeMarkingEnabled ? (
-                    <span className="rounded bg-error/15 px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-error">
-                      Active: -{(negativeMarkRate * 100).toFixed(0)}%
-                    </span>
-                  ) : (
-                    <span className="rounded bg-surface-border px-2 py-0.5 text-[11px] font-mono uppercase text-text-muted">
-                      Disabled
-                    </span>
-                  )}
-                </div>
-                <p className="mt-1 text-body-xs text-text-muted">
-                  Deduct proportional marks for incorrect answers. Unanswered questions always receive 0 marks.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setNegativeMarkingEnabled(!negativeMarkingEnabled)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  negativeMarkingEnabled ? "bg-primary" : "bg-surface-border"
-                }`}
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="test-title-input"
+                className="text-label-xs text-text-muted uppercase font-mono block mb-2 font-semibold"
               >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    negativeMarkingEnabled ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
-              </button>
+                Test Title *
+              </label>
+              <input
+                id="test-title-input"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. SDE Technical Screen — Core Algorithms & Systems"
+                className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              />
             </div>
 
-            {negativeMarkingEnabled && (
-              <div className="mt-4 pt-4 border-t border-border/50 space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-label-xs font-mono text-text-muted uppercase mr-1">Presets:</span>
+            <div>
+              <label
+                htmlFor="test-type-select"
+                className="text-label-xs text-text-muted uppercase font-mono block mb-2 font-semibold"
+              >
+                Curriculum Track *
+              </label>
+              <select
+                id="test-type-select"
+                value={testType}
+                onChange={(e) => setTestType(e.target.value as any)}
+                className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="mixed">Mixed Placement Track</option>
+                <option value="cs_fundamentals">CS Fundamentals</option>
+                <option value="aptitude">Aptitude Track</option>
+                <option value="baseline">Baseline Assessment</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="test-description-textarea"
+                className="text-label-xs text-text-muted uppercase font-mono block mb-2 font-semibold"
+              >
+                Description / Context
+              </label>
+              <textarea
+                id="test-description-textarea"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                placeholder="Describe target roles, expected knowledge, and evaluation criteria..."
+                className="w-full rounded-lg border border-border bg-base p-4 text-body-sm text-text-primary outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30 leading-relaxed"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 2: RULES */}
+      {currentStep === "rules" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="border-b border-border/70 pb-4">
+            <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+              Step 02
+            </span>
+            <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+              Configuration & Evaluation Rules
+            </h3>
+            <p className="text-body-sm text-text-secondary mt-1">
+              Configure exam duration, attempt limits, negative marking penalty, and randomization.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Duration */}
+            <div>
+              <label
+                htmlFor="test-duration-input"
+                className="text-label-xs text-text-muted uppercase font-mono block mb-2 font-semibold"
+              >
+                Duration (Minutes) *
+              </label>
+              <input
+                id="test-duration-input"
+                type="number"
+                min={5}
+                max={300}
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 font-mono"
+              />
+              <p className="text-[11px] font-mono text-text-muted mt-1.5">
+                The continuous countdown timer visible during the exam.
+              </p>
+            </div>
+
+            {/* Attempt Limit */}
+            <div>
+              <label
+                htmlFor="test-attempt-limit-input"
+                className="text-label-xs text-text-muted uppercase font-mono block mb-2 font-semibold"
+              >
+                Attempt Limit (Blank = Unlimited)
+              </label>
+              <input
+                id="test-attempt-limit-input"
+                type="number"
+                min={1}
+                max={100}
+                value={attemptLimit}
+                onChange={(e) => setAttemptLimit(e.target.value)}
+                placeholder="Unlimited attempts"
+                className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 font-mono"
+              />
+              <p className="text-[11px] font-mono text-text-muted mt-1.5">
+                {attemptLimit ? `Capped at ${attemptLimit} completed attempts per student.` : "Students may take this test unlimited times."}
+              </p>
+            </div>
+
+            {/* Negative Marking Box */}
+            <div className="md:col-span-2 rounded-xl border border-border/70 bg-surface-high p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
+                      Negative Marking
+                    </span>
+                    {negativeMarkingEnabled ? (
+                      <span className="rounded bg-error/15 px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-error border border-error/30">
+                        Active: -{(negativeMarkRate * 100).toFixed(0)}%
+                      </span>
+                    ) : (
+                      <span className="rounded bg-surface-highest px-2 py-0.5 text-[11px] font-mono uppercase text-text-muted border border-border">
+                        Disabled
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-body-xs text-text-muted mt-0.5">
+                    Deduct proportional marks for incorrect responses. Unanswered questions receive 0 marks.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  id="toggle-negative-marking-btn"
+                  onClick={() => setNegativeMarkingEnabled(!negativeMarkingEnabled)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    negativeMarkingEnabled ? "bg-primary" : "bg-surface-highest"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      negativeMarkingEnabled ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {negativeMarkingEnabled && (
+                <div className="pt-3 border-t border-border/60 flex flex-wrap items-center gap-3">
+                  <span className="text-label-xs font-mono text-text-muted uppercase">Presets:</span>
                   {[
                     { label: "1/4 Penalty (25%)", rate: 0.25 },
                     { label: "1/3 Penalty (~33%)", rate: 0.33 },
-                    { label: "1/2 Penalty (50%)", rate: 0.50 },
+                    { label: "1/2 Penalty (50%)", rate: 0.5 },
                   ].map((preset) => (
                     <button
                       key={preset.rate}
@@ -811,64 +981,37 @@ export function TestBuilder({
                     </button>
                   ))}
                 </div>
+              )}
+            </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <label className="text-label-xs text-text-muted uppercase font-mono">
-                      Penalty Rate (%):
-                    </label>
-                    <div className="relative w-24">
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="1"
-                        value={Math.round(negativeMarkRate * 100)}
-                        onChange={(e) => {
-                          const val = Number(e.target.value);
-                          const clamped = Math.max(0, Math.min(100, isNaN(val) ? 0 : val));
-                          setNegativeMarkRate(clamped / 100);
-                        }}
-                        className="w-full rounded-lg border border-border bg-base px-3 py-1.5 text-body-sm font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 text-right pr-6"
-                      />
-                      <span className="absolute right-2 top-1.5 text-body-sm font-mono text-text-muted">%</span>
-                    </div>
-                  </div>
-
-                  <p className="text-body-xs font-mono text-text-muted">
-                    → Incorrect answers deduct <span className="text-error font-semibold">{(negativeMarkRate * 100).toFixed(0)}%</span> of the question&apos;s marks (e.g. -{(2 * negativeMarkRate).toFixed(2)} on a 2-mark question).
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Randomize Questions Toggle */}
-            <div className="mt-4 pt-4 border-t border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Randomize Questions */}
+            <div className="rounded-xl border border-border/70 bg-surface-high p-4 flex items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
                     Randomize Questions
                   </span>
-                  {randomizeQuestions ? (
-                    <span className="rounded bg-primary/15 px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-primary-text">
-                      ON
-                    </span>
-                  ) : (
-                    <span className="rounded bg-surface-border px-2 py-0.5 text-[11px] font-mono uppercase text-text-muted">
-                      OFF
-                    </span>
-                  )}
+                  <span
+                    className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase border ${
+                      randomizeQuestions
+                        ? "bg-primary/15 text-primary-text border-primary/30"
+                        : "bg-surface-highest text-text-muted border-border"
+                    }`}
+                  >
+                    {randomizeQuestions ? "ON" : "OFF"}
+                  </span>
                 </div>
-                <p className="mt-1 text-body-xs text-text-muted">
-                  Questions are shuffled independently for each attempt.
+                <p className="text-body-xs text-text-muted mt-1">
+                  Questions will be shuffled when an attempt starts.
                 </p>
               </div>
 
               <button
                 type="button"
+                id="toggle-randomize-questions-btn"
                 onClick={() => setRandomizeQuestions(!randomizeQuestions)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  randomizeQuestions ? "bg-primary" : "bg-surface-border"
+                  randomizeQuestions ? "bg-primary" : "bg-surface-highest"
                 }`}
               >
                 <span
@@ -879,33 +1022,34 @@ export function TestBuilder({
               </button>
             </div>
 
-            {/* Randomize Options Toggle */}
-            <div className="mt-4 pt-4 border-t border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Randomize Options */}
+            <div className="rounded-xl border border-border/70 bg-surface-high p-4 flex items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
                     Randomize Options
                   </span>
-                  {randomizeOptions ? (
-                    <span className="rounded bg-primary/15 px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-primary-text">
-                      ON
-                    </span>
-                  ) : (
-                    <span className="rounded bg-surface-border px-2 py-0.5 text-[11px] font-mono uppercase text-text-muted">
-                      OFF
-                    </span>
-                  )}
+                  <span
+                    className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase border ${
+                      randomizeOptions
+                        ? "bg-primary/15 text-primary-text border-primary/30"
+                        : "bg-surface-highest text-text-muted border-border"
+                    }`}
+                  >
+                    {randomizeOptions ? "ON" : "OFF"}
+                  </span>
                 </div>
-                <p className="mt-1 text-body-xs text-text-muted">
-                  Answer choices are shuffled independently for each attempt.
+                <p className="text-body-xs text-text-muted mt-1">
+                  Answer options will be shuffled for each attempt.
                 </p>
               </div>
 
               <button
                 type="button"
+                id="toggle-randomize-options-btn"
                 onClick={() => setRandomizeOptions(!randomizeOptions)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  randomizeOptions ? "bg-primary" : "bg-surface-border"
+                  randomizeOptions ? "bg-primary" : "bg-surface-highest"
                 }`}
               >
                 <span
@@ -915,153 +1059,642 @@ export function TestBuilder({
                 />
               </button>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Attempt Limit */}
-            <div className="mt-4 pt-4 border-t border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
-                    Attempt Limit
-                  </span>
-                  {attemptLimit.trim() === "" ? (
-                    <span className="rounded bg-surface-border px-2 py-0.5 text-[11px] font-mono uppercase text-text-muted">
-                      Unlimited
-                    </span>
-                  ) : (
-                    <span className="rounded bg-primary/15 px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-primary-text">
-                      {attemptLimit}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-1 text-body-xs text-text-muted">
-                  Maximum number of attempts a student can submit for this test. Leave empty for unlimited.
-                </p>
-              </div>
+      {/* STEP 3: INSTRUCTIONS */}
+      {currentStep === "instructions" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="border-b border-border/70 pb-4">
+            <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+              Step 03
+            </span>
+            <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+              Test Pre-Start Instructions
+            </h3>
+            <p className="text-body-sm text-text-secondary mt-1">
+              Author candidate guidelines shown on the test detail page before beginning the attempt.
+            </p>
+          </div>
 
-              <input
-                type="number"
-                min={1}
-                max={100}
-                placeholder="Unlimited"
-                value={attemptLimit}
-                onChange={(e) => setAttemptLimit(e.target.value)}
-                className="w-28 rounded-lg border border-border bg-base px-3 py-1.5 text-body-sm font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 text-right"
-              />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="test-instructions-textarea"
+                className="text-label-xs text-text-muted uppercase font-mono font-semibold"
+              >
+                Pre-Start Instructions
+              </label>
+              <span className="text-label-xs font-mono text-text-muted">
+                {instructions.length} / 5000 characters
+              </span>
             </div>
 
-            {/* Phase 8: Lifecycle & Availability Scheduling */}
-            <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
-                    Publication Status
-                  </span>
-                  <p className="mt-1 text-body-xs text-text-muted">
-                    Draft tests are private and only visible to administrators.
-                  </p>
+            <textarea
+              id="test-instructions-textarea"
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              rows={6}
+              maxLength={5000}
+              placeholder="e.g. This assessment evaluates core computer science concepts. Maintain strict focus and do not use external aids..."
+              className="w-full rounded-lg border border-border bg-base p-4 text-body-sm text-text-primary outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30 leading-relaxed font-sans"
+            />
+
+            {/* Live Preview Box */}
+            <div className="rounded-xl border border-border/70 bg-surface-high p-4 space-y-2">
+              <span className="text-[10px] font-mono uppercase text-text-muted font-bold block">
+                Candidate Preview
+              </span>
+              {instructions.trim() ? (
+                <p className="text-body-sm text-text-primary whitespace-pre-wrap leading-relaxed">
+                  {instructions}
+                </p>
+              ) : (
+                <p className="text-body-sm text-text-muted italic">
+                  No additional instructions configured. Students will see the default rules.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 4: SECTIONS */}
+      {currentStep === "sections" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/70 pb-4">
+            <div>
+              <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+                Step 04
+              </span>
+              <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+                Section Management
+              </h3>
+              <p className="text-body-sm text-text-secondary mt-1">
+                Organize the assessment into distinct sections (e.g. Core CS, Aptitude, Systems).
+              </p>
+            </div>
+
+            <button
+              type="button"
+              id="btn-add-section"
+              onClick={addSection}
+              className="inline-flex items-center gap-1.5 bg-primary text-text-inverse px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-primary-text transition-colors shadow-sm self-start sm:self-auto"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span>Add Section</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {sections.map((sec, idx) => (
+              <div
+                key={sec.id}
+                className="rounded-xl border border-border bg-surface-high p-4 sm:p-5 space-y-3"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center font-mono text-label-xs font-bold text-primary-text shrink-0">
+                      0{sec.sectionOrder}
+                    </span>
+                    <input
+                      type="text"
+                      value={sec.title}
+                      onChange={(e) => updateSectionTitle(sec.id, e.target.value)}
+                      placeholder="Section Title..."
+                      className="bg-transparent font-bold text-body-md text-text-primary outline-none border-b border-border/80 focus:border-primary pb-0.5 flex-1 min-w-0"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => moveSectionUp(idx)}
+                      title="Move section up"
+                      className="w-8 h-8 rounded border border-border bg-surface flex items-center justify-center text-text-muted hover:text-text-primary disabled:opacity-30 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === sections.length - 1}
+                      onClick={() => moveSectionDown(idx)}
+                      title="Move section down"
+                      className="w-8 h-8 rounded border border-border bg-surface flex items-center justify-center text-text-muted hover:text-text-primary disabled:opacity-30 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">arrow_downward</span>
+                    </button>
+                    {sections.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSection(sec.id)}
+                        title="Delete section"
+                        className="w-8 h-8 rounded border border-error/30 bg-error/10 flex items-center justify-center text-error hover:bg-error/20 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setLifecycleStatus("published")}
-                    className={`px-3 py-1.5 rounded-lg text-label-xs font-mono font-semibold transition-colors ${
-                      lifecycleStatus === "published"
-                        ? "bg-primary text-text-inverse shadow-sm"
-                        : "bg-surface-border text-text-muted hover:text-text-primary"
-                    }`}
-                  >
-                    Published
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLifecycleStatus("draft")}
-                    className={`px-3 py-1.5 rounded-lg text-label-xs font-mono font-semibold transition-colors ${
-                      lifecycleStatus === "draft"
-                        ? "bg-surface-high text-text-primary border border-border"
-                        : "bg-surface-border text-text-muted hover:text-text-primary"
-                    }`}
-                  >
-                    Draft
-                  </button>
+
+                <div>
+                  <input
+                    type="text"
+                    value={sec.description}
+                    onChange={(e) => updateSectionDescription(sec.id, e.target.value)}
+                    placeholder="Optional section description or instructions..."
+                    className="w-full bg-base rounded-md border border-border/80 px-3 py-1.5 text-body-xs text-text-secondary outline-none focus:border-primary font-sans"
+                  />
+                </div>
+
+                <div className="flex items-center gap-4 text-label-xs font-mono text-text-muted pt-1">
+                  <span>{sec.questions.length} fixed questions</span>
+                  <span>·</span>
+                  <span>{(sec.pools || []).length} question pools</span>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border/30">
+      {/* STEP 5: QUESTIONS (FIXED QUESTIONS MANAGEMENT) */}
+      {currentStep === "questions" && (
+        <div className="space-y-6">
+          {/* Active Section Selector */}
+          <div className="rounded-xl border border-border bg-surface p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-label-xs font-mono uppercase text-text-muted font-bold">
+                Assigning Questions to:
+              </span>
+              <select
+                id="select-target-section"
+                value={activeSectionId}
+                onChange={(e) => {
+                  setActiveSectionId(e.target.value);
+                  setActivePoolId(null);
+                }}
+                className="rounded-lg border border-border bg-base px-3 py-1.5 text-label-xs font-mono font-bold text-primary-text outline-none focus:border-primary"
+              >
+                {sections.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    Section {s.sectionOrder}: {s.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="text-label-xs font-mono text-text-muted">
+              Section Total: {activeSection?.questions.length || 0} questions ·{" "}
+              {activeSection?.questions.reduce((sum, q) => sum + q.marks, 0) || 0} marks
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Repository Browser (Left 7 cols) */}
+            <div className="lg:col-span-7 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-sm">
+              <div className="border-b border-border/70 pb-3">
+                <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+                  Curriculum Repository
+                </span>
+                <h3 className="text-title-sm font-bold text-text-primary mt-0.5">
+                  Browse & Add Questions
+                </h3>
+              </div>
+
+              {/* Filters */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search repository..."
+                  className="rounded-lg border border-border bg-base px-3 py-1.5 text-body-xs text-text-primary outline-none focus:border-primary"
+                />
+
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="rounded-lg border border-border bg-base px-2 py-1.5 text-label-xs font-mono text-text-primary outline-none focus:border-primary"
+                >
+                  <option value="">All Subjects</option>
+                  {availableSubjects.map((s) => (
+                    <option key={s.name} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  className="rounded-lg border border-border bg-base px-2 py-1.5 text-label-xs font-mono text-text-primary outline-none focus:border-primary"
+                >
+                  <option value="">All Difficulties</option>
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+
+              {/* Question items list */}
+              <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+                {filteredRepository.length > 0 ? (
+                  filteredRepository.map((q) => {
+                    const isSelected = allSelectedQuestionIds.has(q.id);
+                    return (
+                      <div
+                        key={q.id}
+                        className={`p-3.5 rounded-lg border transition-all flex flex-col justify-between gap-2.5 ${
+                          isSelected
+                            ? "border-secondary/30 bg-secondary/5 opacity-70"
+                            : "border-border bg-base hover:border-primary/50"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2 text-[10px] font-mono text-text-muted mb-1">
+                            <span className="text-primary-text font-semibold">
+                              {q.subjectCode} · {q.topicName}
+                            </span>
+                            <span className="uppercase">{q.difficulty}</span>
+                          </div>
+                          <p className="text-body-xs text-text-primary font-medium line-clamp-2">
+                            {q.question}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/50 text-[11px] font-mono">
+                          <span className="text-text-muted">
+                            {q.marks} marks · {q.expectedTime ? `${q.expectedTime}s` : "No time"}
+                          </span>
+
+                          <button
+                            type="button"
+                            disabled={isSelected}
+                            onClick={() => addQuestionToTarget(q)}
+                            className={`px-3 py-1 rounded text-label-xs font-mono font-bold transition-colors ${
+                              isSelected
+                                ? "bg-secondary/15 text-secondary cursor-not-allowed"
+                                : "bg-primary text-text-inverse hover:bg-primary-text"
+                            }`}
+                          >
+                            {isSelected ? "Added" : "+ Add"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-center py-8 text-label-xs font-mono text-text-muted">
+                    No questions match the filter criteria.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Active Section Questions (Right 5 cols) */}
+            <div className="lg:col-span-5 space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-sm">
+              <div className="border-b border-border/70 pb-3 flex items-center justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary">
-                      Availability Window
-                    </span>
-                    <span className={`rounded px-2 py-0.5 text-[11px] font-mono font-bold uppercase ${
-                      isScheduled ? "bg-primary/15 text-primary-text" : "bg-surface-border text-text-muted"
-                    }`}>
-                      {isScheduled ? "Scheduled" : "Always Available"}
-                    </span>
+                  <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+                    Section Payload
+                  </span>
+                  <h3 className="text-title-sm font-bold text-text-primary mt-0.5">
+                    {activeSection?.title}
+                  </h3>
+                </div>
+                <span className="text-label-xs font-mono text-text-muted">
+                  {activeSection?.questions.length || 0} questions
+                </span>
+              </div>
+
+              <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+                {activeSection?.questions && activeSection.questions.length > 0 ? (
+                  activeSection.questions.map((item, qIdx) => (
+                    <div
+                      key={item.id}
+                      className="p-3 rounded-lg border border-border bg-surface-high space-y-2"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="w-5 h-5 rounded bg-surface border border-border flex items-center justify-center text-[10px] font-mono font-bold text-text-primary shrink-0 mt-0.5">
+                          {qIdx + 1}
+                        </span>
+                        <p className="text-body-xs text-text-primary line-clamp-2 flex-1">
+                          {item.question.question}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => removeQuestionFromSection(activeSection.id, item.id)}
+                          className="text-text-muted hover:text-error shrink-0"
+                          title="Remove from section"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 text-[11px] font-mono text-text-muted pt-1 border-t border-border/50">
+                        <div className="flex items-center gap-1.5">
+                          <span>Marks:</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={20}
+                            value={item.marks}
+                            onChange={(e) =>
+                              updateQuestionMarks(activeSection.id, item.id, Number(e.target.value))
+                            }
+                            className="w-12 bg-base border border-border rounded px-1.5 py-0.5 text-center text-text-primary text-[11px]"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            disabled={qIdx === 0}
+                            onClick={() => moveQuestionUpInSection(activeSection.id, qIdx)}
+                            className="p-1 rounded hover:bg-surface disabled:opacity-30"
+                            title="Move up"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">arrow_upward</span>
+                          </button>
+                          <button
+                            type="button"
+                            disabled={qIdx === activeSection.questions.length - 1}
+                            onClick={() => moveQuestionDownInSection(activeSection.id, qIdx)}
+                            className="p-1 rounded hover:bg-surface disabled:opacity-30"
+                            title="Move down"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">arrow_downward</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center py-8 text-label-xs font-mono text-text-muted">
+                    No questions in this section yet. Add from the repository on the left.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 6: QUESTION POOLS */}
+      {currentStep === "pools" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/70 pb-4">
+            <div>
+              <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+                Step 06
+              </span>
+              <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+                Question Pools Management
+              </h3>
+              <p className="text-body-sm text-text-secondary mt-1">
+                Sample randomized question subsets dynamically for each attempt (e.g. 5 selected from 12 available).
+              </p>
+            </div>
+
+            <button
+              type="button"
+              id="btn-add-pool"
+              onClick={() => addPoolToSection(activeSectionId)}
+              className="inline-flex items-center gap-1.5 bg-primary text-text-inverse px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-primary-text transition-colors shadow-sm self-start sm:self-auto"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span>Create Pool in {activeSection?.title}</span>
+            </button>
+          </div>
+
+          <div className="space-y-5">
+            {sections.map((sec) => (
+              <div key={sec.id} className="space-y-3">
+                <h4 className="text-title-sm font-bold text-primary-text font-mono">
+                  Section: {sec.title}
+                </h4>
+
+                {(sec.pools || []).length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {sec.pools.map((p) => {
+                      const isCapacityValid = p.questions.length >= p.selectionCount;
+                      return (
+                        <div
+                          key={p.id}
+                          className={`rounded-xl border p-4 sm:p-5 space-y-3 bg-surface-high ${
+                            !isCapacityValid
+                              ? "border-error/50 ring-1 ring-error/20"
+                              : "border-border"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <input
+                              type="text"
+                              value={p.title}
+                              onChange={(e) => updatePoolTitle(sec.id, p.id, e.target.value)}
+                              placeholder="Pool Title..."
+                              className="font-bold text-body-sm text-text-primary bg-transparent border-b border-border focus:border-primary outline-none flex-1"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removePoolFromSection(sec.id, p.id)}
+                              className="text-text-muted hover:text-error"
+                              title="Delete Pool"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-3 text-label-xs font-mono">
+                            <div className="flex items-center gap-2">
+                              <span>Selection Count:</span>
+                              <input
+                                type="number"
+                                min={1}
+                                max={p.questions.length || 1}
+                                value={p.selectionCount}
+                                onChange={(e) =>
+                                  updatePoolSelectionCount(sec.id, p.id, Number(e.target.value))
+                                }
+                                className="w-14 bg-base border border-border rounded px-2 py-1 text-center font-bold text-text-primary"
+                              />
+                            </div>
+
+                            <span
+                              className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
+                                isCapacityValid
+                                  ? "bg-secondary/15 text-secondary border border-secondary/30"
+                                  : "bg-error/15 text-error border border-error/30 animate-pulse"
+                              }`}
+                            >
+                              {p.selectionCount} of {p.questions.length} available
+                            </span>
+                          </div>
+
+                          {!isCapacityValid && (
+                            <p className="text-[11px] font-mono text-error">
+                              ⚠ Insufficient capacity: pool selection count exceeds added questions!
+                            </p>
+                          )}
+
+                          {/* Pool Questions List */}
+                          <div className="space-y-1.5 pt-2 border-t border-border/60">
+                            <span className="text-[10px] font-mono uppercase text-text-muted block">
+                              Pool Items ({p.questions.length}):
+                            </span>
+                            <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
+                              {p.questions.map((pq) => (
+                                <div
+                                  key={pq.id}
+                                  className="flex items-center justify-between gap-2 p-1.5 rounded bg-base border border-border/70 text-body-xs"
+                                >
+                                  <span className="truncate flex-1">{pq.question.question}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeQuestionFromPool(sec.id, p.id, pq.id)}
+                                    className="text-text-muted hover:text-error"
+                                  >
+                                    <span className="material-symbols-outlined text-[14px]">close</span>
+                                  </button>
+                                </div>
+                              ))}
+                              {p.questions.length === 0 && (
+                                <p className="text-[11px] font-mono text-text-muted italic py-2">
+                                  Select this pool in Step 05 to add questions from the repository.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <p className="mt-1 text-body-xs text-text-muted">
-                    Restrict when students can start attempts, or leave open indefinitely.
+                ) : (
+                  <p className="text-label-xs font-mono text-text-muted italic">
+                    No question pools in {sec.title}.
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* STEP 7: SCHEDULE */}
+      {currentStep === "schedule" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="border-b border-border/70 pb-4">
+            <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+              Step 07
+            </span>
+            <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+              Lifecycle Status & Availability Schedule
+            </h3>
+            <p className="text-body-sm text-text-secondary mt-1">
+              Configure deployment status and optional time-based availability windows.
+            </p>
+          </div>
+
+          <div className="space-y-5 max-w-xl">
+            {/* Status Selection */}
+            <div>
+              <label
+                htmlFor="test-lifecycle-status"
+                className="text-label-xs text-text-muted uppercase font-mono block mb-2 font-semibold"
+              >
+                Initial Deployment Status *
+              </label>
+              <select
+                id="test-lifecycle-status"
+                value={lifecycleStatus}
+                onChange={(e) => setLifecycleStatus(e.target.value as any)}
+                className="w-full rounded-lg border border-border bg-base px-4 py-2.5 text-body-sm text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="published">Published (Available for testing)</option>
+                <option value="draft">Draft (Admin editing only)</option>
+              </select>
+            </div>
+
+            {/* Scheduled Window Toggle */}
+            <div className="rounded-xl border border-border/70 bg-surface-high p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-primary block">
+                    Schedule Availability Window
+                  </span>
+                  <p className="text-body-xs text-text-muted mt-0.5">
+                    Scheduled tests become available during their configured window.
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsScheduled(false)}
-                    className={`px-3 py-1.5 rounded-lg text-label-xs font-mono font-semibold transition-colors ${
-                      !isScheduled
-                        ? "bg-primary text-text-inverse shadow-sm"
-                        : "bg-surface-border text-text-muted hover:text-text-primary"
+
+                <button
+                  type="button"
+                  id="toggle-schedule-window-btn"
+                  onClick={() => setIsScheduled(!isScheduled)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    isScheduled ? "bg-primary" : "bg-surface-highest"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      isScheduled ? "translate-x-5" : "translate-x-0"
                     }`}
-                  >
-                    Always Available
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsScheduled(true)}
-                    className={`px-3 py-1.5 rounded-lg text-label-xs font-mono font-semibold transition-colors ${
-                      isScheduled
-                        ? "bg-primary text-text-inverse shadow-sm"
-                        : "bg-surface-border text-text-muted hover:text-text-primary"
-                    }`}
-                  >
-                    Scheduled
-                  </button>
-                </div>
+                  />
+                </button>
               </div>
 
               {isScheduled && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl border border-primary/20 bg-primary/5 mt-2">
-                  <div>
-                    <label className="block text-label-xs font-mono uppercase text-text-muted mb-1">
-                      Start Time (Local)
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={scheduledStartAt}
-                      onChange={(e) => setScheduledStartAt(e.target.value)}
-                      className="w-full rounded-lg border border-border bg-base px-3 py-1.5 text-body-sm font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-                    />
+                <div className="space-y-4 pt-3 border-t border-border/60">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        htmlFor="schedule-start-input"
+                        className="text-label-xs text-text-muted uppercase font-mono block mb-1 font-semibold"
+                      >
+                        Start Date / Time
+                      </label>
+                      <input
+                        id="schedule-start-input"
+                        type="datetime-local"
+                        value={scheduledStartAt}
+                        onChange={(e) => setScheduledStartAt(e.target.value)}
+                        className="w-full rounded-lg border border-border bg-base px-3 py-2 text-body-sm font-mono text-text-primary outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="schedule-end-input"
+                        className="text-label-xs text-text-muted uppercase font-mono block mb-1 font-semibold"
+                      >
+                        End Date / Time
+                      </label>
+                      <input
+                        id="schedule-end-input"
+                        type="datetime-local"
+                        value={scheduledEndAt}
+                        onChange={(e) => setScheduledEndAt(e.target.value)}
+                        className="w-full rounded-lg border border-border bg-base px-3 py-2 text-body-sm font-mono text-text-primary outline-none focus:border-primary"
+                      />
+                    </div>
                   </div>
+
                   <div>
-                    <label className="block text-label-xs font-mono uppercase text-text-muted mb-1">
-                      End Time (Local)
+                    <label
+                      htmlFor="schedule-tz-input"
+                      className="text-label-xs text-text-muted uppercase font-mono block mb-1 font-semibold"
+                    >
+                      Timezone
                     </label>
                     <input
-                      type="datetime-local"
-                      value={scheduledEndAt}
-                      onChange={(e) => setScheduledEndAt(e.target.value)}
-                      className="w-full rounded-lg border border-border bg-base px-3 py-1.5 text-body-sm font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-label-xs font-mono uppercase text-text-muted mb-1">
-                      Timezone (IANA)
-                    </label>
-                    <input
+                      id="schedule-tz-input"
                       type="text"
                       value={scheduleTimezone}
                       onChange={(e) => setScheduleTimezone(e.target.value)}
-                      placeholder="e.g. Asia/Kolkata"
-                      className="w-full rounded-lg border border-border bg-base px-3 py-1.5 text-body-sm font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                      className="w-full rounded-lg border border-border bg-base px-3 py-2 text-body-sm font-mono text-text-primary outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1069,620 +1702,249 @@ export function TestBuilder({
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Split Builder: Repository (Left) vs Sections Composition (Right) */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
-        {/* Left: Repository */}
-        <div className="space-y-4 rounded-xl border border-border bg-surface p-5 sm:p-6 lg:col-span-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-label-xs font-mono font-bold uppercase tracking-wider text-primary-text">Select questions</p>
-              <h3 className="mt-1 text-title-md font-semibold text-text-primary">Repository</h3>
-            </div>
-            <span className="text-right text-label-xs font-mono uppercase text-text-muted">{filteredRepo.length} available</span>
-          </div>
-
-          {/* Active section / pool target destination selector banner */}
-          <div className="flex items-center justify-between gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-label-xs font-mono">
-            <span className="text-text-muted uppercase shrink-0">Target:</span>
-            <select
-              value={
-                activePoolId
-                  ? `${activeSectionId}:pool:${activePoolId}`
-                  : `${activeSectionId}:fixed`
-              }
-              onChange={(e) => {
-                const val = e.target.value;
-                const parts = val.split(":");
-                if (parts[1] === "pool") {
-                  setActiveSectionId(parts[0]);
-                  setActivePoolId(parts[2]);
-                } else {
-                  setActiveSectionId(parts[0]);
-                  setActivePoolId(null);
-                }
-              }}
-              aria-label="Active target destination"
-              className="rounded border border-primary/30 bg-surface px-2.5 py-1 text-primary-text font-bold outline-none focus:ring-2 focus:ring-primary/40 truncate flex-1 min-w-0"
-            >
-              {sections.map((s, idx) => (
-                <optgroup
-                  key={s.id}
-                  label={`Sec ${idx + 1}: ${s.title || "Untitled"}`}
-                >
-                  <option value={`${s.id}:fixed`}>
-                    Fixed Questions ({s.questions.length} assigned)
-                  </option>
-                  {(s.pools || []).map((p, pIdx) => (
-                    <option key={p.id} value={`${s.id}:pool:${p.id}`}>
-                      Pool {pIdx + 1}: {p.title || "Untitled"} (Pick {p.selectionCount} of {p.questions.length})
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
-
-          <div className="relative">
-            <label htmlFor="builder-question-search" className="sr-only">Search repository questions</label>
-            <input
-              id="builder-question-search"
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter by keyword, topic, or subject..."
-              className="h-11 w-full rounded-lg border border-border bg-base px-10 text-body-sm text-text-primary outline-none placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/30"
-            />
-            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-3 text-[18px] text-text-muted">
-              search
+      {/* STEP 8: REVIEW & PUBLISH CONFIRMATION */}
+      {currentStep === "review" && (
+        <div className="space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+          <div className="border-b border-border/70 pb-4">
+            <span className="text-label-xs font-mono uppercase tracking-wider text-primary-text font-bold">
+              Step 08
             </span>
+            <h3 className="text-headline-sm font-bold text-text-primary mt-1">
+              Final Review & Deployment Verification
+            </h3>
+            <p className="text-body-sm text-text-secondary mt-1">
+              Review all assessment parameters, verify structural validation, and deploy.
+            </p>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            <select
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              aria-label="Filter repository by subject"
-              className="h-9 min-w-max rounded-lg border border-border bg-base px-3 text-label-xs font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-            >
-              <option value="">All subjects</option>
-              {[...new Set(repositoryQuestions.map((q) => q.subjectName))].map((subject) => (
-                <option key={subject} value={subject}>{subject}</option>
-              ))}
-            </select>
-            <select
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
-              aria-label="Filter repository by difficulty"
-              className="h-9 min-w-max rounded-lg border border-border bg-base px-3 text-label-xs font-mono text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-            >
-              <option value="">All difficulty</option>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </div>
-
-          <div className="max-h-[500px] space-y-3 overflow-y-auto pr-1">
-            {filteredRepo.map((q) => {
-              const isSelected = allSelectedQuestionIds.has(q.id);
-              const activePool = (activeSection?.pools || []).find((p) => p.id === activePoolId);
-              const btnLabel = isSelected
-                ? "Assigned"
-                : activePool
-                ? `+ Add to Pool "${activePool.title || 'Pool'}"`
-                : `+ Add to ${activeSection?.title || "Section"}`;
-              return (
-                <div
-                  key={q.id}
-                  className={`space-y-2 rounded-lg border bg-base p-4 transition-colors ${
-                    isSelected
-                      ? "border-secondary/30 bg-secondary/5"
-                      : "border-border hover:border-border-variant"
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-label-xs font-mono">
-                    <span className="text-text-muted">
-                      ID: {q.id.slice(0, 6).toUpperCase()} • {q.subjectCode}
-                    </span>
-                    <span className="uppercase text-primary-text">{q.difficulty}</span>
-                  </div>
-                  <p className="text-body-sm text-text-primary line-clamp-2">
-                    {q.question}
-                  </p>
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="min-w-0 truncate text-label-xs font-mono text-text-muted">
-                      {q.topicName} · {q.marks} marks · {q.expectedTime || "-"}s
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => addQuestionToTarget(q)}
-                      disabled={isSelected}
-                      className="shrink-0 rounded-md border border-primary/30 px-2.5 py-1 text-label-xs font-mono font-semibold text-primary-text transition-colors hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:cursor-default disabled:border-secondary/30 disabled:text-secondary truncate max-w-[220px]"
-                    >
-                      {btnLabel}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          {filteredRepo.length === 0 && (
-            <div className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-body-sm font-mono text-text-muted">
-              No repository questions match the current search and filters.
+          {/* Validation Status Notice */}
+          {validationWarnings.length > 0 ? (
+            <div className="p-4 rounded-xl border border-error/50 bg-error/10 space-y-2">
+              <div className="flex items-center gap-2 text-error font-bold font-mono text-body-sm">
+                <span className="material-symbols-outlined text-[20px]">warning</span>
+                <span>Structural Validation Incomplete ({validationWarnings.length} issues)</span>
+              </div>
+              <ul className="list-disc list-inside text-body-xs text-error/90 space-y-1 pl-1">
+                {validationWarnings.map((w, idx) => (
+                  <li key={idx}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <div className="p-4 rounded-xl border border-secondary/40 bg-secondary/10 flex items-center gap-2.5 text-secondary text-body-sm font-medium">
+              <span className="material-symbols-outlined text-[20px]">verified</span>
+              <span>All parameters verified. Assessment is structurally sound and ready for deployment.</span>
             </div>
           )}
-        </div>
 
-        {/* Right: Test Composition with Sections */}
-        <div className="flex flex-col justify-between space-y-6 rounded-xl border border-border bg-surface p-5 sm:p-6 lg:col-span-6">
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border">
-              <div>
-                <p className="text-label-xs font-mono font-bold uppercase tracking-wider text-primary-text">Review composition</p>
-                <h3 className="mt-1 text-title-md font-semibold text-text-primary">
-                  Sections & Questions
-                </h3>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 text-right font-mono text-label-xs">
-                <span>
-                  SECTIONS: <strong className="text-text-primary">{sections.length}</strong>
-                </span>
-                <span>
-                  QUESTIONS: <strong className="text-text-primary">{totalQuestions}</strong>
-                </span>
-                <span>
-                  TOTAL MARKS: <strong className="text-primary-text">{totalMarks}</strong>
-                </span>
-              </div>
+          {/* Configuration Review Summary Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 rounded-xl border border-border bg-surface-high space-y-1">
+              <span className="text-[10px] font-mono uppercase text-text-muted block">Title</span>
+              <span className="text-body-sm font-bold text-text-primary block truncate">
+                {title || "Untitled"}
+              </span>
+              <span className="text-[11px] font-mono text-primary-text block uppercase">
+                {testType}
+              </span>
             </div>
 
-            {/* Scrollable Sections Container */}
-            <div className="max-h-[500px] space-y-4 overflow-y-auto pr-1">
-              {sections.map((sec, secIdx) => {
-                const isActive = sec.id === activeSectionId;
-                return (
-                  <div
-                    key={sec.id}
-                    className={`rounded-xl border bg-base p-4 space-y-3 transition-colors ${
-                      isActive
-                        ? "border-primary/50 shadow-sm"
-                        : "border-border"
-                    }`}
-                  >
-                    {/* Section Header Controls */}
-                    <div className="flex items-center justify-between gap-2 border-b border-border/70 pb-3">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveSectionId(sec.id);
-                            setActivePoolId(null);
-                          }}
-                          className={`shrink-0 rounded px-2 py-0.5 text-label-xs font-mono font-bold uppercase transition-colors ${
-                            isActive
-                              ? "bg-primary text-text-inverse"
-                              : "bg-surface-high text-primary-text hover:bg-surface-high/80"
-                          }`}
-                          title="Click to make this the active section for adding questions"
-                        >
-                          SEC {String(secIdx + 1).padStart(2, "0")}
-                        </button>
-                        <input
-                          type="text"
-                          value={sec.title}
-                          onChange={(e) => updateSectionTitle(sec.id, e.target.value)}
-                          placeholder="Section Title (e.g. Aptitude, DSA)"
-                          className="rounded-lg border border-border bg-surface px-3 py-1.5 text-body-sm font-semibold text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 flex-1 min-w-[120px]"
-                        />
-                      </div>
+            <div className="p-4 rounded-xl border border-border bg-surface-high space-y-1">
+              <span className="text-[10px] font-mono uppercase text-text-muted block">Questions & Marks</span>
+              <span className="text-body-sm font-bold text-text-primary block">
+                {totalQuestions} questions · {totalMarks} marks
+              </span>
+              <span className="text-[11px] font-mono text-text-muted block">
+                {sections.length} {sections.length === 1 ? "section" : "sections"}
+              </span>
+            </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
-                        <span className="text-label-xs font-mono text-text-muted px-1">
-                          {sec.questions.length} Fixed · {(sec.pools || []).reduce((sum, p) => sum + p.selectionCount, 0)} Pooled
-                        </span>
-                        {/* Move Section Up */}
-                        <button
-                          type="button"
-                          onClick={() => moveSectionUp(secIdx)}
-                          disabled={secIdx === 0}
-                          aria-label={`Move Section ${secIdx + 1} up`}
-                          className="rounded p-1 text-text-muted transition-colors hover:bg-surface-high hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:opacity-20"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
-                        </button>
-                        {/* Move Section Down */}
-                        <button
-                          type="button"
-                          onClick={() => moveSectionDown(secIdx)}
-                          disabled={secIdx === sections.length - 1}
-                          aria-label={`Move Section ${secIdx + 1} down`}
-                          className="rounded p-1 text-text-muted transition-colors hover:bg-surface-high hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:opacity-20"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
-                        </button>
-                        {/* Delete Section */}
-                        <button
-                          type="button"
-                          onClick={() => removeSection(sec.id)}
-                          disabled={sections.length <= 1}
-                          aria-label={`Delete Section ${secIdx + 1}`}
-                          title={
-                            sections.length <= 1
-                              ? "At least one section must exist"
-                              : sec.questions.length > 0 || (sec.pools || []).some(p => p.questions.length > 0)
-                              ? "Move or remove questions first"
-                              : "Remove empty section"
-                          }
-                          className="rounded p-1 text-text-muted transition-colors hover:bg-error/10 hover:text-error focus:outline-none focus:ring-2 focus:ring-error/60 disabled:opacity-20"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
-                      </div>
-                    </div>
+            <div className="p-4 rounded-xl border border-border bg-surface-high space-y-1">
+              <span className="text-[10px] font-mono uppercase text-text-muted block">Timing & Rules</span>
+              <span className="text-body-sm font-bold text-text-primary block">
+                {duration} mins · {attemptLimit ? `${attemptLimit} attempts` : "Unlimited"}
+              </span>
+              <span className="text-[11px] font-mono text-text-muted block">
+                {negativeMarkingEnabled ? `-${(negativeMarkRate * 100).toFixed(0)}% Penalty` : "No penalty"}
+              </span>
+            </div>
 
-                    {/* Section Description */}
-                    <input
-                      type="text"
-                      value={sec.description}
-                      onChange={(e) => updateSectionDescription(sec.id, e.target.value)}
-                      placeholder="Optional section description or instructions..."
-                      className="w-full rounded-md border border-border/60 bg-surface/50 px-3 py-1 text-label-xs text-text-secondary outline-none placeholder:text-text-muted/60 focus:border-primary focus:ring-1 focus:ring-primary/30"
-                    />
-
-                    {/* Fixed Questions Sub-section */}
-                    <div className="space-y-2 pt-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-text-muted">
-                          Fixed Questions ({sec.questions.length})
-                        </span>
-                        {!activePoolId && activeSectionId === sec.id && (
-                          <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-primary-text">
-                            Active Target
-                          </span>
-                        )}
-                      </div>
-
-                      {sec.questions.length > 0 ? (
-                        sec.questions.map((sq, qIdx) => (
-                          <div
-                            key={sq.id}
-                            className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-3 sm:flex-row sm:items-center sm:justify-between"
-                          >
-                            <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-                              <span className="font-mono text-label-xs text-text-muted shrink-0">
-                                {String(qIdx + 1).padStart(2, "0")}
-                              </span>
-                              <div className="truncate min-w-0">
-                                <p className="text-body-sm text-text-primary font-medium truncate">
-                                  {sq.question.question}
-                                </p>
-                                <span className="text-label-xs text-text-muted font-mono">
-                                  {sq.question.subjectCode} • {sq.question.topicName}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-end gap-2 shrink-0">
-                              {/* Move to another section if multiple sections exist */}
-                              {sections.length > 1 && (
-                                <select
-                                  value={sec.id}
-                                  onChange={(e) =>
-                                    moveQuestionToSection(sec.id, e.target.value, sq.id)
-                                  }
-                                  aria-label="Move question to section"
-                                  className="h-7 rounded border border-border bg-base px-2 text-label-xs font-mono text-text-secondary outline-none focus:border-primary"
-                                >
-                                  {sections.map((targetSec, tIdx) => (
-                                    <option key={targetSec.id} value={targetSec.id}>
-                                      → {targetSec.title || `Sec ${tIdx + 1}`}
-                                    </option>
-                                  ))}
-                                </select>
-                              )}
-
-                              {/* Move Up / Down Buttons */}
-                              <div className="flex items-center gap-0.5">
-                                <button
-                                  type="button"
-                                  onClick={() => moveQuestionUpInSection(sec.id, qIdx)}
-                                  disabled={qIdx === 0}
-                                  aria-label={`Move question ${qIdx + 1} up`}
-                                  className="rounded p-1 text-text-muted transition-colors hover:bg-surface-high hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:opacity-20"
-                                >
-                                  <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => moveQuestionDownInSection(sec.id, qIdx)}
-                                  disabled={qIdx === sec.questions.length - 1}
-                                  aria-label={`Move question ${qIdx + 1} down`}
-                                  className="rounded p-1 text-text-muted transition-colors hover:bg-surface-high hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:opacity-20"
-                                >
-                                  <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
-                                </button>
-                              </div>
-
-                              {/* Marks */}
-                              <div className="flex items-center gap-1 font-mono text-label-xs">
-                                <input
-                                  type="number"
-                                  value={sq.marks}
-                                  onChange={(e) =>
-                                    updateQuestionMarks(
-                                      sec.id,
-                                      sq.id,
-                                      Number(e.target.value)
-                                    )
-                                  }
-                                  className="w-12 rounded border border-border bg-surface-high px-1.5 py-0.5 text-center text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-                                />
-                                <span className="text-text-muted">pts</span>
-                              </div>
-
-                              {/* Remove button */}
-                              <button
-                                type="button"
-                                onClick={() => removeQuestionFromSection(sec.id, sq.id)}
-                                aria-label={`Remove question ${qIdx + 1} from section`}
-                                className="rounded p-1 text-text-muted transition-colors hover:bg-error/10 hover:text-error focus:outline-none focus:ring-2 focus:ring-error/60"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">
-                                  close
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="rounded border border-dashed border-border/70 px-3 py-3 text-center text-label-xs font-mono text-text-muted">
-                          No fixed questions in this section.
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Question Pools Sub-section */}
-                    <div className="space-y-3 pt-3 border-t border-border/60">
-                      <div className="flex items-center justify-between gap-2">
-                        <div>
-                          <span className="text-label-xs font-mono font-bold uppercase tracking-wider text-primary-text">
-                            Question Pools ({(sec.pools || []).length})
-                          </span>
-                          <p className="text-[11px] font-mono text-text-muted">
-                            Randomly samples N questions per attempt from each pool.
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => addPoolToSection(sec.id)}
-                          className="inline-flex items-center gap-1 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-label-xs font-mono font-semibold text-primary-text hover:bg-primary/20 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/60"
-                        >
-                          <span className="material-symbols-outlined text-[14px]">add</span>
-                          + Add Pool
-                        </button>
-                      </div>
-
-                      {(sec.pools || []).length > 0 ? (
-                        <div className="space-y-3">
-                          {sec.pools.map((pool, pIdx) => {
-                            const isPoolTarget =
-                              activeSectionId === sec.id && activePoolId === pool.id;
-                            const isUnderCapacity =
-                              pool.questions.length < pool.selectionCount;
-                            const poolMarks = pool.questions[0]?.marks ?? 1;
-
-                            return (
-                              <div
-                                key={pool.id}
-                                className={`rounded-lg border p-3.5 space-y-3 transition-colors ${
-                                  isPoolTarget
-                                    ? "border-primary/60 bg-primary/[0.03]"
-                                    : "border-border bg-surface/80"
-                                }`}
-                              >
-                                {/* Pool Header & Parameters */}
-                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                  <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-                                    <span className="rounded bg-surface-high px-2 py-0.5 text-[11px] font-mono font-bold uppercase text-primary-text">
-                                      POOL {pIdx + 1}
-                                    </span>
-                                    <input
-                                      type="text"
-                                      value={pool.title}
-                                      onChange={(e) =>
-                                        updatePoolTitle(sec.id, pool.id, e.target.value)
-                                      }
-                                      placeholder="Pool Name (e.g. Data Structures Bank)"
-                                      className="rounded border border-border bg-base px-2.5 py-1 text-body-sm font-semibold text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 flex-1 min-w-[120px]"
-                                    />
-                                  </div>
-
-                                  <div className="flex items-center gap-2">
-                                    {/* Set as Target Button */}
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setActiveSectionId(sec.id);
-                                        setActivePoolId(pool.id);
-                                      }}
-                                      className={`rounded px-2.5 py-1 text-[11px] font-mono font-semibold transition-colors ${
-                                        isPoolTarget
-                                          ? "bg-primary text-text-inverse"
-                                          : "border border-primary/30 text-primary-text hover:bg-primary/10"
-                                      }`}
-                                    >
-                                      {isPoolTarget ? "🎯 Target" : "Set Target"}
-                                    </button>
-
-                                    {/* Delete Pool */}
-                                    <button
-                                      type="button"
-                                      onClick={() => removePoolFromSection(sec.id, pool.id)}
-                                      aria-label={`Delete pool ${pIdx + 1}`}
-                                      className="rounded p-1 text-text-muted transition-colors hover:bg-error/10 hover:text-error focus:outline-none focus:ring-2 focus:ring-error/60"
-                                    >
-                                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                                    </button>
-                                  </div>
-                                </div>
-
-                                {/* Pool Sampling & Uniform Marks Config */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-label-xs font-mono">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-text-muted shrink-0">Sample:</span>
-                                    <div className="flex items-center gap-1">
-                                      <input
-                                        type="number"
-                                        min={1}
-                                        max={Math.max(1, pool.questions.length)}
-                                        value={pool.selectionCount}
-                                        onChange={(e) =>
-                                          updatePoolSelectionCount(
-                                            sec.id,
-                                            pool.id,
-                                            Number(e.target.value)
-                                          )
-                                        }
-                                        className="w-14 rounded border border-border bg-base px-2 py-0.5 text-center font-bold text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-                                      />
-                                      <span className="text-text-muted">
-                                        of {pool.questions.length} Qs
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center gap-2 sm:justify-end">
-                                    <span className="text-text-muted shrink-0">Uniform Marks:</span>
-                                    <div className="flex items-center gap-1">
-                                      <input
-                                        type="number"
-                                        min={0}
-                                        step={0.5}
-                                        value={poolMarks}
-                                        onChange={(e) =>
-                                          updatePoolUniformMarks(
-                                            sec.id,
-                                            pool.id,
-                                            Number(e.target.value)
-                                          )
-                                        }
-                                        className="w-14 rounded border border-border bg-base px-2 py-0.5 text-center font-bold text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-                                      />
-                                      <span className="text-text-muted">pts / Q</span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Status / Validation Pill */}
-                                <div>
-                                  {isUnderCapacity ? (
-                                    <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-2 py-0.5 text-[11px] font-mono text-amber-500">
-                                      ⚠️ Under-capacity: requires {pool.selectionCount} question(s) but only {pool.questions.length} assigned
-                                    </span>
-                                  ) : (
-                                    <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono text-emerald-500">
-                                      ✓ Ready: {pool.selectionCount} will be sampled randomly per attempt ({pool.selectionCount * poolMarks} pts)
-                                    </span>
-                                  )}
-                                </div>
-
-                                {/* Pool Questions List */}
-                                <div className="space-y-1.5 pt-1">
-                                  {pool.questions.length > 0 ? (
-                                    pool.questions.map((pq, pqIdx) => (
-                                      <div
-                                        key={pq.id}
-                                        className="flex items-center justify-between gap-2 rounded border border-border/50 bg-base px-2.5 py-1.5 text-label-xs"
-                                      >
-                                        <div className="flex items-center gap-2 overflow-hidden min-w-0">
-                                          <span className="font-mono text-text-muted shrink-0">
-                                            P.{pqIdx + 1}
-                                          </span>
-                                          <p className="truncate text-text-primary">
-                                            {pq.question.question}
-                                          </p>
-                                        </div>
-                                        <div className="flex items-center gap-2 shrink-0">
-                                          <span className="font-mono text-text-muted text-[11px]">
-                                            {pq.marks} pts
-                                          </span>
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              removeQuestionFromPool(sec.id, pool.id, pq.id)
-                                            }
-                                            aria-label="Remove question from pool"
-                                            className="rounded p-0.5 text-text-muted hover:text-error"
-                                          >
-                                            <span className="material-symbols-outlined text-[16px]">
-                                              close
-                                            </span>
-                                          </button>
-                                        </div>
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <div className="rounded border border-dashed border-border/60 px-3 py-2.5 text-center text-[11px] font-mono text-text-muted">
-                                      No questions in this pool. Set as target and click &apos;+ Add&apos; in repository.
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="rounded border border-dashed border-border/60 px-3 py-2.5 text-center text-[11px] font-mono text-text-muted">
-                          No pools configured for this section. All questions above are fixed.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* Add Section Button */}
-              <button
-                type="button"
-                onClick={addSection}
-                className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-base/50 py-3 text-body-sm font-semibold font-mono text-text-muted hover:border-primary hover:text-primary-text transition-colors focus:outline-none focus:ring-2 focus:ring-primary/60"
+            <div className="p-4 rounded-xl border border-border bg-surface-high space-y-1">
+              <span className="text-[10px] font-mono uppercase text-text-muted block">Deployment Status</span>
+              <span
+                className={`text-body-sm font-bold uppercase block ${
+                  lifecycleStatus === "published" ? "text-secondary" : "text-tertiary"
+                }`}
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
-                + Add Section
-              </button>
+                {lifecycleStatus}
+              </span>
+              <span className="text-[11px] font-mono text-text-muted block truncate">
+                {isScheduled ? "Window active" : "Always available"}
+              </span>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-border flex flex-col gap-3">
-            {errorMsg && (
-              <div className="p-3 bg-error/10 border border-error/20 rounded text-error text-label-xs font-mono">
-                {errorMsg}
-              </div>
-            )}
-            <div className="flex flex-wrap justify-end gap-3">
-              <button
-                type="button"
-                onClick={handlePreview}
-                className="inline-flex h-11 items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-5 text-body-sm font-semibold text-primary-text transition-colors hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/60"
-              >
-                <span className="material-symbols-outlined text-[18px]">visibility</span>
-                Preview Test
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateTest}
-                disabled={loading || totalQuestions === 0}
-                className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-6 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
-                {loading ? "Deploying..." : "Create Test Payload"}
-              </button>
-            </div>
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border">
+            <button
+              type="button"
+              onClick={handlePreview}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border border-border bg-surface-high text-body-sm font-semibold text-text-primary hover:border-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">visibility</span>
+              <span>Test Preview Mode</span>
+            </button>
+
+            <button
+              type="button"
+              id="btn-deploy-assessment"
+              disabled={!canPublish || loading}
+              onClick={() => setShowPublishConfirm(true)}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-text-inverse px-6 py-2.5 rounded-lg text-body-sm font-bold hover:bg-primary-text transition-colors shadow-sm disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined text-[18px]">publish</span>
+              <span>Deploy Assessment</span>
+            </button>
           </div>
         </div>
+      )}
+
+      {/* Bottom Step Navigation Bar */}
+      <div className="flex items-center justify-between pt-4 border-t border-border/80">
+        <button
+          type="button"
+          disabled={currentStepIndex === 0}
+          onClick={goToPrevStep}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border bg-surface text-body-sm font-medium text-text-secondary hover:text-text-primary disabled:opacity-40 transition-colors"
+        >
+          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+          <span>Previous Step</span>
+        </button>
+
+        <span className="text-label-xs font-mono text-text-muted hidden sm:inline">
+          Step {currentStepIndex + 1} of {BUILDER_STEPS.length}
+        </span>
+
+        {currentStepIndex < BUILDER_STEPS.length - 1 ? (
+          <button
+            type="button"
+            onClick={goToNextStep}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-high border border-border text-body-sm font-semibold text-text-primary hover:border-primary transition-colors"
+          >
+            <span>Next Step</span>
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={!canPublish || loading}
+            onClick={() => setShowPublishConfirm(true)}
+            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary text-text-inverse text-body-sm font-bold hover:bg-primary-text transition-colors disabled:opacity-50"
+          >
+            <span>Deploy</span>
+            <span className="material-symbols-outlined text-[16px]">check</span>
+          </button>
+        )}
       </div>
+
+      {/* 4. PUBLISHING SAFETY CONFIRMATION MODAL */}
+      {showPublishConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-[20px]">publish</span>
+                </div>
+                <div>
+                  <h3 className="text-title-sm font-bold text-text-primary">
+                    Confirm Deployment
+                  </h3>
+                  <p className="text-label-xs font-mono text-text-muted">
+                    Publishing Safety Verification
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowPublishConfirm(false)}
+                className="text-text-muted hover:text-text-primary"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            {/* Verification Table */}
+            <div className="rounded-xl border border-border bg-surface-high p-4 space-y-2 font-mono text-label-xs">
+              <div className="flex justify-between">
+                <span className="text-text-muted">Title:</span>
+                <span className="font-bold text-text-primary">{title}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Questions:</span>
+                <span className="font-bold text-text-primary">{totalQuestions}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Duration:</span>
+                <span className="font-bold text-text-primary">{duration} mins</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Total Marks:</span>
+                <span className="font-bold text-primary-text">{totalMarks}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Status:</span>
+                <span className="font-bold text-secondary uppercase">{lifecycleStatus}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Attempt Limit:</span>
+                <span className="text-text-primary">{attemptLimit ? `${attemptLimit} attempts` : "Unlimited"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Negative Marking:</span>
+                <span className="text-text-primary">
+                  {negativeMarkingEnabled ? `-${(negativeMarkRate * 100).toFixed(0)}%` : "Disabled"}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowPublishConfirm(false)}
+                className="px-4 py-2 rounded-lg border border-border bg-surface text-body-sm font-medium text-text-secondary hover:text-text-primary"
+              >
+                Back to Edit
+              </button>
+
+              <button
+                type="button"
+                id="btn-confirm-publish-assessment"
+                disabled={loading}
+                onClick={handleCreateTest}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-text-inverse text-body-sm font-bold hover:bg-primary-text transition-colors shadow-sm disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <span className="material-symbols-outlined text-[16px] animate-spin">
+                      autorenew
+                    </span>
+                    <span>Deploying...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[16px]">check</span>
+                    <span>Confirm & Deploy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

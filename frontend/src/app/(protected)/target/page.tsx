@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getPlacementTargetStrategy } from "@/server/placement-target-strategy";
+import { getStudentPlacementTargets } from "@/server/company-role-intelligence";
 
 export default async function TargetStrategyPage() {
   const session = await auth();
@@ -9,7 +10,10 @@ export default async function TargetStrategyPage() {
     redirect("/auth/login");
   }
 
-  const strategy = await getPlacementTargetStrategy(session.user.id);
+  const [strategy, placementTargets] = await Promise.all([
+    getPlacementTargetStrategy(session.user.id),
+    getStudentPlacementTargets(session.user.id),
+  ]);
   const { target, readiness, matrix, gaps, advantages, preparationStrategy, emptyState, partialDataBanner } = strategy;
 
   return (
@@ -144,6 +148,46 @@ export default async function TargetStrategyPage() {
                 </span>
               </div>
             </div>
+
+            {/* Additional Target Roles & Companies */}
+            {(placementTargets.targetRoles.length > 1 || placementTargets.targetCompanies.length > 1) && (
+              <div className="mt-5 pt-4 border-t border-border/70 flex flex-col sm:flex-row sm:items-center gap-4 text-label-xs font-mono">
+                {placementTargets.targetRoles.length > 1 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-text-muted text-[10px] uppercase font-bold">
+                      Additional Roles:
+                    </span>
+                    {placementTargets.targetRoles
+                      .filter((r) => !r.isPrimary)
+                      .map((r) => (
+                        <span
+                          key={r.id}
+                          className="px-2.5 py-0.5 rounded-md bg-surface-high border border-border text-[11px] text-text-secondary"
+                        >
+                          {r.name}
+                        </span>
+                      ))}
+                  </div>
+                )}
+                {placementTargets.targetCompanies.length > 1 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-text-muted text-[10px] uppercase font-bold">
+                      Additional Companies:
+                    </span>
+                    {placementTargets.targetCompanies
+                      .filter((c) => c.priority !== 1)
+                      .map((c) => (
+                        <span
+                          key={c.id}
+                          className="px-2.5 py-0.5 rounded-md bg-surface-high border border-border text-[11px] text-text-secondary"
+                        >
+                          {c.name}
+                        </span>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Section 01: Target Readiness vs Overall Readiness */}

@@ -11,6 +11,7 @@ import {
   numeric,
   pgEnum,
   check,
+  customType,
   uniqueIndex,
   index,
 } from "drizzle-orm/pg-core";
@@ -513,5 +514,562 @@ export const studentTargetCompanies = pgTable(
     ),
     index("student_target_companies_user_id_idx").on(table.userId),
     index("student_target_companies_company_id_idx").on(table.companyId),
+  ]
+);
+
+// === Placement Simulations (Phase 17) ===
+export const simulationStatusEnum = pgEnum("simulation_status", [
+  "not_started",
+  "in_progress",
+  "round_completed",
+  "paused",
+  "completed",
+  "abandoned",
+]);
+
+export const simulationRoundStatusEnum = pgEnum("simulation_round_status", [
+  "locked",
+  "unlocked",
+  "in_progress",
+  "completed",
+  "skipped",
+]);
+
+export const simulationRoundTypeEnum = pgEnum("simulation_round_type", [
+  "screening",
+  "coding",
+  "debugging",
+  "tech_interview",
+  "hr_interview",
+]);
+
+export const placementSimulations = pgTable(
+  "placement_simulations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyId: uuid("company_id").references(() => companies.id, { onDelete: "set null" }),
+    companyName: varchar("company_name", { length: 255 }).notNull(),
+    roleId: uuid("role_id").references(() => roles.id, { onDelete: "set null" }),
+    roleName: varchar("role_name", { length: 255 }).notNull(),
+    status: simulationStatusEnum("status").notNull().default("in_progress"),
+    isGeneralizedRole: boolean("is_generalized_role").notNull().default(false),
+    currentRoundOrder: integer("current_round_order").notNull().default(1),
+    totalRounds: integer("total_rounds").notNull().default(5),
+    overallReadinessScore: real("overall_readiness_score"),
+    aptitudeScore: real("aptitude_score"),
+    technicalScore: real("technical_score"),
+    codingScore: real("coding_score"),
+    debuggingScore: real("debugging_score"),
+    interviewScore: real("interview_score"),
+    hrScore: real("hr_score"),
+    readinessLevel: varchar("readiness_level", { length: 50 }),
+    eligibilityCheck: jsonb("eligibility_check"), // { isEligible, criteria, note }
+    summaryReport: jsonb("summary_report"), // { strengths, needsImprovement, recommendations }
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("placement_simulations_user_id_idx").on(table.userId),
+    index("placement_simulations_status_idx").on(table.status),
+  ]
+);
+
+export const placementSimulationRounds = pgTable(
+  "placement_simulation_rounds",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    simulationId: uuid("simulation_id")
+      .notNull()
+      .references(() => placementSimulations.id, { onDelete: "cascade" }),
+    roundNumber: integer("round_number").notNull(),
+    roundType: simulationRoundTypeEnum("round_type").notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    status: simulationRoundStatusEnum("status").notNull().default("locked"),
+    score: real("score"),
+    maxScore: real("max_score"),
+    accuracy: real("accuracy"),
+    durationMinutes: integer("duration_minutes").default(30),
+    timeTakenSeconds: integer("time_taken_seconds").default(0),
+    testId: uuid("test_id").references(() => tests.id, { onDelete: "set null" }),
+    attemptId: uuid("attempt_id").references(() => attempts.id, { onDelete: "set null" }),
+    roundData: jsonb("round_data"), // Stores questions, submissions, test cases, chat transcript, feedback
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("placement_simulation_rounds_sim_round_idx").on(
+      table.simulationId,
+      table.roundNumber
+    ),
+    index("placement_simulation_rounds_simulation_id_idx").on(table.simulationId),
+  ]
+);
+
+// ============================================================================
+// ATS Resume Intelligence (Phase 18)
+// ============================================================================
+
+/**
+ * Raw byte storage for uploaded resumes. Files are stored privately in Postgres
+ * and are only ever served through an ownership-checked server route, never a
+ * public URL.
+ */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType() {
+    return "bytea";
+  },
+});
+
+export const resumeParseStatusEnum = pgEnum("resume_parse_status", [
+  "pending",
+  "parsed",
+  "partial",
+  "failed",
+]);
+
+export const resumeVariantStatusEnum = pgEnum("resume_variant_status", [
+  "active",
+  "archived",
+]);
+
+export const resumeSuggestionStatusEnum = pgEnum("resume_suggestion_status", [
+  "pending",
+  "accepted",
+  "rejected",
+]);
+
+export const resumeFileFormatEnum = pgEnum("resume_file_format", [
+  "pdf",
+  "docx",
+  "txt",
+]);
+
+/** Provenance of every fact that surfaces in resume intelligence. */
+export const resumeEvidenceSourceEnum = pgEnum("resume_evidence_source", [
+  "resume_detected",
+  "student_asserted",
+  "job_description_detected",
+  "ats_formatting",
+]);
+
+// === Resume Files (raw private uploads) ===
+export const resumeFiles = pgTable(
+  "resume_files",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    fileName: varchar("file_name", { length: 255 }).notNull(),
+    mimeType: varchar("mime_type", { length: 120 }).notNull(),
+    fileFormat: resumeFileFormatEnum("file_format").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    contentHash: varchar("content_hash", { length: 64 }).notNull(),
+    data: bytea("data").notNull(),
+    rawText: text("raw_text").notNull().default(""),
+    pageCount: integer("page_count"),
+    parseStatus: resumeParseStatusEnum("parse_status").notNull().default("pending"),
+    parseWarnings: jsonb("parse_warnings"), // string[]
+    fileSignals: jsonb("file_signals"), // observable structural signals used by the ATS engine
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("resume_files_user_id_idx").on(table.userId),
+    // Unique per user + content hash: one stored copy of each distinct document
+    // per student. The upload path updates this row on retry instead of ever
+    // inserting a duplicate, so a failed parse never forks the identity.
+    uniqueIndex("resume_files_user_hash_key").on(table.userId, table.contentHash),
+  ]
+);
+
+// === Resume Variants (targeted versions) ===
+export const resumeVariants = pgTable(
+  "resume_variants",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    label: varchar("label", { length: 255 }).notNull(),
+    targetCompanyId: uuid("target_company_id").references(() => companies.id, {
+      onDelete: "set null",
+    }),
+    targetCompanyName: varchar("target_company_name", { length: 255 }),
+    targetRoleId: uuid("target_role_id").references(() => roles.id, {
+      onDelete: "set null",
+    }),
+    targetRoleName: varchar("target_role_name", { length: 255 }),
+    sourceFileId: uuid("source_file_id").references(() => resumeFiles.id, {
+      onDelete: "set null",
+    }),
+    structuredData: jsonb("structured_data")
+      .notNull()
+      .default(sql`'{}'::jsonb`),
+    jobDescription: jsonb("job_description"),
+    atsScore: real("ats_score"),
+    atsBreakdown: jsonb("ats_breakdown"),
+    matchScore: real("match_score"),
+    isPrimary: boolean("is_primary").notNull().default(false),
+    status: resumeVariantStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("resume_variants_user_id_idx").on(table.userId),
+    index("resume_variants_status_idx").on(table.status),
+    uniqueIndex("resume_variants_single_primary_idx")
+      .on(table.userId)
+      .where(sql`${table.isPrimary} = true`),
+  ]
+);
+
+// === Resume Analyses (append-only analysis runs) ===
+export const resumeAnalyses = pgTable(
+  "resume_analyses",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    variantId: uuid("variant_id")
+      .notNull()
+      .references(() => resumeVariants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    atsScore: real("ats_score").notNull(),
+    matchScore: real("match_score"),
+    breakdown: jsonb("breakdown").notNull(),
+    explanation: jsonb("explanation"),
+    findings: jsonb("findings"),
+    keywordAnalysis: jsonb("keyword_analysis"),
+    skillMatch: jsonb("skill_match"),
+    roleMatch: jsonb("role_match"),
+    contentQuality: jsonb("content_quality"),
+    parsingChecks: jsonb("parsing_checks"),
+    analyzedAt: timestamp("analyzed_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("resume_analyses_variant_idx").on(table.variantId, table.analyzedAt),
+    index("resume_analyses_user_id_idx").on(table.userId),
+  ]
+);
+
+// === Resume Suggestions (before/after, truth-verified) ===
+export const resumeSuggestions = pgTable(
+  "resume_suggestions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    variantId: uuid("variant_id")
+      .notNull()
+      .references(() => resumeVariants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    category: varchar("category", { length: 60 }).notNull(),
+    target: jsonb("target").notNull(),
+    originalText: text("original_text"),
+    suggestedText: text("suggested_text"),
+    reasonWhat: text("reason_what").notNull(),
+    reasonWhy: text("reason_why").notNull(),
+    reasonEvidence: text("reason_evidence").notNull(),
+    severity: varchar("severity", { length: 20 }).notNull().default("info"),
+    actionable: boolean("actionable").notNull().default(false),
+    verification: jsonb("verification"),
+    source: resumeEvidenceSourceEnum("source").notNull().default("resume_detected"),
+    status: resumeSuggestionStatusEnum("status").notNull().default("pending"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("resume_suggestions_variant_status_idx").on(table.variantId, table.status),
+    index("resume_suggestions_user_id_idx").on(table.userId),
+  ]
+);
+
+// === Resume Versions (meaningful snapshots) ===
+export const resumeVersions = pgTable(
+  "resume_versions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    variantId: uuid("variant_id")
+      .notNull()
+      .references(() => resumeVariants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    versionNumber: integer("version_number").notNull(),
+    label: varchar("label", { length: 255 }).notNull(),
+    structuredData: jsonb("structured_data").notNull(),
+    atsScore: real("ats_score"),
+    matchScore: real("match_score"),
+    changeSummary: jsonb("change_summary"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("resume_versions_variant_number_idx").on(
+      table.variantId,
+      table.versionNumber
+    ),
+    index("resume_versions_user_id_idx").on(table.userId),
+  ]
+);
+
+// === Application Status (Phase 19) ===
+export const applicationStatusEnum = pgEnum("application_status", [
+  "INTERESTED",
+  "ELIGIBLE",
+  "APPLIED",
+  "ASSESSMENT",
+  "SHORTLISTED",
+  "INTERVIEW",
+  "OFFER",
+  "REJECTED",
+  "WITHDRAWN",
+  "CLOSED",
+]);
+
+export const applicationEventTypeEnum = pgEnum("application_event_type", [
+  "APPLICATION_CREATED",
+  "STATUS_CHANGED",
+  "DEADLINE_ADDED",
+  "DEADLINE_CHANGED",
+  "RESUME_ATTACHED",
+  "ASSESSMENT_SCHEDULED",
+  "INTERVIEW_SCHEDULED",
+  "INTERVIEW_COMPLETED",
+  "OFFER_RECEIVED",
+  "REJECTED",
+  "WITHDRAWN",
+  "REOPENED",
+  "NOTE_ADDED",
+  "JD_ATTACHED",
+  "OUTCOME_RECORDED",
+]);
+
+export const applicationInterviewTypeEnum = pgEnum("application_interview_type", [
+  "Technical",
+  "Coding",
+  "HR",
+  "Managerial",
+  "Behavioral",
+  "Group Discussion",
+  "Other",
+]);
+
+export const applicationInterviewResultEnum = pgEnum("application_interview_result", [
+  "pending",
+  "cleared",
+  "not_cleared",
+  "awaiting_result",
+]);
+
+export const applicationAssessmentStatusEnum = pgEnum("application_assessment_status", [
+  "scheduled",
+  "completed",
+  "missed",
+  "expired",
+]);
+
+// === Applications (Phase 19 — Placement Application OS) ===
+export const applications = pgTable(
+  "applications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyId: uuid("company_id").references(() => companies.id, {
+      onDelete: "set null",
+    }),
+    companyName: varchar("company_name", { length: 255 }).notNull(),
+    roleId: uuid("role_id").references(() => roles.id, { onDelete: "set null" }),
+    roleName: varchar("role_name", { length: 255 }).notNull(),
+    jobDescription: text("job_description"),
+    source: varchar("source", { length: 120 }),
+    status: applicationStatusEnum("status").notNull().default("INTERESTED"),
+    appliedAt: timestamp("applied_at", { withTimezone: true }),
+    deadline: timestamp("deadline", { withTimezone: true }),
+    assessmentDeadline: timestamp("assessment_deadline", { withTimezone: true }),
+    interviewDate: timestamp("interview_date", { withTimezone: true }),
+    offerDeadline: timestamp("offer_deadline", { withTimezone: true }),
+    location: varchar("location", { length: 255 }),
+    employmentType: varchar("employment_type", { length: 60 }),
+    packageText: varchar("package_text", { length: 120 }),
+    notes: text("notes"),
+    resumeVariantId: uuid("resume_variant_id").references(() => resumeVariants.id, {
+      onDelete: "set null",
+    }),
+    resumeLabel: varchar("resume_label", { length: 255 }),
+    resumeAtsScore: real("resume_ats_score"),
+    resumeMatchScore: real("resume_match_score"),
+    reopenedCount: integer("reopened_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("applications_user_status_idx").on(table.userId, table.status),
+    index("applications_user_deadline_idx").on(table.userId, table.deadline),
+    index("applications_user_updated_idx").on(table.userId, table.updatedAt),
+    index("applications_company_idx").on(table.companyId),
+    index("applications_role_idx").on(table.roleId),
+  ]
+);
+
+// === Application Events (append-only timeline) ===
+export const applicationEvents = pgTable(
+  "application_events",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id")
+      .notNull()
+      .references(() => applications.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    eventType: applicationEventTypeEnum("event_type").notNull(),
+    previousStatus: applicationStatusEnum("previous_status"),
+    newStatus: applicationStatusEnum("new_status"),
+    title: varchar("title", { length: 255 }),
+    metadata: jsonb("metadata"),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("application_events_application_time_idx").on(
+      table.applicationId,
+      table.occurredAt
+    ),
+    index("application_events_user_idx").on(table.userId),
+  ]
+);
+
+// === Application Interviews ===
+export const applicationInterviews = pgTable(
+  "application_interviews",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id")
+      .notNull()
+      .references(() => applications.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    roundNumber: integer("round_number").notNull(),
+    roundType: applicationInterviewTypeEnum("round_type").notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    result: applicationInterviewResultEnum("result").notNull().default("pending"),
+    interviewerNotes: text("interviewer_notes"),
+    userNotes: text("user_notes"),
+    // Phase 20 — optional student-reported interview feedback (student_note evidence).
+    difficulty: text("difficulty"),
+    topicsDiscussed: jsonb("topics_discussed").$type<string[]>(),
+    studentConfidence: text("student_confidence"),
+    questionsRemembered: jsonb("questions_remembered").$type<string[]>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("application_interviews_application_idx").on(
+      table.applicationId,
+      table.roundNumber
+    ),
+    index("application_interviews_user_idx").on(table.userId),
+    index("application_interviews_scheduled_idx").on(table.userId, table.scheduledAt),
+  ]
+);
+
+// === Application Assessments ===
+export const applicationAssessments = pgTable(
+  "application_assessments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id")
+      .notNull()
+      .references(() => applications.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    assessmentType: varchar("assessment_type", { length: 120 }),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
+    deadline: timestamp("deadline", { withTimezone: true }),
+    status: applicationAssessmentStatusEnum("status").notNull().default("scheduled"),
+    scoreText: varchar("score_text", { length: 120 }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("application_assessments_application_idx").on(table.applicationId),
+    index("application_assessments_user_idx").on(table.userId),
+    index("application_assessments_deadline_idx").on(table.userId, table.deadline),
+  ]
+);
+
+// === Application Offers (user-provided financial data only) ===
+export const applicationOffers = pgTable(
+  "application_offers",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id")
+      .notNull()
+      .references(() => applications.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyName: varchar("company_name", { length: 255 }).notNull(),
+    roleName: varchar("role_name", { length: 255 }).notNull(),
+    offerDate: timestamp("offer_date", { withTimezone: true }),
+    compensationText: varchar("compensation_text", { length: 255 }),
+    location: varchar("location", { length: 255 }),
+    joiningDate: timestamp("joining_date", { withTimezone: true }),
+    offerDeadline: timestamp("offer_deadline", { withTimezone: true }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("application_offers_application_idx").on(table.applicationId),
+    index("application_offers_user_idx").on(table.userId),
+  ]
+);
+
+// === Application Reflections (Phase 20 — Outcome Intelligence) ===
+/**
+ * Post-outcome student reflection. Every field is optional, free-text,
+ * student-provided, and NEVER treated as a verified fact: the outcome engine
+ * maps these to `student_note` evidence with confidence "student_reported".
+ */
+export const applicationReflections = pgTable(
+  "application_reflections",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicationId: uuid("application_id")
+      .notNull()
+      .references(() => applications.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    whatWentWell: text("what_went_well"),
+    whatWasDifficult: text("what_was_difficult"),
+    whatWasAsked: text("what_was_asked"),
+    whatWouldImprove: text("what_would_improve"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    // One reflection per application per student.
+    uniqueIndex("application_reflections_application_unique").on(table.applicationId),
+    index("application_reflections_user_idx").on(table.userId),
   ]
 );

@@ -320,7 +320,7 @@ export default async function TestDetailsPage({
                   check_circle
                 </span>
                 <p>
-                  The exam timer runs continuously once started. When the timer hits 0:00, your exam will automatically submit for server-side evaluation.
+                  The exam timer runs continuously once started. When the timer hits 0:00, your exam will automatically submit for evaluation.
                 </p>
               </div>
 
