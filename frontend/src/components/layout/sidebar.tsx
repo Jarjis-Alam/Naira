@@ -41,6 +41,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
   ];
 
   const prepNavItems: NavItem[] = [
+    { label: "Study Planner",     href: "/planner",      icon: "event_note" },
     { label: "Assessment",        href: assessmentHref,  icon: "assignment" },
     { label: "Tests & Practice",  href: "/tests",        icon: "quiz" },
     { label: "Roadmap",           href: "/roadmap",      icon: "alt_route" },

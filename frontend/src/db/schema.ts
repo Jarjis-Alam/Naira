@@ -1073,3 +1073,96 @@ export const applicationReflections = pgTable(
     index("application_reflections_user_idx").on(table.userId),
   ]
 );
+
+// === Phase 24 — Adaptive Study Planner ===
+
+export const studyPlanStatusEnum = pgEnum("study_plan_status", [
+  "ACTIVE",
+  "ARCHIVED",
+  "RECALIBRATED",
+]);
+
+export const studyPlanItemCategoryEnum = pgEnum("study_plan_item_category", [
+  "FIX",
+  "REINFORCE",
+  "REVIEW",
+  "ASSESSMENT",
+  "PRACTICE",
+]);
+
+export const studyPlanItemStatusEnum = pgEnum("study_plan_item_status", [
+  "PENDING",
+  "IN_PROGRESS",
+  "PARTIALLY_COMPLETED",
+  "COMPLETED",
+  "MISSED",
+  "RESCHEDULED",
+]);
+
+export const studyPlanPriorityEnum = pgEnum("study_plan_priority", [
+  "CRITICAL",
+  "HIGH",
+  "MEDIUM",
+  "LOW",
+  "MONITOR",
+  "INSUFFICIENT_EVIDENCE",
+]);
+
+export const adaptiveStudyPlans = pgTable(
+  "adaptive_study_plans",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    planVersion: integer("plan_version").notNull().default(1),
+    status: studyPlanStatusEnum("status").notNull().default("ACTIVE"),
+    planningHorizon: varchar("planning_horizon", { length: 32 }).notNull().default("7_days"),
+    availableMinutesPerDay: integer("available_minutes_per_day"),
+    constraints: jsonb("constraints"),
+    summary: text("summary"),
+    generatedAt: timestamp("generated_at", { withTimezone: true }).notNull().defaultNow(),
+    validFrom: timestamp("valid_from", { withTimezone: true }).notNull().defaultNow(),
+    validUntil: timestamp("valid_until", { withTimezone: true }),
+    recalibratedAt: timestamp("recalibrated_at", { withTimezone: true }),
+    recalibrationReason: text("recalibration_reason"),
+  },
+  (table) => [
+    index("adaptive_study_plans_user_idx").on(table.userId),
+    index("adaptive_study_plans_user_status_idx").on(table.userId, table.status),
+    index("adaptive_study_plans_generated_idx").on(table.generatedAt),
+  ]
+);
+
+export const studyPlanItems = pgTable(
+  "study_plan_items",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    planId: uuid("plan_id")
+      .notNull()
+      .references(() => adaptiveStudyPlans.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    domain: varchar("domain", { length: 64 }).notNull(),
+    topic: varchar("topic", { length: 128 }).notNull(),
+    topicId: uuid("topic_id").references(() => topics.id, { onDelete: "set null" }),
+    category: studyPlanItemCategoryEnum("category").notNull(),
+    priority: studyPlanPriorityEnum("priority").notNull(),
+    estimatedMinutes: integer("estimated_minutes").notNull(),
+    scheduledDate: varchar("scheduled_date", { length: 10 }).notNull(),
+    sequence: integer("sequence").notNull(),
+    reason: text("reason").notNull(),
+    evidence: text("evidence").notNull(),
+    executionActionId: varchar("execution_action_id", { length: 128 }),
+    status: studyPlanItemStatusEnum("status").notNull().default("PENDING"),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    metadata: jsonb("metadata"),
+  },
+  (table) => [
+    index("study_plan_items_plan_idx").on(table.planId),
+    index("study_plan_items_user_date_idx").on(table.userId, table.scheduledDate),
+    index("study_plan_items_status_idx").on(table.status),
+  ]
+);
+

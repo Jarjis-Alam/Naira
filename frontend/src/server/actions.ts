@@ -213,3 +213,60 @@ export async function updateTestLifecycleAction(
   revalidatePath(`/tests/${currentTest.id}`);
   return updated;
 }
+
+// === Phase 24 — Adaptive Study Planner Actions ===
+
+export async function setStudyTimeBudgetAction(minutes: number) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  if (typeof minutes !== "number" || minutes <= 0) {
+    throw new Error("Invalid study minutes. Must be a positive number.");
+  }
+
+  const { generateAdaptiveStudyPlan } = await import("./adaptive-study-planner");
+  const plan = await generateAdaptiveStudyPlan(session.user.id, {
+    availableMinutesPerDay: minutes,
+  });
+
+  revalidatePath("/planner");
+  revalidatePath("/roadmap");
+  revalidatePath("/dashboard");
+  return plan;
+}
+
+export async function recalculateStudyPlanAction(reason?: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { recalculateStudyPlan } = await import("./adaptive-study-planner");
+  const plan = await recalculateStudyPlan(session.user.id, reason || "Student manual trigger");
+
+  revalidatePath("/planner");
+  revalidatePath("/roadmap");
+  revalidatePath("/dashboard");
+  return plan;
+}
+
+export async function updateStudyPlanItemStatusAction(
+  itemId: string,
+  status: "PENDING" | "IN_PROGRESS" | "PARTIALLY_COMPLETED" | "COMPLETED" | "MISSED" | "RESCHEDULED"
+) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { updateStudyPlanItemStatus } = await import("./adaptive-study-planner");
+  const res = await updateStudyPlanItemStatus(session.user.id, itemId, status);
+
+  revalidatePath("/planner");
+  revalidatePath("/roadmap");
+  revalidatePath("/dashboard");
+  return res;
+}
+
