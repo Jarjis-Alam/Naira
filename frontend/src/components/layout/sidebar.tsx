@@ -38,6 +38,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
     { label: "Applications",      href: "/applications", icon: "work_outline" },
     { label: "Outcomes",          href: "/outcomes",     icon: "insights" },
     { label: "Simulations",       href: "/simulation",   icon: "terminal" },
+    { label: "Interview Coach",   href: "/interview",    icon: "record_voice_over" },
   ];
 
   const prepNavItems: NavItem[] = [

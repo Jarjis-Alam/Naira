@@ -294,3 +294,62 @@ export async function generatePracticeSessionAction(params: {
   return res;
 }
 
+export async function startInterviewSessionAction(params: {
+  interviewType: "TECHNICAL" | "HR" | "MIXED" | "ROLE_SPECIFIC";
+  targetRoleId?: string;
+  targetRoleName?: string;
+  companyName?: string;
+  focusArea?: string;
+  maxTurns?: number;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { startInterviewSession } = await import("./interview-coach");
+  const res = await startInterviewSession({
+    userId: session.user.id,
+    ...params,
+  });
+
+  revalidatePath("/interview");
+  return res;
+}
+
+export async function sendInterviewMessageAction(params: {
+  sessionId: string;
+  message: string;
+}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { sendInterviewMessage } = await import("./interview-coach");
+  const res = await sendInterviewMessage({
+    userId: session.user.id,
+    sessionId: params.sessionId,
+    message: params.message,
+  });
+
+  revalidatePath(`/interview`);
+  return res;
+}
+
+export async function completeInterviewSessionAction(sessionId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const { completeInterviewSession } = await import("./interview-coach");
+  const res = await completeInterviewSession({
+    userId: session.user.id,
+    sessionId,
+  });
+
+  revalidatePath(`/interview`);
+  return res;
+}
+

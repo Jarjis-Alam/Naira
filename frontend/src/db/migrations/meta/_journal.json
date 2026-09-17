@@ -134,6 +134,13 @@
       "when": 1789050000000,
       "tag": "0018_phase_24_adaptive_study_planner",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789100000000,
+      "tag": "0019_phase_26_ai_interview_coach",
+      "breakpoints": true
     }
   ]
 }

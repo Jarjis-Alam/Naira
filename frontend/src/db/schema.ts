@@ -1166,3 +1166,106 @@ export const studyPlanItems = pgTable(
   ]
 );
 
+// === Phase 26 — NAIRA AI Interview Coach ===
+
+export const aiInterviewTypeEnum = pgEnum("ai_interview_type", [
+  "TECHNICAL",
+  "HR",
+  "MIXED",
+  "ROLE_SPECIFIC",
+]);
+
+export const aiInterviewSessionStatusEnum = pgEnum("ai_interview_session_status", [
+  "CREATED",
+  "ACTIVE",
+  "COMPLETED",
+  "ABANDONED",
+]);
+
+export const interviewSessions = pgTable(
+  "interview_sessions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    targetRoleId: uuid("target_role_id").references(() => roles.id, { onDelete: "set null" }),
+    targetRoleName: varchar("target_role_name", { length: 255 }).notNull(),
+    companyName: varchar("company_name", { length: 255 }),
+    interviewType: aiInterviewTypeEnum("interview_type").notNull(),
+    status: aiInterviewSessionStatusEnum("status").notNull().default("ACTIVE"),
+    currentRound: integer("current_round").notNull().default(1),
+    turnCount: integer("turn_count").notNull().default(0),
+    maxTurns: integer("max_turns").notNull().default(10),
+    focusArea: varchar("focus_area", { length: 255 }),
+    deterministicContext: jsonb("deterministic_context"),
+    provider: varchar("provider", { length: 64 }).notNull().default("groq"),
+    model: varchar("model", { length: 128 }),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("interview_sessions_user_idx").on(table.userId),
+    index("interview_sessions_status_idx").on(table.status),
+    index("interview_sessions_created_idx").on(table.createdAt),
+  ]
+);
+
+export const interviewTurns = pgTable(
+  "interview_turns",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => interviewSessions.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    turnNumber: integer("turn_number").notNull(),
+    role: varchar("role", { length: 32 }).notNull(),
+    content: text("content").notNull(),
+    qualitativeFeedback: text("qualitative_feedback"),
+    detectedTopics: jsonb("detected_topics").$type<string[]>(),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("interview_turns_session_idx").on(table.sessionId),
+    index("interview_turns_user_idx").on(table.userId),
+    index("interview_turns_turn_idx").on(table.sessionId, table.turnNumber),
+  ]
+);
+
+export const interviewEvaluations = pgTable(
+  "interview_evaluations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => interviewSessions.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    overallSummary: text("overall_summary").notNull(),
+    strengths: jsonb("strengths").$type<string[]>().notNull(),
+    improvements: jsonb("improvements").$type<string[]>().notNull(),
+    qualitativeScores: jsonb("qualitative_scores").$type<Record<string, number | string>>().notNull(),
+    nonCausalObservations: jsonb("non_causal_observations").$type<string[]>(),
+    provenance: varchar("provenance", { length: 64 }).notNull().default("AI_EVALUATION"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("interview_evaluations_session_unique").on(table.sessionId),
+    index("interview_evaluations_user_idx").on(table.userId),
+  ]
+);
+
+export type InterviewSession = typeof interviewSessions.$inferSelect;
+export type NewInterviewSession = typeof interviewSessions.$inferInsert;
+export type InterviewTurn = typeof interviewTurns.$inferSelect;
+export type NewInterviewTurn = typeof interviewTurns.$inferInsert;
+export type InterviewEvaluation = typeof interviewEvaluations.$inferSelect;
+export type NewInterviewEvaluation = typeof interviewEvaluations.$inferInsert;
+

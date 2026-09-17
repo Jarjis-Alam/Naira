@@ -380,16 +380,33 @@ export async function getPlacementIntelligence2(
       : "zero_data";
 
   // 3. Segment into Recent vs Historical
-  // Recent: latest 30% of answers or submitted in last 14 days (min 5 if available)
-  const recentCutoffIndex = Math.max(
-    5,
-    Math.floor(submittedAnswers.length * 0.35)
-  );
-  const recentAnswers = submittedAnswers.slice(0, recentCutoffIndex);
-  const historicalAnswers = submittedAnswers.slice(recentCutoffIndex);
+  // Recent: answers submitted within the last 7 days, or top 35% slice if timestamps identical
+  type AnswerRow = (typeof submittedAnswers)[number];
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const hasDistinctTimeWindows =
+    submittedAnswers.some((a) => a.submittedAt && a.submittedAt >= sevenDaysAgo) &&
+    submittedAnswers.some((a) => a.submittedAt && a.submittedAt < sevenDaysAgo);
+
+  let recentAnswers: AnswerRow[];
+  let historicalAnswers: AnswerRow[];
+
+  if (hasDistinctTimeWindows) {
+    recentAnswers = submittedAnswers.filter(
+      (a) => a.submittedAt && a.submittedAt >= sevenDaysAgo
+    );
+    historicalAnswers = submittedAnswers.filter(
+      (a) => !a.submittedAt || a.submittedAt < sevenDaysAgo
+    );
+  } else {
+    const recentCutoffIndex = Math.max(
+      5,
+      Math.floor(submittedAnswers.length * 0.35)
+    );
+    recentAnswers = submittedAnswers.slice(0, recentCutoffIndex);
+    historicalAnswers = submittedAnswers.slice(recentCutoffIndex);
+  }
 
   // Helper to group answers by subject code
-  type AnswerRow = (typeof submittedAnswers)[number];
   const groupAnswersBySubject = (ansList: AnswerRow[]) => {
     const map = new Map<string, AnswerRow[]>();
     for (const ans of ansList) {
