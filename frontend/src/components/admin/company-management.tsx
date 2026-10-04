@@ -196,7 +196,7 @@ export function CompanyManagement({ initialCompanies }: CompanyManagementProps) 
 
         <button
           onClick={openCreateModal}
-          className="bg-primary text-text-inverse font-semibold text-body-sm px-4 py-2 rounded-lg hover:bg-primary-text transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer whitespace-nowrap"
+          className="bg-primary text-black font-semibold text-body-sm px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer whitespace-nowrap"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
           <span>Add Company</span>
@@ -416,9 +416,9 @@ export function CompanyManagement({ initialCompanies }: CompanyManagementProps) 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 rounded-lg bg-primary text-text-inverse hover:bg-primary-text text-body-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
+                  className="px-5 py-2 rounded-lg bg-primary text-black hover:bg-zinc-200 text-body-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
                 >
-                  {loading && <span className="w-4 h-4 rounded-full border-2 border-text-inverse border-t-transparent animate-spin" />}
+                  {loading && <span className="w-4 h-4 rounded-full border-2 border-black border-t-transparent animate-spin" />}
                   <span>{isCreateOpen ? "Create Company" : "Save Changes"}</span>
                 </button>
               </div>

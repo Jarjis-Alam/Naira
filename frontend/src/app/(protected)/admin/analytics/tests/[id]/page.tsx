@@ -4,8 +4,8 @@ import { getAdminTestDetailAnalytics } from "@/server/admin-analytics";
 import { TestDetailAnalyticsView } from "@/components/admin/analytics/test-detail-analytics-view";
 
 export const metadata = {
-  title: "Assessment Telemetry & Item Analysis | Nexora",
-  description: "Granular question performance, sectional breakdowns, and test difficulty analytics.",
+  title: "Assessment Telemetry | Naira",
+  description: "Question performance, section breakdowns, and test difficulty analytics.",
 };
 
 export default async function AdminTestDetailPage({

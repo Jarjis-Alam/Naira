@@ -75,23 +75,15 @@ export function PracticeLauncherView({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
-      {/* Header Breadcrumbs */}
+      {/* Navigation */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-label-xs font-mono text-text-muted">
-          <Link href="/dashboard" className="hover:text-text-primary transition-colors">
-            Dashboard
-          </Link>
-          <span className="text-border">/</span>
-          <Link href="/planner" className="hover:text-text-primary transition-colors">
-            Planner
-          </Link>
-          <span className="text-border">/</span>
-          <span className="text-text-primary">Practice Intelligence</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <MetaPill>Practice OS</MetaPill>
-          <MetaPill>Deterministic</MetaPill>
-        </div>
+        <Link
+          href="/planner"
+          className="text-label-xs font-mono text-text-muted hover:text-text-primary transition-colors flex items-center gap-1"
+        >
+          <span className="material-symbols-outlined text-[14px]">arrow_back</span>
+          <span>Back to Planner</span>
+        </Link>
       </div>
 
       {/* Main Container */}
@@ -147,7 +139,6 @@ export function PracticeLauncherView({
             </div>
 
             <div>
-              <Eyebrow category="Practice Session" className="mb-1" />
               <h1 className="text-headline-md font-bold text-text-primary tracking-tight">
                 {selection.subjectCode ? `${selection.subjectCode} — ` : ""}
                 {selection.topicName || "Targeted Practice"}

@@ -7,6 +7,7 @@ import type {
   IntelligenceDimensionId,
   EvidenceState,
 } from "@/server/placement-intelligence-2";
+import { DisclosurePanel } from "@/components/ui/disclosure-panel";
 
 interface Props {
   intelligence: PlacementIntelligenceSnapshot2;
@@ -71,18 +72,15 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
       <section aria-labelledby="intel2-overview-heading" className="space-y-4">
         <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-              2.0
-            </span>
             <h2
               id="intel2-overview-heading"
-              className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary"
+              className="text-title-sm font-semibold text-text-primary"
             >
-              MULTI-DIMENSIONAL EVIDENCE BASELINE
+              Evidence Summary
             </h2>
           </div>
           <span className="text-label-xs font-mono text-text-muted">
-            {evidenceSummary.hasBaseline ? "Empirically Calibrated" : "Calibration Incomplete"}
+            {evidenceSummary.hasBaseline ? "Calibrated" : "Calibration Incomplete"}
           </span>
         </div>
 
@@ -139,142 +137,188 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
         </div>
       </section>
 
-      {/* 2. 14 Performance Dimensions Grid */}
-      <section aria-labelledby="dimensions-heading" className="space-y-4">
-        <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-              14
-            </span>
-            <h3 id="dimensions-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              PERFORMANCE DIMENSIONS
-            </h3>
-          </div>
-          <span className="text-label-xs font-mono text-text-muted">Zero Fabrication Guard</span>
-        </div>
+      {/* 2. 14 Performance Dimensions */}
+      {(() => {
+        const measured = dimensions.filter(
+          (d) => d.status !== "INSUFFICIENT_EVIDENCE" && d.score !== null
+        );
+        const uncalibrated = dimensions.filter(
+          (d) => d.status === "INSUFFICIENT_EVIDENCE" || d.score === null
+        );
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {dimensions.map((dim) => {
-            const hasData = dim.status !== "INSUFFICIENT_EVIDENCE" && dim.score !== null;
-            const isSelected = selectedDimensionId === dim.id;
+        return (
+          <section aria-labelledby="dimensions-heading" className="space-y-3">
+            <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
+              <div className="flex items-center gap-2">
+                <h3
+                  id="dimensions-heading"
+                  className="text-title-sm font-semibold text-text-primary"
+                >
+                  Performance Dimensions
+                </h3>
+                <span className="text-[11px] font-mono text-text-muted">
+                  ({measured.length} measured, {uncalibrated.length} pending)
+                </span>
+              </div>
+              <span className="text-label-xs font-mono text-text-muted">
+                Evidence Baseline
+              </span>
+            </div>
 
-            return (
-              <div
-                key={dim.id}
-                onClick={() => setSelectedDimensionId(isSelected ? null : dim.id)}
-                className={`p-4 rounded-cards border transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-card-elevated border-primary-green/80 shadow-[0_0_15px_rgba(255,255,255,0.15)]"
-                    : "bg-card-standard border-neutral-border hover:border-neutral-border/80"
-                }`}
+            {/* Measured Dimensions */}
+            {measured.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {measured.map((dim) => {
+                  const isSelected = selectedDimensionId === dim.id;
+
+                  return (
+                    <div
+                      key={dim.id}
+                      onClick={() =>
+                        setSelectedDimensionId(isSelected ? null : dim.id)
+                      }
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                        isSelected
+                          ? "bg-card-elevated border-white shadow-[0_0_10px_rgba(255,255,255,0.1)]"
+                          : "bg-card-standard border-neutral-border hover:border-neutral-border/80"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-body-sm font-semibold text-text-primary truncate">
+                            {dim.name}
+                          </span>
+                          <span
+                            className={`text-[9px] font-mono px-1.5 py-0.5 rounded border uppercase font-bold tracking-wider shrink-0 ${getStabilityBadge(
+                              dim.status
+                            )}`}
+                          >
+                            {dim.status.replace("_", " ")}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono text-text-muted block mt-0.5">
+                          {dim.observationCount} observations •{" "}
+                          {dim.category.replace("_", " ")}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-xl font-bold font-mono text-primary-green">
+                          {dim.score}%
+                        </span>
+                        <span className="material-symbols-outlined text-[16px] text-text-muted">
+                          {isSelected ? "expand_less" : "expand_more"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-card-standard border border-neutral-border text-center text-xs text-text-muted font-mono">
+                No measured dimensions yet. Complete diagnostic assessments to
+                establish baseline evidence.
+              </div>
+            )}
+
+            {/* Insufficient Evidence (Progressive Disclosure) */}
+            {uncalibrated.length > 0 && (
+              <DisclosurePanel
+                title="Uncalibrated Dimensions"
+                subtitle="Pending diagnostic assessments"
+                countBadge={uncalibrated.length}
+                defaultOpen={measured.length === 0}
               >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className="text-body-sm font-semibold text-text-primary line-clamp-1">
-                    {dim.name}
-                  </span>
-                  <span
-                    className={`text-[9px] font-mono px-1.5 py-0.5 rounded border uppercase font-bold tracking-wider shrink-0 ${getStabilityBadge(
-                      dim.status
-                    )}`}
-                  >
-                    {dim.status.replace("_", " ")}
-                  </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-2">
+                  {uncalibrated.map((dim) => {
+                    const isSelected = selectedDimensionId === dim.id;
+                    return (
+                      <div
+                        key={dim.id}
+                        onClick={() =>
+                          setSelectedDimensionId(isSelected ? null : dim.id)
+                        }
+                        className={`p-2.5 rounded-lg border text-left cursor-pointer transition-colors ${
+                          isSelected
+                            ? "bg-card-elevated border-white/60"
+                            : "bg-[#0f0f12] border-neutral-border hover:border-neutral-border/80"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-xs font-medium text-text-muted truncate">
+                            {dim.name}
+                          </span>
+                          <span className="text-[9px] font-mono text-zinc-500 uppercase">
+                            Pending
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-
-                <div className="flex items-baseline justify-between mt-3">
+              </DisclosurePanel>
+            )}
+            {/* Dimension Inspection Drawer / Drill-down */}
+            {selectedDimension && (
+              <div className="p-5 rounded-cards bg-card-elevated border border-primary-green/40 mt-3 space-y-3">
+                <div className="flex items-start justify-between">
                   <div>
-                    {hasData ? (
-                      <span className="text-2xl font-bold font-mono text-primary-green">
-                        {dim.score}%
-                      </span>
-                    ) : (
-                      <span className="text-label-xs font-mono text-text-muted uppercase">
-                        Insufficient Evidence
-                      </span>
-                    )}
+                    <span className="text-label-xs font-mono uppercase text-primary-green block mb-1">
+                      Evidence Audit Trail
+                    </span>
+                    <h4 className="text-title-sm font-bold text-text-primary">
+                      {selectedDimension.name} ({selectedDimension.category.replace("_", " ")})
+                    </h4>
                   </div>
-                  <span className="text-[11px] font-mono text-text-muted">
-                    {dim.observationCount} obs
-                  </span>
+                  <button
+                    onClick={() => setSelectedDimensionId(null)}
+                    className="text-text-muted hover:text-text-primary text-label-xs font-mono"
+                  >
+                    Close ✕
+                  </button>
                 </div>
 
-                <p className="text-[11px] text-text-secondary mt-2 line-clamp-2 leading-relaxed">
-                  {dim.summary}
-                </p>
+                <div className="text-body-sm text-text-secondary leading-relaxed">
+                  {selectedDimension.summary}
+                </div>
 
-                {dim.hasCorroboratingSources && (
-                  <div className="mt-2.5 pt-2 border-t border-neutral-border/40 flex items-center gap-1.5 text-[10px] font-mono text-primary-green">
-                    <span className="material-symbols-outlined text-[13px]">verified</span>
-                    <span>Cross-source corroborated</span>
+                {selectedDimension.evidence.length > 0 ? (
+                  <div className="space-y-2 pt-2 border-t border-neutral-border">
+                    <span className="text-[11px] font-mono text-text-muted uppercase block">
+                      Recorded Empirical Observations ({selectedDimension.evidence.length})
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {selectedDimension.evidence.map((ev, i) => (
+                        <div
+                          key={i}
+                          className="p-3 rounded-md bg-card-standard border border-neutral-border text-label-xs font-mono"
+                        >
+                          <div className="flex justify-between items-center text-text-muted text-[10px] mb-1">
+                            <span className="uppercase">{ev.source}</span>
+                            <span>{ev.count} recorded</span>
+                          </div>
+                          <div className="text-text-primary">{ev.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-label-xs font-mono text-text-muted py-2 border-t border-neutral-border">
+                    No individual observations recorded yet. Dimension score is not fabricated.
                   </div>
                 )}
               </div>
-            );
-          })}
-        </div>
-
-        {/* Dimension Inspection Drawer / Drill-down */}
-        {selectedDimension && (
-          <div className="p-5 rounded-cards bg-card-elevated border border-primary-green/40 mt-3 space-y-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="text-label-xs font-mono uppercase text-primary-green block mb-1">
-                  Evidence Audit Trail
-                </span>
-                <h4 className="text-title-sm font-bold text-text-primary">
-                  {selectedDimension.name} ({selectedDimension.category.replace("_", " ")})
-                </h4>
-              </div>
-              <button
-                onClick={() => setSelectedDimensionId(null)}
-                className="text-text-muted hover:text-text-primary text-label-xs font-mono"
-              >
-                Close ✕
-              </button>
-            </div>
-
-            <div className="text-body-sm text-text-secondary leading-relaxed">
-              {selectedDimension.summary}
-            </div>
-
-            {selectedDimension.evidence.length > 0 ? (
-              <div className="space-y-2 pt-2 border-t border-neutral-border">
-                <span className="text-[11px] font-mono text-text-muted uppercase block">
-                  Recorded Empirical Observations ({selectedDimension.evidence.length})
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {selectedDimension.evidence.map((ev, i) => (
-                    <div
-                      key={i}
-                      className="p-3 rounded-md bg-card-standard border border-neutral-border text-label-xs font-mono"
-                    >
-                      <div className="flex justify-between items-center text-text-muted text-[10px] mb-1">
-                        <span className="uppercase">{ev.source}</span>
-                        <span>{ev.count} recorded</span>
-                      </div>
-                      <div className="text-text-primary">{ev.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-label-xs font-mono text-text-muted py-2 border-t border-neutral-border">
-                No individual observations recorded yet. Dimension score is not fabricated.
-              </div>
             )}
-          </div>
-        )}
-      </section>
+          </section>
+        );
+      })()}
 
       {/* 3. Performance Trends (Recent vs Historical) */}
       <section aria-labelledby="trends2-heading" className="space-y-4">
         <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-              03
-            </span>
-            <h3 id="trends2-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              DETERMINISTIC PERFORMANCE TRENDS
+            <h3 id="trends2-heading" className="text-title-sm font-semibold text-text-primary">
+              Performance Trends
             </h3>
           </div>
           <span className="text-label-xs font-mono text-text-muted">Recent vs. Historical</span>
@@ -341,11 +385,8 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
         <section aria-labelledby="strengths2-heading" className="space-y-4">
           <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-                +
-              </span>
-              <h3 id="strengths2-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-                EVIDENCE-BACKED STRENGTHS
+              <h3 id="strengths2-heading" className="text-title-sm font-semibold text-text-primary">
+                Strengths
               </h3>
             </div>
             <span className="text-label-xs font-mono text-primary-green">
@@ -392,11 +433,8 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
         <section aria-labelledby="weaknesses2-heading" className="space-y-4">
           <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-error/10 text-error border border-error/20">
-                !
-              </span>
-              <h3 id="weaknesses2-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-                EVIDENCE-BACKED FOCUS AREAS
+              <h3 id="weaknesses2-heading" className="text-title-sm font-semibold text-text-primary">
+                Focus Areas
               </h3>
             </div>
             <span className="text-label-xs font-mono text-error">
@@ -445,11 +483,8 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
       <section aria-labelledby="target-alignment-heading" className="space-y-4">
         <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-              TARGET
-            </span>
-            <h3 id="target-alignment-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              TARGET ROLE CURRICULUM ALIGNMENT
+            <h3 id="target-alignment-heading" className="text-title-sm font-semibold text-text-primary">
+              Role Alignment
             </h3>
           </div>
           <span className="text-label-xs font-mono text-text-muted">
@@ -540,14 +575,11 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
         <section aria-labelledby="corroborations-heading" className="space-y-4">
           <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-                MULTI-SOURCE
-              </span>
-              <h3 id="corroborations-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-                CROSS-SOURCE CORROBORATED PATTERNS
+              <h3 id="corroborations-heading" className="text-title-sm font-semibold text-text-primary">
+                Corroborated Patterns
               </h3>
             </div>
-            <span className="text-label-xs font-mono text-text-muted">Non-Causal Evidence</span>
+            <span className="text-label-xs font-mono text-text-muted">Multi-Source</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -587,14 +619,10 @@ export function PlacementIntelligence2View({ intelligence }: Props) {
       <section aria-labelledby="priorities2-heading" className="space-y-4">
         <div className="flex items-center justify-between border-b border-neutral-border/60 pb-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-              ACTIONS
-            </span>
-            <h3 id="priorities2-heading" className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-              PRIORITIZED NEXT ACTIONS & INSIGHTS
+            <h3 id="priorities2-heading" className="text-title-sm font-semibold text-text-primary">
+              Next Actions
             </h3>
           </div>
-          <span className="text-label-xs font-mono text-text-muted">Phase 15 Action Engine</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">

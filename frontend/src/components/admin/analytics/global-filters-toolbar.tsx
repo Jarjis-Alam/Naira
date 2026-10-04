@@ -96,7 +96,7 @@ export function GlobalFiltersToolbar({
                 onClick={() => handleDatePreset(preset.value)}
                 className={`rounded px-2.5 py-1 text-label-xs font-mono transition-colors ${
                   active
-                    ? "bg-primary text-text-inverse font-semibold shadow-xs"
+                    ? "bg-primary text-black font-semibold shadow-xs"
                     : "bg-surface-high border border-border text-text-secondary hover:text-text-primary hover:bg-surface-highest"
                 }`}
               >

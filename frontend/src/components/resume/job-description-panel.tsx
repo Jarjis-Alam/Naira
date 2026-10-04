@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { StoredJobDescription } from "@/lib/resume/types";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export function JobDescriptionPanel({
   variantId,
@@ -18,6 +19,7 @@ export function JobDescriptionPanel({
   const [editing, setEditing] = useState(!jobDescription);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
 
   const extraction = jobDescription?.extraction ?? null;
 
@@ -49,15 +51,8 @@ export function JobDescriptionPanel({
     }
   }
 
-  async function handleRemove() {
-    if (
-      typeof window !== "undefined" &&
-      !window.confirm(
-        "Remove this job description? Target-match analysis and keyword alignment comparisons will be reset."
-      )
-    ) {
-      return;
-    }
+  async function executeRemove() {
+    setConfirmRemoveOpen(false);
     setBusy(true);
     setError(null);
     try {
@@ -147,7 +142,7 @@ export function JobDescriptionPanel({
               type="button"
               onClick={handleSave}
               disabled={busy || raw.trim().length < 20}
-              className="bg-primary text-text-inverse font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-primary-text transition-all disabled:opacity-50"
+              className="bg-primary text-black font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50"
             >
               {busy ? "Analysing…" : "Analyse job description"}
             </button>
@@ -166,9 +161,9 @@ export function JobDescriptionPanel({
             {jobDescription && (
               <button
                 type="button"
-                onClick={handleRemove}
+                onClick={() => setConfirmRemoveOpen(true)}
                 disabled={busy}
-                className="text-[12px] font-mono text-error/80 hover:text-error underline disabled:opacity-50"
+                className="text-[12px] font-mono text-error/80 hover:text-error underline disabled:opacity-50 cursor-pointer"
               >
                 Remove
               </button>
@@ -255,6 +250,17 @@ export function JobDescriptionPanel({
           </div>
         )
       )}
+
+      <ConfirmationDialog
+        isOpen={confirmRemoveOpen}
+        title="Remove Job Description"
+        description="Remove this job description? Target-match analysis and keyword alignment comparisons will be reset."
+        confirmLabel="Remove Job Description"
+        isDestructive={true}
+        isLoading={busy}
+        onConfirm={executeRemove}
+        onCancel={() => setConfirmRemoveOpen(false)}
+      />
     </section>
   );
 }

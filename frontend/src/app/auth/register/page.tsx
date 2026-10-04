@@ -16,6 +16,7 @@ export default function RegisterPage() {
     graduationYear: new Date().getFullYear() + 1,
   });
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -75,7 +76,7 @@ export default function RegisterPage() {
         >
           <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
           <span className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
-            SYS.REG // PLACEMENT CANDIDATE ENROLLMENT
+            Candidate Enrollment
           </span>
         </div>
       </header>
@@ -83,7 +84,7 @@ export default function RegisterPage() {
 
       {/* BEGIN: MainContent */}
       <main className="relative z-10 w-full max-w-md mx-auto px-5 py-8 flex flex-col items-center my-auto">
-        {/* Nexora Monogram & Brand Section */}
+        {/* Naira Monogram & Brand Section */}
         <div
           className="flex flex-col items-center mb-8 text-center"
           data-purpose="brand-identity"
@@ -94,6 +95,7 @@ export default function RegisterPage() {
               fill="none"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
               <path
                 d="M5 19V5L15 17V5"
@@ -106,10 +108,10 @@ export default function RegisterPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white mb-1">
-            Nexora
+            Naira
           </h1>
           <p className="text-[11px] font-mono tracking-widest uppercase text-zinc-400">
-            Your Operating System For Placements
+            Placement Operating System
           </p>
         </div>
 
@@ -129,7 +131,11 @@ export default function RegisterPage() {
           </div>
 
           {error && (
-            <div className="mb-5 px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-center gap-2">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="mb-5 px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-center gap-2"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
               <span>{error}</span>
             </div>
@@ -148,6 +154,7 @@ export default function RegisterPage() {
                 name="name"
                 type="text"
                 required
+                aria-invalid={Boolean(error)}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Jarjis Alam"
@@ -167,6 +174,7 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 required
+                aria-invalid={Boolean(error)}
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="you@example.com"
@@ -181,17 +189,31 @@ export default function RegisterPage() {
               >
                 Password *
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                minLength={6}
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="••••••••••••"
-                className="w-full px-4 py-3 rounded-full bg-[#08090a]/70 border border-[#27282d] text-white text-sm placeholder-zinc-500 tracking-wider focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all duration-200"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  aria-invalid={Boolean(error)}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="••••••••••••"
+                  className="w-full pl-4 pr-11 py-3 rounded-full bg-[#08090a]/70 border border-[#27282d] text-white text-sm placeholder-zinc-500 tracking-wider focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all duration-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer p-1"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -249,7 +271,18 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="pt-3">
+            <p className="text-[11px] text-zinc-400 text-center leading-relaxed">
+              By creating an account, you agree to NAIRA&apos;s{" "}
+              <Link href="/terms" className="text-zinc-200 hover:text-white underline underline-offset-2">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-zinc-200 hover:text-white underline underline-offset-2">
+                Privacy Policy
+              </Link>.
+            </p>
+
+            <div className="pt-1">
               <button
                 type="submit"
                 disabled={loading}
@@ -261,6 +294,7 @@ export default function RegisterPage() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
@@ -291,16 +325,16 @@ export default function RegisterPage() {
       {/* BEGIN: SiteFooter */}
       <footer className="relative z-10 w-full py-6 px-4 text-center">
         <div className="inline-flex items-center gap-4 text-[11px] font-mono text-zinc-500">
-          <span className="hover:text-zinc-300 cursor-pointer transition-colors">
-            STATUS: OPERATIONAL
-          </span>
+          <Link href="/privacy" className="hover:text-zinc-300 transition-colors underline-offset-4 hover:underline">
+            PRIVACY PROTOCOL
+          </Link>
           <span>•</span>
-          <span className="hover:text-zinc-300 cursor-pointer transition-colors">
-            TERMINAL GATEWAY 2.4
-          </span>
+          <Link href="/terms" className="hover:text-zinc-300 transition-colors underline-offset-4 hover:underline">
+            TERMS OF SERVICE
+          </Link>
           <span>•</span>
-          <span className="hover:text-zinc-300 cursor-pointer transition-colors">
-            PRIVACY &amp; PROTOCOLS
+          <span className="text-zinc-600">
+            GATEWAY 2.4
           </span>
         </div>
       </footer>

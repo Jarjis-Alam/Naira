@@ -50,6 +50,19 @@ export interface EligibilityResult {
   criteria: EligibilityCriterion[];
 }
 
+/**
+ * Phase 17 Authoritative Readiness Weights:
+ * Screening: 20%, Coding: 30%, Debugging: 15%, Technical Interview: 20%, HR Interview: 15%
+ * Total = 100%
+ */
+export const SIMULATION_READINESS_WEIGHTS = {
+  screening: 0.20,
+  coding: 0.30,
+  debugging: 0.15,
+  tech_interview: 0.20,
+  hr_interview: 0.15,
+} as const;
+
 export interface CodingChallenge {
   id: string;
   title: string;
@@ -1039,7 +1052,11 @@ export async function submitSimulationRound(params: {
     // Weighted Simulation Readiness Score:
     // Screening: 20%, Coding: 30%, Debugging: 15%, Tech Interview: 20%, HR: 15%
     const overallScore = Math.round(
-      s1 * 0.2 + s2 * 0.3 + s3 * 0.15 + s4 * 0.2 + s5 * 0.15
+      s1 * SIMULATION_READINESS_WEIGHTS.screening +
+      s2 * SIMULATION_READINESS_WEIGHTS.coding +
+      s3 * SIMULATION_READINESS_WEIGHTS.debugging +
+      s4 * SIMULATION_READINESS_WEIGHTS.tech_interview +
+      s5 * SIMULATION_READINESS_WEIGHTS.hr_interview
     );
 
     const readinessLevel =

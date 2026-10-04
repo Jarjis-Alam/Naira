@@ -178,7 +178,7 @@ export function AdminTestPreview({ initialDraft }: { initialDraft?: PreviewDraft
           <span className="material-symbols-outlined text-[32px] text-text-muted">preview</span>
           <h1 className="text-title-md font-semibold">Preview is unavailable</h1>
           <p className="text-body-sm text-text-muted">Return to the Test Builder and preview the current configured version.</p>
-          <Link href="/admin/tests/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-body-sm font-semibold text-text-inverse focus:outline-none focus:ring-2 focus:ring-primary/60">Back to Test Builder</Link>
+          <Link href="/admin/tests/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-body-sm font-semibold text-black hover:bg-zinc-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/60">Back to Test Builder</Link>
         </div>
       </div>
     );
@@ -192,7 +192,7 @@ export function AdminTestPreview({ initialDraft }: { initialDraft?: PreviewDraft
           <p className="text-label-xs font-mono uppercase tracking-wider text-primary-text">Preview Mode</p>
           <h1 className="text-title-md font-semibold">No questions configured</h1>
           <p className="text-body-sm text-text-muted">Add questions to this test in the Repository before previewing it.</p>
-          <Link href="/admin/tests/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-body-sm font-semibold text-text-inverse focus:outline-none focus:ring-2 focus:ring-primary/60">Back to Test Builder</Link>
+          <Link href="/admin/tests/new" className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-body-sm font-semibold text-black hover:bg-zinc-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/60">Back to Test Builder</Link>
         </div>
       </div>
     );
@@ -262,7 +262,7 @@ export function AdminTestPreview({ initialDraft }: { initialDraft?: PreviewDraft
                           : reviewed[question.id]
                           ? "border-tertiary text-tertiary"
                           : answers[question.id]
-                          ? "border-primary bg-primary text-text-inverse"
+                          ? "border-primary bg-primary text-black font-bold"
                           : "border-border bg-surface-high text-text-muted"
                       }`}
                     >
@@ -313,14 +313,14 @@ export function AdminTestPreview({ initialDraft }: { initialDraft?: PreviewDraft
               {currentQuestion?.options.map((option, index) => {
                 const letter = String.fromCharCode(65 + index);
                 const isSelected = Array.isArray(selectedAnswer) ? selectedAnswer.includes(option) : selectedAnswer === option;
-                return <button key={`${currentQuestion.id}-${index}`} type="button" onClick={() => selectAnswer(option)} role={currentQuestion.questionType === "single_choice" ? "radio" : "checkbox"} aria-checked={isSelected} aria-label={`Preview option ${letter}: ${option}`} className={`flex w-full items-start gap-4 rounded-xl border p-4 text-left focus:outline-none focus:ring-2 focus:ring-primary/70 ${isSelected ? "border-primary bg-primary/10" : "border-border bg-surface hover:border-border-variant"}`}><span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-label-xs font-mono font-bold ${isSelected ? "bg-primary text-text-inverse" : "border border-border bg-surface-high text-text-muted"}`}>{letter}</span><span className="text-body-sm leading-relaxed">{option}</span></button>;
+                return <button key={`${currentQuestion.id}-${index}`} type="button" onClick={() => selectAnswer(option)} role={currentQuestion.questionType === "single_choice" ? "radio" : "checkbox"} aria-checked={isSelected} aria-label={`Preview option ${letter}: ${option}`} className={`flex w-full items-start gap-4 rounded-xl border p-4 text-left focus:outline-none focus:ring-2 focus:ring-primary/70 ${isSelected ? "border-primary bg-primary/10" : "border-border bg-surface hover:border-border-variant"}`}><span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-label-xs font-mono font-bold ${isSelected ? "bg-primary text-black border border-primary" : "border border-border bg-surface-high text-text-muted"}`}>{letter}</span><span className="text-body-sm leading-relaxed">{option}</span></button>;
               })}
             </div>
             {ended && <div className="rounded-lg border border-tertiary/30 bg-tertiary/10 p-3 text-body-sm text-tertiary">Preview time ended. No submission was created.</div>}
             <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-border bg-base/95 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm">
               <button type="button" onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))} disabled={currentIndex === 0} className="h-11 rounded-lg border border-border bg-surface px-4 text-body-sm font-medium disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-primary/70">Previous</button>
               <button type="button" onClick={() => setReviewed((state) => ({ ...state, [currentQuestion.id]: !state[currentQuestion.id] }))} className={`h-11 rounded-lg border px-4 text-body-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/70 ${reviewed[currentQuestion.id] ? "border-tertiary bg-tertiary/10 text-tertiary" : "border-border bg-surface text-text-secondary"}`}>Mark for Review</button>
-              <button type="button" onClick={() => setCurrentIndex((index) => Math.min(draft.questions.length - 1, index + 1))} disabled={currentIndex === draft.questions.length - 1} className="h-11 rounded-lg bg-primary px-5 text-body-sm font-semibold text-text-inverse disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-primary/70">Next</button>
+              <button type="button" onClick={() => setCurrentIndex((index) => Math.min(draft.questions.length - 1, index + 1))} disabled={currentIndex === draft.questions.length - 1} className="h-11 rounded-lg bg-primary px-5 text-body-sm font-semibold text-black hover:bg-zinc-200 transition-colors disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-primary/70">Next</button>
             </div>
           </div>
         </main>

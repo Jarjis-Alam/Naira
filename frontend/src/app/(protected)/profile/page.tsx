@@ -17,7 +17,8 @@ import {
 import { getPlacementTargetStrategy } from "@/server/placement-target-strategy";
 import { getStudentSimulationHistory } from "@/server/placement-simulation";
 import { getResumeHealth } from "@/server/resume-intelligence";
-import { MetricCardV2 } from "@/components/ui/metric-card-v2";
+import { CompactMetricStrip } from "@/components/ui/compact-metric-strip";
+import { PrivacyManagementCard } from "@/components/profile/privacy-management-card";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -91,7 +92,10 @@ export default async function ProfilePage() {
     getResumeHealth(session.user.id).catch(() => null),
   ]);
 
-  const completedSimulation = simulationHistory.find((s) => s.status === "completed") ?? null;
+  const completedSimulation =
+    (simulationHistory as Array<{ status: string; overallReadinessScore?: number | null }>).find(
+      (s) => s.status === "completed"
+    ) ?? null;
   const outcomeHistory = await getOutcomeHistorySummary(session.user.id).catch(() => null);
 
   const initial = (profile.name.charAt(0) || "U").toUpperCase();
@@ -99,42 +103,35 @@ export default async function ProfilePage() {
 
   return (
     <div className="space-y-6 pb-24 max-w-7xl mx-auto">
-      {/* ── Top Bar: Breadcrumb + Cycle Status Badges ── */}
+      {/* ── Top Bar ── */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 font-mono text-xs text-sage-40 flex-wrap">
-          <Link href="/dashboard" className="hover:text-phosphor-white transition-colors">
-            Nexora
-          </Link>
-          <span className="text-[#3f4a38]">/</span>
-          <span className="text-phosphor-white font-semibold">Profile &amp; Identity</span>
-          <span className="text-[#3f4a38]">/</span>
-          <span className="px-2.5 py-0.5 rounded-full bg-[#282b29] text-lime-pulse font-mono text-[10px] border border-[#3f4a38]/40">
-            ID: NX-{shortId}
-          </span>
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-white font-display">
+            Candidate Profile
+          </h1>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Academic credentials, target roles, and performance dimensions.
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 text-[11px] font-mono font-semibold uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-ping" />
-            <span>Active Cycle</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-zinc-300 border border-white/20 text-[11px] font-mono font-semibold uppercase tracking-wider">
-            <span className="material-symbols-outlined text-[14px]">verified_user</span>
-            <span>Profile Verified</span>
-          </div>
+          <Link
+            href="/target"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[16px]">radar</span>
+            <span>Target Strategy</span>
+          </Link>
         </div>
       </div>
 
       {/* ── Profile Header Hero Card ── */}
-      <div className="relative rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-6 sm:p-8 shadow-xl overflow-hidden">
-        {/* Ambient Chromatic Glow */}
-        <div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-lime-pulse/5 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-            {/* Candidate Avatar with Ring */}
+      <div className="rounded-2xl bg-[#121215] border border-zinc-800 p-6 sm:p-7 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            {/* Candidate Avatar */}
             <div className="relative shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shadow-2xl bg-[#111413] border-2 border-lime-pulse/40 flex items-center justify-center font-heading text-2xl sm:text-3xl font-bold text-lime-pulse">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-zinc-900 border border-zinc-700 flex items-center justify-center font-heading text-2xl font-bold text-white">
                 {profile.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -146,112 +143,93 @@ export default async function ProfilePage() {
                   initial
                 )}
               </div>
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#111413] flex items-center justify-center border border-[#3f4a38]">
-                <span className="w-4 h-4 rounded-full bg-lime-pulse flex items-center justify-center">
-                  <span className="material-symbols-outlined text-void-black text-[12px] font-bold">
-                    check
-                  </span>
-                </span>
-              </div>
             </div>
 
             {/* Identity & Academic Meta */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h2 className="text-2xl font-bold text-white tracking-tight">
                   {profile.name}
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-lime-pulse text-void-black font-mono text-[10px] font-bold uppercase tracking-wider">
+                </h2>
+                <span className="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-mono text-[10px] font-semibold border border-zinc-700">
                   {readiness.hasCompletedBaseline ? "Calibrated" : "Uncalibrated"}
                 </span>
-                <span className="text-sage-40 font-mono text-[11px]">
+                <span className="text-zinc-500 font-mono text-[11px]">
                   UID: {profile.userId.slice(0, 8)}
                 </span>
               </div>
 
-              <p className="text-xs text-sage-40 flex items-center gap-2 flex-wrap">
-                <span className="text-phosphor-white font-medium">{profile.email}</span>
+              <p className="text-xs text-zinc-400 flex items-center gap-2 flex-wrap">
+                <span className="text-zinc-200 font-medium">{profile.email}</span>
                 <span>•</span>
                 <span>{profile.branch || "Computer Science & Engineering"}</span>
                 <span>•</span>
-                <span className="text-phosphor-white">{profile.college || "Nexora Institute"}</span>
+                <span className="text-zinc-300">{profile.college || "Institute of Technology"}</span>
                 <span>•</span>
                 <span>Class of {profile.graduationYear || "2026"}</span>
               </p>
-
-              {/* Status Tag Chips */}
-              <div className="flex items-center gap-2 pt-1.5 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#282b29] text-sage-40 font-mono text-[10px] font-semibold border border-[#3f4a38]/40">
-                  {profile.branch ? profile.branch.toUpperCase() : "CS CORE"}
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-[#282b29] text-sage-40 font-mono text-[10px] font-semibold border border-[#3f4a38]/40">
-                  CLASS OF {profile.graduationYear || "2026"}
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-zinc-300 font-mono text-[10px] font-semibold border border-white/20">
-                  {profile.preferredLanguage ? `${profile.preferredLanguage.toUpperCase()} TRACK` : "C++ TRACK"}
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse font-mono text-[10px] font-bold border border-lime-pulse/30">
-                  READINESS {readiness.readinessScore !== null ? `${readiness.readinessScore}%` : "--"}
-                </span>
-              </div>
             </div>
-          </div>
-
-          {/* Target Role Pill */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Link
-              href="/target"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-lime-pulse hover:bg-mint-frost text-void-black font-semibold text-xs shadow-md transition-all font-sans"
-            >
-              <span className="material-symbols-outlined text-[17px]">radar</span>
-              <span>Target Strategy</span>
-            </Link>
           </div>
         </div>
       </div>
 
-      {/* ── 4 Placement Readiness Dimensions ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <MetricCardV2
-          title="Preparation Readiness"
-          value={readiness.hasCompletedBaseline && readiness.readinessScore !== null ? `${readiness.readinessScore}%` : "--"}
-          accentColor="green"
-          icon="menu_book"
-          progressPct={readiness.hasCompletedBaseline ? readiness.readinessScore : 0}
-          footerText={readiness.hasCompletedBaseline ? "Curriculum benchmark active" : "Complete baseline test"}
-          href="/tests"
+      {/* ── 4 Placement Readiness Dimensions Strip ── */}
+      <section aria-label="Placement Readiness Dimensions">
+        <CompactMetricStrip
+          items={[
+            {
+              id: "prep",
+              label: "Preparation",
+              value:
+                readiness.hasCompletedBaseline && readiness.readinessScore !== null
+                  ? `${readiness.readinessScore}%`
+                  : "--",
+              detail: readiness.hasCompletedBaseline
+                ? "Curriculum benchmark"
+                : "Baseline pending",
+              progressPct: readiness.hasCompletedBaseline ? readiness.readinessScore : 0,
+              href: "/tests",
+            },
+            {
+              id: "target",
+              label: "Target Fit",
+              value:
+                targetStrategy?.readiness.targetScore !== null &&
+                targetStrategy?.readiness.targetScore !== undefined
+                  ? `${targetStrategy.readiness.targetScore}%`
+                  : "--",
+              detail: placementTargets.configured
+                ? "Target alignment"
+                : "Select company",
+              progressPct: targetStrategy?.readiness.targetScore ?? 0,
+              href: "/target",
+            },
+            {
+              id: "ats",
+              label: "Resume ATS",
+              value:
+                resumeHealth?.hasResume && resumeHealth.atsScore !== null
+                  ? `${resumeHealth.atsScore}%`
+                  : "--",
+              detail: resumeHealth?.hasResume ? "ATS analyzed" : "Upload resume",
+              progressPct: resumeHealth?.hasResume ? resumeHealth.atsScore : 0,
+              href: "/resume",
+            },
+            {
+              id: "simulation",
+              label: "Interview Simulation",
+              value:
+                completedSimulation?.overallReadinessScore !== null &&
+                completedSimulation?.overallReadinessScore !== undefined
+                  ? `${completedSimulation.overallReadinessScore}%`
+                  : "--",
+              detail: completedSimulation ? "Latest verified" : "Take mock",
+              progressPct: completedSimulation?.overallReadinessScore ?? 0,
+              href: "/simulation",
+            },
+          ]}
         />
-
-        <MetricCardV2
-          title="Target Readiness"
-          value={targetStrategy?.readiness.targetScore !== null && targetStrategy?.readiness.targetScore !== undefined ? `${targetStrategy.readiness.targetScore}%` : "--"}
-          accentColor="pink"
-          icon="radar"
-          progressPct={targetStrategy?.readiness.targetScore ?? 0}
-          footerText={placementTargets.configured ? "Target company alignment" : "Select target company"}
-          href="/target"
-        />
-
-        <MetricCardV2
-          title="Resume ATS Benchmark"
-          value={resumeHealth?.hasResume && resumeHealth.atsScore !== null ? `${resumeHealth.atsScore}%` : "--"}
-          accentColor="blue"
-          icon="description"
-          progressPct={resumeHealth?.hasResume ? resumeHealth.atsScore : 0}
-          footerText={resumeHealth?.hasResume ? "ATS scan complete" : "Upload resume to scan"}
-          href="/resume"
-        />
-
-        <MetricCardV2
-          title="Interview Simulation"
-          value={completedSimulation?.overallReadinessScore !== null && completedSimulation?.overallReadinessScore !== undefined ? `${completedSimulation.overallReadinessScore}%` : "--"}
-          accentColor="amber"
-          icon="videocam"
-          progressPct={completedSimulation?.overallReadinessScore ?? 0}
-          footerText={completedSimulation ? "Latest simulation verified" : "Take mock simulation"}
-          href="/simulation"
-        />
-      </div>
+      </section>
 
       {/* ── Main Layout: Profile Editors & Targets ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -263,7 +241,7 @@ export default async function ProfilePage() {
           <div className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md space-y-4">
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold">
               <span className="material-symbols-outlined text-[16px] text-lime-pulse">tune</span>
-              <span>Environment Preferences</span>
+              <span>Preferences</span>
             </div>
 
             <div className="space-y-3">
@@ -327,7 +305,7 @@ export default async function ProfilePage() {
             <div className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md">
               <div className="flex items-center gap-2 mb-3 text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold">
                 <span className="material-symbols-outlined text-[16px] text-lime-pulse">history</span>
-                <span>Outcome History (Empirical Observations)</span>
+                <span>Outcome History</span>
               </div>
               <div className="grid grid-cols-4 gap-3 text-center font-mono">
                 <div className="rounded-xl bg-[#111413] border border-[#3f4a38]/30 p-2.5">
@@ -410,6 +388,12 @@ export default async function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Privacy & Data Sovereignty Section ── */}
+      <PrivacyManagementCard
+        userId={profile.userId}
+        email={profile.email}
+      />
     </div>
   );
 }

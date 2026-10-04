@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { CinematicHero } from "@/components/landing/cinematic-hero";
 import { LandingFooter } from "@/components/landing/landing-footer";
 
@@ -60,7 +59,7 @@ export default async function LandingPage() {
             </div>
 
             <div className="bg-carbon-veil/60 border border-circuit-border/60 p-5 rounded-md">
-              <div className="text-caption text-sage-40 uppercase font-mono mb-1">Empirical Focus Candidates</div>
+              <div className="text-caption text-sage-40 uppercase font-mono mb-1">Focus Areas</div>
               <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#ff7b72]" />
@@ -80,14 +79,11 @@ export default async function LandingPage() {
       <section id="how-it-works" className="container-fluid py-20 scroll-mt-20 border-t border-phosphor-blue-black relative">
         <span id="loop" className="absolute -top-20" aria-hidden="true" />
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <Eyebrow system="NAIRA" category="EXECUTION ARCHITECTURE" className="justify-center">
-            CLOSED-LOOP PREPARATION
-          </Eyebrow>
           <h2 className="font-heading text-headline-lg font-semibold text-phosphor-white">
-            How Naira Operates
+            How Naira Works
           </h2>
           <p className="text-body-sm text-sage-60 mt-2 max-w-xl mx-auto leading-relaxed">
-            A deterministic engineering feedback loop designed to move students from uncalibrated to placement-ready.
+            A structured preparation cycle designed to guide you from initial assessment to placement readiness.
           </p>
         </div>
 
@@ -124,14 +120,11 @@ export default async function LandingPage() {
       <section id="about" className="py-20 container-fluid border-t border-phosphor-blue-black scroll-mt-20 relative">
         <span id="curriculum" className="absolute -top-20" aria-hidden="true" />
         <div className="mb-12 text-center md:text-left">
-          <Eyebrow system="NAIRA" category="CURRICULUM">
-            STANDARDIZED SYLLABUS
-          </Eyebrow>
           <h2 className="font-heading text-headline-lg font-semibold text-phosphor-white mb-2">
             Placement Curriculum & Mock Tests
           </h2>
           <p className="text-body text-sage-60 max-w-3xl">
-            Engineered to cover the technical interview syllabus across 7 core subjects and high-fidelity placement simulations.
+            Comprehensive coverage across core computer science subjects and realistic mock tests.
           </p>
         </div>
 

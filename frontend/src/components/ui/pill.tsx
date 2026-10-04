@@ -79,14 +79,16 @@ export function Pill({
 
   const activeClass =
     type === "tab" && active
-      ? "bg-white text-black font-semibold border-white"
+      ? "bg-white text-black font-semibold border-white shadow-xs"
       : type === "tab"
       ? "bg-transparent text-zinc-400 border-transparent hover:bg-zinc-800 hover:text-white"
       : "";
 
+  const appliedVariant = type === "tab" ? "" : variantClasses[variant];
+
   return (
     <Tag
-      className={`${base} ${variantClasses[variant]} ${sizeClasses[size]} ${typeClass} ${activeClass} ${className}`}
+      className={`${base} ${appliedVariant} ${sizeClasses[size]} ${typeClass} ${activeClass} ${className}`}
       {...props}
     >
       {(dot || type === "status") && (

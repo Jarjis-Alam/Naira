@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ResumeVariantSummary } from "@/server/resume-intelligence";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export function VariantsPanel({
   variants,
@@ -17,6 +18,7 @@ export function VariantsPanel({
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
 
   async function call(url: string, method: string, body?: unknown) {
     const res = await fetch(url, {
@@ -56,10 +58,7 @@ export function VariantsPanel({
     }
   }
 
-  async function handleDelete(variantId: string, label: string) {
-    if (!window.confirm(`Delete the resume variant "${label}"? Its versions and analyses are removed with it.`)) {
-      return;
-    }
+  async function executeDelete(variantId: string) {
     setBusy(variantId);
     setError(null);
     try {
@@ -69,6 +68,7 @@ export function VariantsPanel({
       setError(err instanceof Error ? err.message : "The variant could not be deleted.");
     } finally {
       setBusy(null);
+      setDeleteTarget(null);
     }
   }
 
@@ -86,7 +86,7 @@ export function VariantsPanel({
           type="button"
           onClick={handleCreate}
           disabled={busy === "create"}
-          className="bg-primary text-text-inverse font-semibold text-[12px] px-4 py-2 rounded-lg hover:bg-primary-text transition-all disabled:opacity-50 whitespace-nowrap"
+          className="bg-primary text-black font-semibold text-[12px] px-4 py-2 rounded-lg hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
         >
           {busy === "create" ? "Creating…" : "New variant"}
         </button>
@@ -165,9 +165,9 @@ export function VariantsPanel({
                   )}
                   <button
                     type="button"
-                    onClick={() => handleDelete(variant.id, variant.label)}
+                    onClick={() => setDeleteTarget({ id: variant.id, label: variant.label })}
                     disabled={busy === variant.id}
-                    className="text-[11px] font-mono px-3 py-1.5 rounded-lg border border-error/30 bg-error/10 text-error hover:bg-error/20 transition-colors disabled:opacity-50"
+                    className="text-[11px] font-mono px-3 py-1.5 rounded-lg border border-error/30 bg-error/10 text-error hover:bg-error/20 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     Delete
                   </button>
@@ -177,6 +177,21 @@ export function VariantsPanel({
           })}
         </div>
       )}
+
+      <ConfirmationDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Delete Resume Variant"
+        description={`Delete the resume variant "${deleteTarget?.label}"? Its versions and analyses will be permanently removed.`}
+        confirmLabel="Delete Variant"
+        isDestructive={true}
+        isLoading={Boolean(deleteTarget && busy === deleteTarget.id)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            executeDelete(deleteTarget.id);
+          }
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </section>
   );
 }

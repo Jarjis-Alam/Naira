@@ -412,11 +412,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 .text-body-md {
   font-family: var(--font-inter-variable); font-size: 16px; font-weight: 400;
-  line-height: 1.5; letter-spacing: -0.352px; color: var(--color-sage-60);
+  line-height: 1.5; letter-spacing: -0.352px;
 }
 .text-body-sm {
   font-family: var(--font-inter-variable); font-size: 14px; font-weight: 400;
-  line-height: 1.43; letter-spacing: -0.364px; color: var(--color-sage-60);
+  line-height: 1.43; letter-spacing: -0.364px;
 }
 .text-code-sm {
   font-family: var(--font-mono); font-size: 13px; font-weight: 400;
@@ -425,7 +425,6 @@ h1, h2, h3, h4, h5, h6 {
 .text-label-xs {
   font-family: var(--font-inter-variable); font-size: 11px; font-weight: 500;
   line-height: 1.33; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--color-moss-70);
 }
 .text-caption {
   font-family: var(--font-inter-variable); font-size: 12px; font-weight: 400;
@@ -597,7 +596,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
   background-color: #ffffff;
-  color: #000000;
+  color: #000000 !important;
   border: 1px solid #ffffff;
   border-radius: var(--radius-buttons);
   padding: 10px 24px;
@@ -611,12 +610,13 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary:hover {
   background-color: #e4e4e7;
   border-color: #e4e4e7;
+  color: #000000 !important;
 }
 
 .btn-accent {
   display: inline-flex; align-items: center; gap: 8px;
   background-color: #ffffff;
-  color: #000000;
+  color: #000000 !important;
   border: 1px solid transparent;
   border-radius: var(--radius-pills);
   padding: 10px 24px;
@@ -626,7 +626,81 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-base);
   text-decoration: none;
 }
-.btn-accent:hover { background-color: #e4e4e7; }
+.btn-accent:hover {
+  background-color: #e4e4e7;
+  color: #000000 !important;
+}
+
+/* ============================================================
+   HIGH-CONTRAST ENFORCEMENT FOR WHITE / LIGHT UI ELEMENTS
+   Ensures near-black (#000000) foreground on all light components
+   while strictly preserving muted grey hierarchy on dark backgrounds.
+   ============================================================ */
+.pill-action-primary,
+.pill-tab.active,
+button.bg-primary:not([class*="bg-primary/"]):not(:disabled),
+a.bg-primary:not([class*="bg-primary/"]),
+button.bg-primary-green:not([class*="bg-primary-green/"]):not(:disabled),
+a.bg-primary-green:not([class*="bg-primary-green/"]),
+button.bg-white:not([class*="bg-white/"]):not(:disabled),
+a.bg-white:not([class*="bg-white/"]),
+button.bg-bright-green:not([class*="bg-bright-green/"]):not(:disabled),
+a.bg-bright-green:not([class*="bg-bright-green/"]) {
+  color: #000000 !important;
+}
+
+/* Ensure text and icon descendants inside active white/light controls inherit dark contrast */
+button.bg-primary:not([class*="bg-primary/"]):not(:disabled) span,
+a.bg-primary:not([class*="bg-primary/"]) span,
+button.bg-primary-green:not([class*="bg-primary-green/"]):not(:disabled) span,
+a.bg-primary-green:not([class*="bg-primary-green/"]) span,
+button.bg-white:not([class*="bg-white/"]):not(:disabled) span,
+a.bg-white:not([class*="bg-white/"]) span,
+.pill-action-primary span,
+.pill-tab.active span {
+  color: inherit;
+}
+
+.btn-primary .material-symbols-outlined,
+.btn-accent .material-symbols-outlined,
+.pill-action-primary .material-symbols-outlined,
+.pill-tab.active .material-symbols-outlined,
+button.bg-primary:not([class*="bg-primary/"]):not(:disabled) .material-symbols-outlined,
+a.bg-primary:not([class*="bg-primary/"]) .material-symbols-outlined,
+button.bg-primary-green:not([class*="bg-primary-green/"]):not(:disabled) .material-symbols-outlined,
+a.bg-primary-green:not([class*="bg-primary-green/"]) .material-symbols-outlined,
+button.bg-white:not([class*="bg-white/"]):not(:disabled) .material-symbols-outlined,
+a.bg-white:not([class*="bg-white/"]) .material-symbols-outlined,
+button.bg-primary:not([class*="bg-primary/"]):not(:disabled) svg,
+a.bg-primary:not([class*="bg-primary/"]) svg,
+button.bg-primary-green:not([class*="bg-primary-green/"]):not(:disabled) svg,
+a.bg-primary-green:not([class*="bg-primary-green/"]) svg,
+button.bg-white:not([class*="bg-white/"]):not(:disabled) svg,
+a.bg-white:not([class*="bg-white/"]) svg {
+  color: #000000 !important;
+}
+
+/* Consistent hover feedback on white/light controls without contrast loss */
+button.bg-primary:not([class*="bg-primary/"]):not(:disabled):hover,
+a.bg-primary:not([class*="bg-primary/"]):hover,
+button.bg-primary-green:not([class*="bg-primary-green/"]):not(:disabled):hover,
+a.bg-primary-green:not([class*="bg-primary-green/"]):hover,
+button.bg-white:not([class*="bg-white/"]):not(:disabled):hover,
+a.bg-white:not([class*="bg-white/"]):hover {
+  background-color: #e4e4e7;
+  color: #000000 !important;
+}
+
+/* Visually distinct disabled state for light buttons */
+button.bg-primary:disabled,
+button.bg-primary-green:disabled,
+button.bg-white:disabled,
+.btn-primary:disabled,
+.btn-accent:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 6px;
@@ -792,5 +866,67 @@ h1, h2, h3, h4, h5, h6 {
    ============================================================ */
 .font-mileast {
   font-family: var(--font-mileast, 'Mileast'), Georgia, serif;
+}
+
+/* ============================================================
+   PRINT STYLESHEET (ATS Resume & Document Print Optimization)
+   ============================================================ */
+@media print {
+  /* Hide application navigation chrome, floating widgets, and interactive controls */
+  nav,
+  aside,
+  header,
+  footer,
+  [data-purpose="sidebar"],
+  .no-print,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Reset canvas to clean white background and sharp black text */
+  html,
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Expand main content container to fill paper page */
+  #main-content,
+  main,
+  .print-full-width {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Remove dark surface fills, borders, and shadows */
+  * {
+    background: transparent !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #e5e7eb !important;
+  }
+
+  /* Avoid awkward page cuts in resume blocks */
+  section,
+  article,
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    color: #111827 !important;
+  }
+
+  a[href]::after {
+    content: "" !important;
+  }
 }
 

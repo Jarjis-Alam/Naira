@@ -13,9 +13,7 @@ import {
   recalculateStudyPlanAction,
   updateStudyPlanItemStatusAction,
 } from "@/server/actions";
-import { Pill, PillTabBar, PillTab, MetaPill } from "@/components/ui/pill";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { NexoraLogo } from "@/components/ui/nexora-logo";
+import { PillTabBar, PillTab } from "@/components/ui/pill";
 
 interface StudyPlannerViewProps {
   initialPlan: AdaptiveStudyPlanView;
@@ -84,16 +82,7 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
   // Render Empty State if applicable
   if (plan.emptyState && plan.emptyState.show) {
     return (
-      <div className="space-y-8 pb-16">
-        <div className="flex items-center gap-2 text-text-muted text-[12px] font-mono mb-1">
-          <NexoraLogo size={16} />
-          <span className="font-semibold text-white">NAIRA</span>
-          <span className="text-zinc-600">/</span>
-          <span>PREPARATION</span>
-          <span className="text-zinc-600">/</span>
-          <span className="text-white">STUDY PLANNER</span>
-        </div>
-
+      <div className="py-12">
         <div className="rounded-2xl bg-surface-container border border-outline-variant p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-sm">
           <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 text-white">
             <span className="material-symbols-outlined text-[28px]">
@@ -101,9 +90,9 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
             </span>
           </div>
 
-          <h2 className="text-2xl font-bold font-heading text-white tracking-tight mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold font-heading text-white tracking-tight mb-2">
             {plan.emptyState.title}
-          </h2>
+          </h1>
           <p className="text-sm text-text-muted leading-relaxed mb-8 max-w-md mx-auto">
             {plan.emptyState.message}
           </p>
@@ -150,22 +139,14 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
 
   return (
     <div className="space-y-8 pb-16">
-      {/* ── Top Header & Strategic Breadcrumb ── */}
+      {/* ── Top Header ── */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div className="flex flex-col max-w-3xl">
-          <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono mb-1">
-            <NexoraLogo size={16} />
-            <span className="font-semibold text-white">NAIRA</span>
-            <span className="text-zinc-600">/</span>
-            <span>PREPARATION</span>
-            <span className="text-zinc-600">/</span>
-            <span className="text-white">STUDY PLANNER</span>
-          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-display">
-            Adaptive Study Planner
+            Study Planner
           </h1>
           <p className="text-sm text-text-secondary mt-1 leading-relaxed">
-            Evidence-calibrated preparation schedule synchronized with Phase 23 multidimensional intelligence, target role requirements, and retention spacing.
+            A daily study plan tailored to your weak areas and target roles.
           </p>
         </div>
 
@@ -248,12 +229,9 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold font-heading text-white">
-                    Today&apos;s Preparation Focus
+                  <h2 className="text-base font-semibold text-white">
+                    Today&apos;s Plan
                   </h2>
-                  <Pill variant="neutral" size="sm" type="label">
-                    v{plan.planVersion}
-                  </Pill>
                 </div>
                 <p className="text-xs text-text-muted mt-0.5 font-mono">
                   {today.completedCount} of {today.totalCount} items completed · {totalAllocated} / {capacity} min allocated
@@ -313,18 +291,23 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
                       </button>
 
                       {/* Content */}
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-xs text-text-muted font-semibold">
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                          <span className="font-mono text-xs text-text-muted font-medium">
                             {String(idx + 1).padStart(2, "0")}
                           </span>
-                          <span className="font-heading font-semibold text-white text-sm sm:text-base">
-                            {item.domain} — {item.topic}
+                          <span className="font-mono text-xs text-text-muted">
+                            {item.domain}
                           </span>
-
-                          {/* Category Badge */}
+                          <span className="font-heading font-bold text-white text-sm sm:text-base">
+                            {item.topic}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-xs font-mono text-zinc-300">
+                            <span className="material-symbols-outlined text-[13px] text-zinc-400">schedule</span>
+                            {item.estimatedMinutes}m
+                          </span>
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
+                            className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider ${
                               isFix
                                 ? "bg-zinc-800 text-white border border-zinc-700"
                                 : isReinforce
@@ -336,16 +319,8 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
                           >
                             {item.category}
                           </span>
-
-                          {/* Duration Badge */}
-                          <MetaPill>
-                            <span className="material-symbols-outlined text-[12px] mr-1">schedule</span>
-                            {item.estimatedMinutes} MIN
-                          </MetaPill>
-
-                          {/* Target Indicator */}
                           {item.metadata?.targetDomain && (
-                            <span className="px-2 py-0.5 rounded-full bg-white text-black text-[9px] font-mono font-bold uppercase tracking-wider">
+                            <span className="px-2 py-0.5 rounded bg-white text-black text-[9px] font-mono font-bold uppercase tracking-wider">
                               Target Priority
                             </span>
                           )}
@@ -463,45 +438,55 @@ export function StudyPlannerView({ initialPlan }: StudyPlannerViewProps) {
         </div>
       )}
 
-      {/* ── Evidence-Backed Architecture ("Why This Plan?") ── */}
+      {/* ── Allocation Rationale ("Why This Plan?") ── */}
       {plan.whyThisPlan && plan.whyThisPlan.keyDrivers.length > 0 && (
-        <section className="p-6 rounded-2xl bg-surface-container border border-outline-variant space-y-4 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px] text-white">psychology</span>
-            <h3 className="text-sm font-bold font-heading text-white tracking-wide uppercase">
-              {plan.whyThisPlan.title}
-            </h3>
-          </div>
-          <p className="text-xs text-text-secondary leading-relaxed">
-            {plan.whyThisPlan.description}
-          </p>
+        <details className="group rounded-2xl bg-surface-container border border-outline-variant overflow-hidden shadow-sm">
+          <summary className="p-5 flex items-center justify-between cursor-pointer select-none hover:bg-surface-container-high/40 transition-colors">
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-[18px] text-zinc-400">psychology</span>
+              <h2 className="text-sm font-semibold text-white">
+                Why this plan?
+              </h2>
+              <span className="text-xs font-mono text-text-muted">
+                ({plan.whyThisPlan.keyDrivers.length} key drivers)
+              </span>
+            </div>
+            <span className="material-symbols-outlined text-[18px] text-text-muted group-open:rotate-180 transition-transform">
+              expand_more
+            </span>
+          </summary>
+          <div className="px-5 pb-5 pt-1 space-y-3 border-t border-outline-variant/40">
+            <p className="text-xs text-text-secondary leading-relaxed pt-2">
+              {plan.whyThisPlan.description}
+            </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-            {plan.whyThisPlan.keyDrivers.map((driver, idx) => (
-              <div
-                key={idx}
-                className="p-3.5 rounded-xl bg-surface border border-outline-variant/50 space-y-1.5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white truncate">
-                    {driver.topic}
-                  </span>
-                  <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">
-                    {driver.category}
-                  </span>
-                </div>
-                <p className="text-[11px] text-text-secondary leading-relaxed">
-                  {driver.reason}
-                </p>
-                {driver.evidence && (
-                  <p className="text-[10px] font-mono text-text-muted">
-                    Basis: {driver.evidence}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+              {plan.whyThisPlan.keyDrivers.map((driver, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-xl bg-surface border border-outline-variant/50 space-y-1.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white truncate">
+                      {driver.topic}
+                    </span>
+                    <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                      {driver.category}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-text-secondary leading-relaxed">
+                    {driver.reason}
                   </p>
-                )}
-              </div>
-            ))}
+                  {driver.evidence && (
+                    <p className="text-[10px] font-mono text-text-muted">
+                      Basis: {driver.evidence}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </section>
+        </details>
       )}
     </div>
   );

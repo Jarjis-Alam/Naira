@@ -630,7 +630,7 @@ export function QuestionForm({
           type="submit"
           id="btn-submit-question"
           disabled={loading}
-          className="inline-flex items-center gap-2 bg-primary text-text-inverse font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-primary-text transition-colors shadow-sm disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-primary text-black font-semibold text-body-sm px-6 py-2.5 rounded-lg hover:bg-zinc-200 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
         >
           {loading ? (
             <>

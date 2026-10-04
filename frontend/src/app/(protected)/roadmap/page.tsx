@@ -39,13 +39,11 @@ export default async function RoadmapPage() {
     <div className="space-y-6 pb-24 max-w-7xl mx-auto">
       {/* ── Top Header ── */}
       <PageHeader
-        breadcrumbs={breadcrumbs}
-        title="Placement Trajectory Roadmap"
-        subtitle="Deterministic preparation trajectory, calibrated continuously by verified assessment results."
+        title="Placement Roadmap"
+        subtitle="Your personalized preparation milestones based on verified assessment results."
         badge={{
-          label: roadmap.hasBaseline ? "CALIBRATED" : "ZERO DATA",
+          label: roadmap.hasBaseline ? "Active" : "New",
           variant: roadmap.hasBaseline ? "green" : "neutral",
-          ping: roadmap.hasBaseline,
         }}
       />
 
@@ -73,10 +71,10 @@ export default async function RoadmapPage() {
                 <div className="flex items-center gap-2 text-sage-40 text-xs mt-1 flex-wrap">
                   <span className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-[15px] text-zinc-400">calendar_today</span>
-                    <span>Continuous Milestone Verification</span>
+                    <span>Milestones</span>
                   </span>
                   <span>•</span>
-                  <span className="text-lime-pulse font-medium">Adaptive Syllabus</span>
+                  <span className="text-lime-pulse font-medium">Adaptive</span>
                   <span>•</span>
                   <span>7 Core CS Domains</span>
                 </div>
@@ -212,7 +210,7 @@ export default async function RoadmapPage() {
       {/* ── Progression Loop Indicator ── */}
       <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] font-mono text-xs shadow-md">
         <span className="text-sage-40 uppercase tracking-wider text-[10px] mr-1 font-semibold">
-          Progression:
+          Workflow:
         </span>
         {[
           { step: "01", label: "Current State", active: roadmap.hasBaseline },
@@ -252,7 +250,7 @@ export default async function RoadmapPage() {
                   Your roadmap will calibrate following your baseline assessment.
                 </h2>
                 <p className="text-xs text-sage-40 mt-1 leading-relaxed">
-                  Complete your baseline diagnostic so Nexora can evaluate your current readiness profile across Core CS domains.
+                  Complete your baseline diagnostic to evaluate your readiness profile across Core CS domains.
                 </p>
               </div>
             </div>
@@ -283,7 +281,7 @@ export default async function RoadmapPage() {
             </Link>
           </div>
           <p className="text-[10px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-            Recommended focus (Execution Core)
+            Recommended focus
           </p>
           <ul className="space-y-1.5">
             {dailyPlan.actions.slice(0, 3).map((action) => (
@@ -314,9 +312,6 @@ export default async function RoadmapPage() {
               <h3 className="text-xs font-mono tracking-wider uppercase text-sage-40 font-semibold">
                 Preparation Focus
               </h3>
-              {roadmap.hasBaseline && (
-                <span className="text-[10px] font-mono text-lime-pulse">VERIFIED SIGNALS</span>
-              )}
             </div>
 
             <p className="text-xs text-sage-40 leading-relaxed">
@@ -432,17 +427,17 @@ export default async function RoadmapPage() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-2 h-2 rounded-full bg-lime-pulse animate-pulse" />
                     <span className="text-xs font-mono tracking-wider uppercase text-sage-40 font-semibold">
-                      TODAY&apos;S FOCUS
+                      Today&apos;s Focus
                     </span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#282b29] border border-[#3f4a38]/40 text-lime-pulse">
-                      {dailyPlan.completedCount} / {dailyPlan.totalCount} COMPLETE
+                      {dailyPlan.completedCount} / {dailyPlan.totalCount} completed
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-phosphor-white">
                     {todayActiveAction.domain} → {todayActiveAction.topic}
                   </h3>
                   <p className="text-xs text-sage-40 mt-1">
-                    {todayActiveAction.targetCount} targeted questions • Verified accuracy: {todayActiveAction.accuracy}%
+                    {todayActiveAction.targetCount} targeted questions • {todayActiveAction.accuracy}% accuracy
                   </p>
                 </div>
 
@@ -452,8 +447,8 @@ export default async function RoadmapPage() {
                 >
                   <span>
                     {todayActiveAction.status === "COMPLETED"
-                      ? "PRACTICE AGAIN"
-                      : "START PRACTICE"}
+                      ? "Practice Again"
+                      : "Start Practice"}
                   </span>
                   <span className="material-symbols-outlined text-[16px]">play_arrow</span>
                 </Link>
@@ -461,20 +456,15 @@ export default async function RoadmapPage() {
             </section>
           )}
 
-          {/* Prioritized Preparation Sequence */}
+          {/* Next Actions */}
           <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
             <div className="flex items-center justify-between mb-4">
-              <div>
-                <span className="text-xs font-mono tracking-wider uppercase text-sage-40 font-medium">
-                  Prioritized Preparation Sequence
-                </span>
-                <h2 className="text-base font-bold text-phosphor-white mt-0.5">
-                  Execution Actions
-                </h2>
-              </div>
+              <h2 className="text-base font-bold text-phosphor-white">
+                Next Actions
+              </h2>
               <span className="text-xs font-mono text-sage-40">
                 {roadmap.nextActions.length}{" "}
-                {roadmap.nextActions.length === 1 ? "STEP" : "STEPS"}
+                {roadmap.nextActions.length === 1 ? "step" : "steps"}
               </span>
             </div>
 

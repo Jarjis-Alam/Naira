@@ -15,6 +15,8 @@ import {
 } from "@/components/analytics/analytics-charts";
 import { PlacementIntelligence2View } from "@/components/analytics/placement-intelligence-2-view";
 import { PageHeader } from "@/components/ui/page-header";
+import { CompactMetricStrip } from "@/components/ui/compact-metric-strip";
+import { DisclosurePanel } from "@/components/ui/disclosure-panel";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -44,9 +46,9 @@ export default async function AnalyticsPage() {
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold font-heading text-phosphor-white">
+          <h1 className="text-2xl sm:text-3xl font-bold font-heading text-phosphor-white">
             Your analytics will appear here.
-          </h2>
+          </h1>
           <p className="text-[13px] text-sage-40 mt-2 leading-relaxed">
             Complete your baseline assessment to unlock personalized recommendations, readiness driver attribution, and trajectory tracking.
           </p>
@@ -67,20 +69,13 @@ export default async function AnalyticsPage() {
 
   const { trend, readiness, recommendations } = intelligence;
 
-  const breadcrumbs = [
-    { label: "NEXORA", href: "/dashboard" },
-    { label: "PREPARATION", href: "/tests" },
-    { label: "ANALYTICS INTELLIGENCE" },
-  ];
-
   return (
     <div className="space-y-8 pb-24 max-w-7xl mx-auto">
       {/* ── Top Header & Filter Pills ── */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
         <PageHeader
-          breadcrumbs={breadcrumbs}
-          title="Placement Trajectory & Competency Analytics"
-          subtitle="Longitudinal benchmarking against Tier-1 engineering cohorts, velocity telemetry, and algorithmic mastery projections."
+          title="Performance Analytics"
+          subtitle="Track performance trends, topic accuracy, and placement readiness across domains."
         />
 
         {/* Filter Pills Bar */}
@@ -100,190 +95,97 @@ export default async function AnalyticsPage() {
           <div className="h-4 w-px bg-[#3f4a38]/60 mx-0.5" />
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-sage-40 font-mono">
             <span className="w-2 h-2 rounded-full bg-lime-pulse" />
-            <span>Tier-1 Median Benchmark</span>
+            <span>Tier-1 Benchmark</span>
           </div>
         </div>
       </div>
 
       {/* ── Top KPI Summary Strip ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {/* Card 1: Aggregate Placement Readiness */}
-        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-          <div className="flex items-start justify-between mb-3">
-            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
-              Placement Readiness
-            </span>
-            <div className="w-8 h-8 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse">
-              <span className="material-symbols-outlined text-[18px]">verified</span>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-                {analytics.readiness.score ?? "--"}%
-              </span>
-              <span className="text-[11px] font-mono text-lime-pulse flex items-center">
-                <span className="material-symbols-outlined text-[13px]">arrow_upward</span>
-                {readiness.level?.label || "CALIBRATED"}
-              </span>
-            </div>
-            <p className="text-[11px] text-sage-40 mt-1">
-              Deterministic across 7 placement domains
-            </p>
-          </div>
-          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-lime-pulse h-full rounded-full transition-all duration-500"
-              style={{ width: `${analytics.readiness.score ?? 0}%` }}
-            />
-          </div>
-        </div>
+      <CompactMetricStrip
+        items={[
+          {
+            id: "readiness",
+            label: "Placement Readiness",
+            value: analytics.readiness.score != null ? `${analytics.readiness.score}%` : "--",
+            detail: "7 placement domains",
+            statusText: readiness.level?.label || "CALIBRATED",
+            progressPct: analytics.readiness.score ?? null,
+          },
+          {
+            id: "tests",
+            label: "Tests Completed",
+            value: analytics.overview.testsCompleted,
+            detail: `${analytics.overview.questionsAttempted} attempted`,
+            statusText: "Velocity",
+            progressPct: Math.min(100, analytics.overview.testsCompleted * 10),
+          },
+          {
+            id: "accuracy",
+            label: "Accuracy",
+            value: `${analytics.overview.avgAccuracy}%`,
+            detail: `${analytics.overview.questionsCorrect} correct`,
+            statusText: "Precision",
+            progressPct: analytics.overview.avgAccuracy,
+          },
+          {
+            id: "avg-score",
+            label: "Average Score",
+            value: `${analytics.overview.avgScore}%`,
+            detail: "Across subjects",
+            statusText: "Score",
+            progressPct: analytics.overview.avgScore,
+          },
+        ]}
+      />
 
-        {/* Card 2: Tests Completed Velocity */}
-        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-          <div className="flex items-start justify-between mb-3">
-            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
-              Execution Velocity
-            </span>
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined text-[18px]">speed</span>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-                {analytics.overview.testsCompleted}
-              </span>
-              <span className="text-[11px] font-mono text-sage-40">tests evaluated</span>
-            </div>
-            <p className="text-[11px] text-sage-40 mt-1">
-              {analytics.overview.questionsAttempted} questions solved across topics
-            </p>
-          </div>
-          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-white h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, analytics.overview.testsCompleted * 10)}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Card 3: Overall Accuracy */}
-        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-          <div className="flex items-start justify-between mb-3">
-            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
-              Accuracy Index
-            </span>
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined text-[18px]">track_changes</span>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-                {analytics.overview.avgAccuracy}%
-              </span>
-              <span className="text-[11px] font-mono text-zinc-300">
-                {analytics.overview.questionsCorrect} correct
-              </span>
-            </div>
-            <p className="text-[11px] text-sage-40 mt-1">
-              Average across all attempted evaluation sessions
-            </p>
-          </div>
-          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-zinc-300 h-full rounded-full transition-all duration-500"
-              style={{ width: `${analytics.overview.avgAccuracy}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Card 4: Average Score */}
-        <div className="relative overflow-hidden p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 shadow-sm flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-          <div className="flex items-start justify-between mb-3">
-            <span className="text-[11px] font-mono tracking-wider uppercase text-sage-40 font-semibold">
-              Average Score
-            </span>
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined text-[18px]">psychology</span>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-                {analytics.overview.avgScore}%
-              </span>
-              <span className="text-[11px] font-mono text-zinc-400">
-                {analytics.overview.questionsAttempted} graded
-              </span>
-            </div>
-            <p className="text-[11px] text-sage-40 mt-1">
-              Normalized scoring benchmark across subjects
-            </p>
-          </div>
-          <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-4 overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-zinc-400 h-full rounded-full transition-all duration-500"
-              style={{ width: `${analytics.overview.avgScore}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ── 01. READINESS SECTION ── */}
+      {/* ── READINESS SECTION ── */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30">
-              01
-            </span>
-            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-              READINESS CALIBRATION
-            </h2>
-          </div>
-          <span className="text-[11px] font-mono text-sage-40">Dynamic Calibration</span>
+        <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 className="text-sm font-semibold tracking-wider text-phosphor-white">
+            Readiness Calibration
+          </h2>
+          <span className="text-[11px] font-mono text-zinc-400">Current Level</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-5">
             <ReadinessGaugeCard readiness={analytics.readiness} />
           </div>
-          <div className="lg:col-span-7 flex flex-col justify-between rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 space-y-4 shadow-md">
+          <div className="lg:col-span-7 flex flex-col justify-between rounded-2xl border border-zinc-800 bg-[#0d0d10] p-6 space-y-4 shadow-md">
             <div>
-              <span className="text-[11px] font-mono uppercase text-sage-40 block mb-1">
-                Readiness Model Overview
+              <span className="text-[11px] font-mono uppercase text-zinc-400 block mb-1">
+                Overview
               </span>
               <h3 className="text-base font-semibold text-phosphor-white">
-                Comprehensive Multi-Domain Calibration
+                Domain Calibration
               </h3>
-              <p className="mt-2 text-xs text-sage-40 leading-relaxed">
-                Placement readiness is deterministically calculated across Aptitude, DSA, Core CS, and SQL benchmarks. Rather than a simple average, Nexora weights critical domain competencies against technical placement requirements.
+              <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
+                Placement readiness is weighted across Aptitude, DSA, Core CS, and SQL benchmarks based on technical placement requirements.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#3f4a38]/30 text-center font-mono">
-              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
-                <span className="text-[10px] text-sage-40 block">DSA</span>
-                <span className="text-base font-bold text-lime-pulse">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-zinc-800 text-center font-mono">
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[10px] text-zinc-400 block">DSA</span>
+                <span className="text-base font-bold text-white">
                   {analytics.readiness.breakdown?.dsa ?? 0}%
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
-                <span className="text-[10px] text-sage-40 block">Core CS</span>
-                <span className="text-base font-bold text-lime-pulse">
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[10px] text-zinc-400 block">Core CS</span>
+                <span className="text-base font-bold text-white">
                   {analytics.readiness.breakdown?.coreCs ?? 0}%
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
-                <span className="text-[10px] text-sage-40 block">SQL</span>
-                <span className="text-base font-bold text-lime-pulse">
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[10px] text-zinc-400 block">SQL</span>
+                <span className="text-base font-bold text-white">
                   {analytics.readiness.breakdown?.sql ?? 0}%
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-[#111413] border border-[#3f4a38]/30">
-                <span className="text-[10px] text-sage-40 block">Aptitude</span>
-                <span className="text-base font-bold text-lime-pulse">
+              <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <span className="text-[10px] text-zinc-400 block">Aptitude</span>
+                <span className="text-base font-bold text-white">
                   {analytics.readiness.breakdown?.aptitude ?? 0}%
                 </span>
               </div>
@@ -292,47 +194,25 @@ export default async function AnalyticsPage() {
         </div>
       </section>
 
-      {/* ── 02. DIFFICULTY BREAKDOWN ── */}
+      {/* ── DOMAIN ATTRIBUTION ── */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
-              02
-            </span>
-            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-              DIFFICULTY CALIBRATION
-            </h2>
-          </div>
-          <span className="text-[11px] font-mono text-sage-40">Easy • Medium • Hard</span>
+        <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 className="text-sm font-semibold tracking-wider text-phosphor-white">
+            Domain Attribution
+          </h2>
+          <span className="text-[11px] font-mono text-zinc-400">Benchmark Comparison</span>
         </div>
 
-        <DifficultyPerformanceCard difficultyPerformance={analytics.difficultyPerformance} />
-      </section>
-
-      {/* ── 03. SUBJECT ATTRIBUTION DRIVERS ── */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
-              03
-            </span>
-            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-              DOMAIN ATTRIBUTION DRIVERS
-            </h2>
-          </div>
-          <span className="text-[11px] font-mono text-sage-40">Helping vs Holding Back</span>
-        </div>
-
-        <div className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+        <div className="rounded-2xl border border-zinc-800 bg-[#0d0d10] p-6 shadow-md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Positive Contributors */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-mono font-semibold text-lime-pulse uppercase">
+              <div className="flex items-center justify-between text-xs font-mono font-semibold text-white uppercase">
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">add_circle</span>
-                  Helping Your Readiness
+                  Above Benchmark
                 </span>
-                <span className="text-[10px] text-sage-40">Benchmark Exceeded</span>
+                <span className="text-[10px] text-zinc-400">Strong</span>
               </div>
 
               {readiness.positiveContributors.length > 0 ? (
@@ -340,24 +220,24 @@ export default async function AnalyticsPage() {
                   {readiness.positiveContributors.slice(0, 3).map((c) => (
                     <div
                       key={c.code}
-                      className="p-3.5 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800 flex items-center justify-between"
                     >
                       <div>
                         <div className="text-xs font-medium text-phosphor-white">
                           {c.name}
                         </div>
-                        <div className="text-[10px] font-mono text-sage-40 mt-0.5">
+                        <div className="text-[10px] font-mono text-zinc-400 mt-0.5">
                           {c.status} • Weight: {(c.weight * 100).toFixed(0)}%
                         </div>
                       </div>
-                      <span className="text-base font-bold font-mono text-lime-pulse">
+                      <span className="text-base font-bold font-mono text-white">
                         +{c.score}%
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs font-mono text-sage-40 py-2">
+                <p className="text-xs font-mono text-zinc-400 py-2">
                   Complete more tests to elevate domain scores into positive contributors.
                 </p>
               )}
@@ -368,9 +248,9 @@ export default async function AnalyticsPage() {
               <div className="flex items-center justify-between text-xs font-mono font-semibold text-zinc-400 uppercase">
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">remove_circle</span>
-                  Holding Your Readiness Back
+                  Needs Focus
                 </span>
-                <span className="text-[10px] text-sage-40">Targeted Deficits</span>
+                <span className="text-[10px] text-zinc-500">Below Benchmark</span>
               </div>
 
               {readiness.negativeContributors.length > 0 ? (
@@ -378,24 +258,24 @@ export default async function AnalyticsPage() {
                   {readiness.negativeContributors.slice(0, 3).map((c) => (
                     <div
                       key={c.code}
-                      className="p-3.5 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800 flex items-center justify-between"
                     >
                       <div>
                         <div className="text-xs font-medium text-phosphor-white">
                           {c.name}
                         </div>
-                        <div className="text-[10px] font-mono text-sage-40 mt-0.5">
+                        <div className="text-[10px] font-mono text-zinc-400 mt-0.5">
                           {c.status} • Weight: {(c.weight * 100).toFixed(0)}%
                         </div>
                       </div>
-                      <span className="text-base font-bold font-mono text-zinc-400">
+                      <span className="text-base font-bold font-mono text-zinc-300">
                         {c.score}%
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs font-mono text-lime-pulse py-2">
+                <p className="text-xs font-mono text-zinc-300 py-2">
                   No significant domain deficits detected. All tested domains meet benchmark.
                 </p>
               )}
@@ -404,60 +284,77 @@ export default async function AnalyticsPage() {
         </div>
       </section>
 
-      {/* ── 04. TOPIC STRENGTH MATRIX ── */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
-              04
-            </span>
-            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-              GRANULAR TOPIC MATRIX
+      {/* ── PLACEMENT INTELLIGENCE (14 DIMENSIONS & EVIDENCE) ── */}
+      {placementIntelligence2 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+            <h2 className="text-sm font-semibold tracking-wider text-phosphor-white">
+              Placement Intelligence
             </h2>
+            <span className="text-[11px] font-mono text-zinc-400">14 Dimensions</span>
           </div>
-          <span className="text-[11px] font-mono text-sage-40">Strengths vs Weaknesses</span>
-        </div>
 
-        <TopicStrengthMatrixCard
-          strongestTopics={analytics.strongestTopics}
-          weakestTopics={analytics.weakestTopics}
-        />
+          <PlacementIntelligence2View intelligence={placementIntelligence2} />
+        </section>
+      )}
+
+      {/* ── DEEP DIAGNOSTICS & TRENDS (PROGRESSIVE DISCLOSURE) ── */}
+      <section>
+        <DisclosurePanel
+          title="Diagnostic Analytics & Trends"
+          subtitle="Performance over time, topic strengths/weaknesses, and difficulty breakdown"
+          countBadge="Diagnostics"
+          defaultOpen={false}
+        >
+          <div className="space-y-8 pt-2">
+            <div>
+              <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800/60">
+                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-300">
+                  Performance Trends
+                </h3>
+                <span className="text-[10px] font-mono text-zinc-500">Score Progression</span>
+              </div>
+              <PerformanceTrendsChart
+                performanceOverTime={analytics.performanceOverTime}
+                overallTrend={trend.overall}
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800/60">
+                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-300">
+                  Topic Performance
+                </h3>
+                <span className="text-[10px] font-mono text-zinc-500">Strengths & Weaknesses</span>
+              </div>
+              <TopicStrengthMatrixCard
+                strongestTopics={analytics.strongestTopics}
+                weakestTopics={analytics.weakestTopics}
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800/60">
+                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-300">
+                  Difficulty Breakdown
+                </h3>
+                <span className="text-[10px] font-mono text-zinc-500">Easy • Medium • Hard</span>
+              </div>
+              <DifficultyPerformanceCard difficultyPerformance={analytics.difficultyPerformance} />
+            </div>
+          </div>
+        </DisclosurePanel>
       </section>
 
-      {/* ── 05. PERFORMANCE OVER TIME ── */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
-              05
-            </span>
-            <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-              HISTORICAL TRAJECTORY
-            </h2>
-          </div>
-          <span className="text-[11px] font-mono text-sage-40">Performance Progression</span>
-        </div>
-
-        <PerformanceTrendsChart
-          performanceOverTime={analytics.performanceOverTime}
-          overallTrend={trend.overall}
-        />
-      </section>
-
-      {/* ── 06. PRESCRIPTIVE RECOMMENDATIONS ── */}
+      {/* ── RECOMMENDED ACTIONS ── */}
       {recommendations.length > 0 && (
         <section className="space-y-4">
-          <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30">
-                06
-              </span>
-              <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-                PRESCRIPTIVE RECOMMENDATIONS
-              </h2>
-            </div>
-            <span className="text-[11px] font-mono text-sage-40">
-              {recommendations.length} Prioritized Actions
+          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+            <h2 className="text-sm font-semibold tracking-wider text-phosphor-white">
+              Recommended Actions
+            </h2>
+            <span className="text-[11px] font-mono text-zinc-400">
+              {recommendations.length} Actions
             </span>
           </div>
 
@@ -465,7 +362,7 @@ export default async function AnalyticsPage() {
             {recommendations.slice(0, 3).map((rec) => (
               <div
                 key={rec.id}
-                className="p-5 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 flex flex-col justify-between shadow-md group hover:border-[#88957f]/60 transition-all"
+                className="p-5 rounded-xl bg-[#0d0d10] border border-zinc-800 flex flex-col justify-between shadow-sm group hover:border-zinc-700 transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -480,21 +377,21 @@ export default async function AnalyticsPage() {
                     >
                       {rec.priority}
                     </span>
-                    <span className="text-[11px] font-mono text-lime-pulse font-medium">
+                    <span className="text-[11px] font-mono text-white font-medium">
                       {rec.metric}
                     </span>
                   </div>
                   <h4 className="text-sm font-semibold text-phosphor-white mb-1">
                     {rec.title}
                   </h4>
-                  <p className="text-xs text-sage-40 leading-relaxed mb-4">
+                  <p className="text-xs text-zinc-400 leading-relaxed mb-4">
                     {rec.reason}
                   </p>
                 </div>
 
                 <Link
                   href={rec.route || "/tests"}
-                  className="px-4 py-2 rounded-full text-xs font-semibold bg-lime-pulse/10 text-lime-pulse border border-lime-pulse/30 hover:bg-lime-pulse hover:text-void-black transition-all flex items-center justify-center gap-1.5"
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-white text-black hover:bg-zinc-200 transition-all flex items-center justify-center gap-1.5"
                 >
                   <span>{rec.ctaText || "Take Action"}</span>
                   <span className="text-sm leading-none">→</span>
@@ -502,25 +399,6 @@ export default async function AnalyticsPage() {
               </div>
             ))}
           </div>
-        </section>
-      )}
-
-      {/* ── 07. PHASE 23 INTELLIGENCE 2.0 FULL VIEW ── */}
-      {placementIntelligence2 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between border-b border-[#3f4a38]/40 pb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30">
-                07
-              </span>
-              <h2 className="text-sm font-bold font-mono tracking-wider uppercase text-phosphor-white">
-                INTELLIGENCE 2.0 — MULTI-DIMENSIONAL COMPETENCY MATRIX
-              </h2>
-            </div>
-            <span className="text-[11px] font-mono text-sage-40">14 Dimensions</span>
-          </div>
-
-          <PlacementIntelligence2View intelligence={placementIntelligence2} />
         </section>
       )}
     </div>

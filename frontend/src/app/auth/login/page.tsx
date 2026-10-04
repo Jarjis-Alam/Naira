@@ -13,6 +13,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -88,20 +89,33 @@ function LoginForm() {
 
       {/* Notifications / Alerts */}
       {registered && !error && !notice && (
-        <div className="mb-5 px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-300">
-          ✓ Account created successfully. Sign in with your credentials.
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-5 px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-300 flex items-center gap-2"
+        >
+          <span className="material-symbols-outlined text-[16px] text-emerald-400">check_circle</span>
+          <span>Account created successfully. Sign in with your credentials.</span>
         </div>
       )}
 
       {error && (
-        <div className="mb-5 px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-center gap-2">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mb-5 px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-center gap-2"
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {notice && (
-        <div className="mb-5 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-xs text-zinc-300 flex items-center gap-2">
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-5 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-xs text-zinc-300 flex items-center gap-2"
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0" />
           <span>{notice}</span>
         </div>
@@ -123,6 +137,7 @@ function LoginForm() {
               name="email"
               type="email"
               required
+              aria-invalid={Boolean(error)}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -152,13 +167,25 @@ function LoginForm() {
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
+              aria-invalid={Boolean(error)}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full px-4 py-3 rounded-full bg-[#08090a]/70 border border-[#27282d] text-white text-sm placeholder-zinc-500 tracking-wider focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all duration-200"
+              className="w-full pl-4 pr-11 py-3 rounded-full bg-[#08090a]/70 border border-[#27282d] text-white text-sm placeholder-zinc-500 tracking-wider focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all duration-200"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer p-1"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                {showPassword ? "visibility_off" : "visibility"}
+              </span>
+            </button>
           </div>
         </div>
 
@@ -292,7 +319,7 @@ export default function LoginPage() {
         >
           <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
           <span className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
-            SYS.AUTH // ZERO-BIAS ENGINE
+            Secure Sign In
           </span>
         </div>
       </header>
@@ -300,12 +327,12 @@ export default function LoginPage() {
 
       {/* BEGIN: MainContent */}
       <main className="relative z-10 w-full max-w-md mx-auto px-5 py-8 flex flex-col items-center my-auto">
-        {/* Nexora Monogram & Brand Section */}
+        {/* Naira Monogram & Brand Section */}
         <div
           className="flex flex-col items-center mb-8 text-center"
           data-purpose="brand-identity"
         >
-          {/* Minimalist Nexora Logo Icon in rounded container */}
+          {/* Minimalist Naira Logo Icon in rounded container */}
           <div className="w-12 h-12 p-3 rounded-2xl bg-gradient-to-b from-zinc-800 to-[#121316] border border-[#27282d] shadow-[0_0_25px_-5px_rgba(255,255,255,0.05)] flex items-center justify-center mb-4 transition-transform hover:scale-105 duration-300">
             <svg
               className="w-6 h-6 text-white"
@@ -328,7 +355,7 @@ export default function LoginPage() {
             Naira
           </h1>
           <p className="text-[11px] font-mono tracking-widest uppercase text-zinc-400">
-            Your Operating System For Placements
+            Placement Operating System
           </p>
         </div>
 
@@ -336,7 +363,7 @@ export default function LoginPage() {
         <Suspense
           fallback={
             <div className="w-full h-80 rounded-3xl bg-[#121316]/50 border border-[#27282d] flex items-center justify-center text-xs font-mono text-zinc-500">
-              INITIALIZING SYS.AUTH...
+              Loading...
             </div>
           }
         >
@@ -348,16 +375,16 @@ export default function LoginPage() {
       {/* BEGIN: SiteFooter */}
       <footer className="relative z-10 w-full py-6 px-4 text-center">
         <div className="inline-flex items-center gap-4 text-[11px] font-mono text-zinc-500">
-          <span className="hover:text-zinc-300 cursor-pointer transition-colors">
-            STATUS: OPERATIONAL
-          </span>
+          <Link href="/privacy" className="hover:text-zinc-300 transition-colors underline-offset-4 hover:underline">
+            PRIVACY PROTOCOL
+          </Link>
           <span>•</span>
-          <span className="hover:text-zinc-300 cursor-pointer transition-colors">
-            TERMINAL GATEWAY 2.4
-          </span>
+          <Link href="/terms" className="hover:text-zinc-300 transition-colors underline-offset-4 hover:underline">
+            TERMS OF SERVICE
+          </Link>
           <span>•</span>
-          <span className="hover:text-zinc-300 cursor-pointer transition-colors">
-            PRIVACY &amp; PROTOCOLS
+          <span className="text-zinc-600">
+            GATEWAY 2.4
           </span>
         </div>
       </footer>

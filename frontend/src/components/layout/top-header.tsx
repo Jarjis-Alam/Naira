@@ -12,23 +12,13 @@ export function TopHeader({ session }: TopHeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-void-black/85 backdrop-blur-xl border-b border-outline-variant flex items-center justify-between px-4 sm:px-6 lg:px-8">
-      {/* Search Input Bar */}
-      <div className="flex-1 max-w-md md:max-w-lg mr-4">
-        <div className="h-10 w-full rounded-full bg-surface-container-low border border-outline-variant px-3.5 flex items-center justify-between shadow-inner focus-within:border-white/40 transition-colors">
-          <div className="flex items-center gap-2 text-text-muted flex-1 min-w-0">
-            <span className="material-symbols-outlined text-[18px] text-text-muted shrink-0">
-              search
-            </span>
-            <input
-              type="text"
-              placeholder="Search anything... (companies, skills, tests, etc.)"
-              className="bg-transparent border-none outline-none text-[13px] text-white placeholder:text-text-muted/60 w-full"
-              readOnly
-            />
-          </div>
-          <div className="hidden sm:flex items-center px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted text-[11px] font-mono select-none">
-            ⌘ K
-          </div>
+      {/* System Status / Workspace Indicator */}
+      <div className="flex-1 max-w-md md:max-w-lg mr-4 hidden sm:block">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant text-text-muted text-xs font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-white shadow-xs" />
+          <span className="text-zinc-300 font-medium tracking-tight">NAIRA OS</span>
+          <span className="text-zinc-600">·</span>
+          <span className="text-zinc-400 truncate">Placement Intelligence System</span>
         </div>
       </div>
 

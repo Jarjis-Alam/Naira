@@ -16,27 +16,16 @@ export default async function TargetStrategyPage() {
   ]);
   const { target, readiness, matrix, gaps, advantages, preparationStrategy, emptyState, partialDataBanner } = strategy;
 
-  const totalTargetsCount = (placementTargets.targetRoles?.length || 0) + (placementTargets.targetCompanies?.length || 0);
-  const secondaryRolesCount = placementTargets.targetRoles?.filter((r) => !r.isPrimary)?.length || 0;
-  const secondaryCompaniesCount = placementTargets.targetCompanies?.filter((c) => c.priority !== 1)?.length || 0;
-
   return (
     <div className="space-y-8 pb-16">
-      {/* Top Navigation / Breadcrumb & Header */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono">
-            <span>Nexora</span>
-            <span className="text-border">/</span>
-            <span className="text-text-secondary">Placement Strategy</span>
-            <span className="text-border">/</span>
-            <span className="text-lime-pulse font-semibold">Target Console</span>
-          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-display">
             Target Strategy
           </h1>
           <p className="text-sm text-text-secondary">
-            Calibrate role archetypes, company benchmarks, and competency coverage for high-velocity offers.
+            Align your preparation with role requirements and company hiring benchmarks.
           </p>
         </div>
 
@@ -58,43 +47,7 @@ export default async function TargetStrategyPage() {
         </div>
       </div>
 
-      {/* Filter / Scope Pills Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-outline-variant/30">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-void-black font-semibold text-xs transition-all">
-            <span>Configured Targets</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-void-black/20 text-void-black text-[10px] font-mono font-bold">
-              {totalTargetsCount || 1}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
-            <span className="w-2 h-2 rounded-full bg-lime-pulse"></span>
-            <span>Primary Role</span>
-            <span className="text-text-muted text-[11px] font-mono">(1)</span>
-          </div>
-          {secondaryRolesCount > 0 && (
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
-              <span className="w-2 h-2 rounded-full bg-zinc-300"></span>
-              <span>Secondary Roles</span>
-              <span className="text-text-muted text-[11px] font-mono">({secondaryRolesCount})</span>
-            </div>
-          )}
-          {secondaryCompaniesCount > 0 && (
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary text-xs">
-              <span className="w-2 h-2 rounded-full bg-zinc-400"></span>
-              <span>Target Companies</span>
-              <span className="text-text-muted text-[11px] font-mono">({secondaryCompaniesCount})</span>
-            </div>
-          )}
-        </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-outline-variant/40 text-text-muted text-xs font-mono">
-            <span className="material-symbols-outlined text-[14px]">tune</span>
-            <span>Calibrated: <strong className="text-text-primary font-semibold">Phase 16 Engine</strong></span>
-          </div>
-        </div>
-      </div>
 
       {/* EMPTY STATES */}
       {emptyState && (
@@ -155,8 +108,8 @@ export default async function TargetStrategyPage() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-pulse/15 border border-lime-pulse/35 text-lime-pulse font-mono text-[11px] font-bold tracking-wider uppercase">
-                    <span className="w-2 h-2 rounded-full bg-lime-pulse animate-ping"></span>
-                    ACTIVE PRIMARY TARGET
+                    <span className="w-2 h-2 rounded-full bg-lime-pulse"></span>
+                    Primary Target
                   </span>
                   {target.primaryRole?.category && (
                     <span className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
@@ -168,7 +121,7 @@ export default async function TargetStrategyPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 bg-surface-container px-3.5 py-1.5 rounded-full border border-outline-variant/40">
-                  <span className="font-mono text-[11px] text-text-muted uppercase tracking-wider">FIT MATCH</span>
+                  <span className="font-mono text-[11px] text-text-muted uppercase tracking-wider">Target Fit</span>
                   <span className="font-mono text-lg font-bold text-lime-pulse leading-none">
                     {readiness.targetScore !== null ? `${readiness.targetScore}%` : "--"}
                   </span>
@@ -233,7 +186,7 @@ export default async function TargetStrategyPage() {
                 {/* Col 1: Technical Fit Score */}
                 <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between gap-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Target Readiness Index</span>
+                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Target Readiness</span>
                     <span className="text-xl font-bold font-mono text-lime-pulse">
                       {readiness.targetScore !== null ? `${readiness.targetScore}%` : "--"}
                     </span>
@@ -245,14 +198,14 @@ export default async function TargetStrategyPage() {
                     ></div>
                   </div>
                   <p className="text-xs text-text-secondary font-mono">
-                    Weighted target accuracy across evaluated subject domains.
+                    Weighted accuracy across evaluated subjects.
                   </p>
                 </div>
 
                 {/* Col 2: General Baseline vs Target */}
                 <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between gap-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Overall Baseline</span>
+                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Baseline Score</span>
                     <span className="text-xl font-bold font-mono text-white">
                       {readiness.overallScore !== null ? `${readiness.overallScore}%` : "--"}
                     </span>
@@ -264,14 +217,14 @@ export default async function TargetStrategyPage() {
                     ></div>
                   </div>
                   <p className="text-xs text-text-secondary font-mono">
-                    General technical baseline across all curriculum subjects.
+                    Overall accuracy across evaluated subjects.
                   </p>
                 </div>
 
                 {/* Col 3: Domain Distribution */}
                 <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex flex-col justify-between gap-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Domain Coverage</span>
+                    <span className="text-xs font-mono text-text-muted uppercase tracking-wider">Skill Breakdown</span>
                     <span className="text-xs font-mono font-bold uppercase text-lime-pulse">
                       {readiness.targetLevel || "EVALUATING"}
                     </span>
@@ -284,7 +237,7 @@ export default async function TargetStrategyPage() {
                     <span className="text-zinc-400">{readiness.weakCount} Weak</span>
                   </div>
                   <p className="text-xs text-text-secondary font-mono">
-                    {matrix.length} domain rubrics tracked against target benchmark.
+                    {matrix.length} domains evaluated.
                   </p>
                 </div>
               </div>
@@ -342,10 +295,10 @@ export default async function TargetStrategyPage() {
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono text-lime-pulse font-bold tracking-widest uppercase">
-                      STRATEGIC DIRECTIVE
+                      Recommended Focus
                     </span>
                     <span className="text-border">•</span>
-                    <span className="text-[11px] font-mono text-text-muted">High-Yield Priority</span>
+                    <span className="text-[11px] font-mono text-text-muted">Priority Action</span>
                   </div>
                   <p className="text-sm text-text-primary mt-0.5 leading-relaxed">
                     {preparationStrategy.summary}
@@ -366,16 +319,15 @@ export default async function TargetStrategyPage() {
             </div>
           )}
 
-          {/* Section 02: Target Requirements & Performance Matrix */}
+          {/* Target Requirements */}
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                  <span className="text-lime-pulse font-mono">01</span>
-                  TARGET REQUIREMENTS & COMPETENCY EVIDENCE
+                <h2 className="text-lg font-bold text-white tracking-tight">
+                  Target Requirements
                 </h2>
-                <p className="text-xs font-mono text-text-muted mt-0.5">
-                  Authoritative domain requirements mapped against your measured scores
+                <p className="text-xs text-text-muted mt-0.5">
+                  Role requirements mapped against your current accuracy
                 </p>
               </div>
               <div className="flex items-center gap-1.5 text-text-muted text-xs font-mono">
@@ -466,16 +418,15 @@ export default async function TargetStrategyPage() {
             </div>
           </div>
 
-          {/* Section 03: Target Gaps & Priority Deficits */}
+          {/* Target Gaps */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                  <span className="text-lime-pulse font-mono">02</span>
-                  TARGET GAPS & PRIORITY DEFICITS
+                <h2 className="text-lg font-bold text-white tracking-tight">
+                  Target Gaps
                 </h2>
-                <p className="text-xs font-mono text-text-muted mt-0.5">
-                  Areas below the target benchmark requiring targeted intervention
+                <p className="text-xs text-text-muted mt-0.5">
+                  Areas below the target benchmark requiring targeted practice
                 </p>
               </div>
               <span className="text-xs font-mono text-text-muted">
@@ -510,10 +461,10 @@ export default async function TargetStrategyPage() {
                           {gap.priority}
                         </span>
                         <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/25 font-bold uppercase">
-                          TARGET {gap.targetRelevance}
+                          {gap.targetRelevance} Relevance
                         </span>
                         <span className="text-xs font-mono text-zinc-300 font-semibold bg-surface-container px-2.5 py-1 rounded-full border border-outline-variant/40">
-                          {gap.currentAccuracy}% ACCURACY
+                          {gap.currentAccuracy}% Accuracy
                         </span>
                       </div>
                     </div>
@@ -573,15 +524,14 @@ export default async function TargetStrategyPage() {
             )}
           </div>
 
-          {/* Section 04: Your Advantages */}
+          {/* Competitive Advantages */}
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <span className="text-lime-pulse font-mono">03</span>
-                YOUR COMPETITIVE ADVANTAGES
+              <h2 className="text-lg font-bold text-white tracking-tight">
+                Competitive Advantages
               </h2>
-              <p className="text-xs font-mono text-text-muted mt-0.5">
-                Areas where your measured performance exceeds target benchmarks
+              <p className="text-xs text-text-muted mt-0.5">
+                Topics where your measured performance exceeds target benchmarks
               </p>
             </div>
 
@@ -619,15 +569,14 @@ export default async function TargetStrategyPage() {
             )}
           </div>
 
-          {/* Section 05: Preparation Strategy & Directives */}
+          {/* Preparation Strategy */}
           <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-low p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <span className="text-lime-pulse font-mono">04</span>
-                PREPARATION STRATEGY DIRECTIVE
+              <h2 className="text-lg font-bold text-white tracking-tight">
+                Preparation Strategy
               </h2>
               <span className="text-[10px] font-mono text-lime-pulse font-bold uppercase tracking-wider">
-                Action Plan
+                Overview
               </span>
             </div>
 

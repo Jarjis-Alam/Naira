@@ -152,7 +152,7 @@ export function ProfileEditor({ initialProfile }: ProfileEditorProps) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-3 w-full rounded-buttons bg-primary-green py-2.5 text-body-sm font-semibold text-void-black transition-colors hover:bg-bright-green focus:outline-none focus:ring-1 focus:ring-bright-green disabled:opacity-50 cursor-pointer shadow-none"
+            className="mt-3 w-full rounded-buttons bg-primary-green py-2.5 text-body-sm font-semibold text-void-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-400 disabled:opacity-50 cursor-pointer shadow-none"
           >
             {loading ? "Saving..." : "Save Configuration"}
           </button>

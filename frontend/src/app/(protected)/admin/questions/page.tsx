@@ -79,7 +79,7 @@ export default async function AdminQuestionsPage() {
         <Link
           href="/admin/questions/new"
           id="btn-admin-new-question"
-          className="bg-primary text-text-inverse font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-primary-text transition-colors inline-flex items-center gap-2 shadow-sm self-start sm:self-auto"
+          className="bg-primary text-black font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-zinc-200 transition-colors inline-flex items-center gap-2 shadow-sm self-start sm:self-auto"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
           New Question

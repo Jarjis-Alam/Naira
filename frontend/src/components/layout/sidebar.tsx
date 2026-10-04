@@ -165,9 +165,9 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
 
       {/* ── Navigation ── */}
       <div className="flex-1 overflow-y-auto space-y-0 pr-0.5 -mr-0.5 min-h-0">
-        {renderNavGroup("Core OS", coreNavItems, false)}
+        {renderNavGroup("Workspace", coreNavItems, false)}
         {renderNavGroup("Preparation", prepNavItems)}
-        {renderNavGroup("Identity", identityNavItems)}
+        {renderNavGroup("Account", identityNavItems)}
         {isAdmin && renderNavGroup("Admin", adminNavItems)}
       </div>
 

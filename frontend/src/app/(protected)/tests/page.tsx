@@ -12,22 +12,14 @@ export default async function TestCatalogPage() {
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Top Header & Strategic Breadcrumb */}
+      {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div className="flex flex-col max-w-3xl">
-          <div className="flex items-center gap-1.5 text-text-muted text-[12px] font-mono mb-1">
-            <NexoraLogo size={16} />
-            <span className="font-semibold text-white">NEXORA</span>
-            <span className="text-border">/</span>
-            <span>PREPARATION</span>
-            <span className="text-border">/</span>
-            <span className="text-white">TESTS &amp; PRACTICE</span>
-          </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white font-display">
-            Diagnostic Tests &amp; Adaptive Practice
+            Tests &amp; Practice
           </h1>
           <p className="text-sm text-text-secondary mt-1 leading-relaxed">
-            Calibrated question banks, algorithmic pressure tests, and targeted weak-spot drills synchronized with Tier-1 placement rubrics.
+            Assessments and targeted practice to evaluate and strengthen your skills.
           </p>
         </div>
 

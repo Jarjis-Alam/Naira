@@ -166,7 +166,7 @@ export function PlacementTargetsEditor({
         ) : (
           <button
             onClick={openEditor}
-            className="px-4 py-2 rounded-buttons bg-primary-green text-void-black hover:bg-bright-green text-body-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-none focus:outline-none focus:ring-1 focus:ring-bright-green"
+            className="px-4 py-2 rounded-buttons bg-primary-green text-void-black hover:bg-zinc-200 text-body-sm font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-none focus:outline-none focus:ring-1 focus:ring-zinc-400"
           >
             <span className="material-symbols-outlined text-[16px]">add_task</span>
             <span>Set Placement Target</span>
@@ -334,7 +334,7 @@ export function PlacementTargetsEditor({
           </div>
           <button
             onClick={openEditor}
-            className="mt-2 bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 cursor-pointer shadow-none focus-visible:ring-1 focus-visible:ring-bright-green"
+            className="mt-2 bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 cursor-pointer shadow-none focus-visible:ring-1 focus-visible:ring-zinc-400"
           >
             <span className="material-symbols-outlined text-[18px]">add_task</span>
             <span>Set Placement Target</span>

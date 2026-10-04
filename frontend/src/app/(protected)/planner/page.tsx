@@ -4,9 +4,9 @@ import { getActiveStudyPlan } from "@/server/adaptive-study-planner";
 import { StudyPlannerView } from "@/components/planner/study-planner-view";
 
 export const metadata = {
-  title: "Adaptive Study Planner | Nexora",
+  title: "Study Planner | Naira",
   description:
-    "Evidence-calibrated preparation schedule, personalized time budgeting, and adaptive reassessment.",
+    "A daily study plan tailored to your weak areas, target roles, and available time.",
 };
 
 export default async function PlannerPage() {

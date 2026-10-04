@@ -13,6 +13,13 @@ interface InterviewCoachViewProps {
   targetRoles: { id: string; name: string }[];
 }
 
+const WEAK_TOPICS = [
+  "Concurrency & Locks",
+  "Database Internals",
+  "Raft Consensus",
+  "TCP Socket Buffers",
+];
+
 export function InterviewCoachView({
   initialHistory,
   targetRoles,
@@ -25,6 +32,7 @@ export function InterviewCoachView({
   // Form states for new interview
   const [selectedType, setSelectedType] = useState<"TECHNICAL" | "HR" | "MIXED" | "ROLE_SPECIFIC">("TECHNICAL");
   const [selectedRoleId, setSelectedRoleId] = useState<string>(targetRoles[0]?.id || "");
+  const [selectedDuration, setSelectedDuration] = useState<number>(45);
   const [focusArea, setFocusArea] = useState<string>("");
   const [isStarting, setIsStarting] = useState<boolean>(false);
 
@@ -39,6 +47,10 @@ export function InterviewCoachView({
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns, isSending]);
+
+  const handleAddTopic = (topic: string) => {
+    setFocusArea((prev) => (prev ? `${prev}, ${topic}` : topic));
+  };
 
   const handleStartInterview = async () => {
     setIsStarting(true);
@@ -181,62 +193,62 @@ export function InterviewCoachView({
   if (activeSession && activeSession.status === "COMPLETED" && evaluation) {
     const scores = evaluation.qualitativeScores as Record<string, number>;
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-8 max-w-5xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-5">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-900 text-neutral-200 border border-neutral-700">
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-semibold bg-zinc-900 text-zinc-200 border border-zinc-700 uppercase">
                 {activeSession.interviewType} INTERVIEW
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-900 text-neutral-400 border border-neutral-800">
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
                 {activeSession.targetRoleName}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-neutral-800 text-white">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-800 text-white">
                 COMPLETED
               </span>
             </div>
-            <h1 className="text-xl font-bold text-white tracking-tight mt-2">
-              Interview Evaluation & Qualitative Insights
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-3">
+              Interview Evaluation &amp; Qualitative Insights
             </h1>
           </div>
           <button
             onClick={handleResetToSetup}
-            className="px-4 py-2 rounded-full text-sm font-medium bg-white text-black hover:bg-neutral-200 transition-colors shadow-sm"
+            className="px-6 py-2.5 rounded-full text-xs font-mono font-semibold bg-white text-zinc-950 hover:bg-zinc-200 transition-colors shadow-md cursor-pointer self-start sm:self-center"
           >
             Start Another Session
           </button>
         </div>
 
         {/* Overall Summary */}
-        <div className="p-5 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400">
+        <div className="p-6 rounded-[20px] bg-[#0f0f12] border border-zinc-800 space-y-3">
+          <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
             Performance Overview
           </h2>
-          <p className="text-neutral-200 text-sm leading-relaxed">
+          <p className="text-zinc-200 text-sm leading-relaxed">
             {evaluation.overallSummary}
           </p>
         </div>
 
         {/* Qualitative Scores */}
-        <div className="p-5 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400">
+        <div className="p-6 rounded-[20px] bg-[#0f0f12] border border-zinc-800 space-y-4">
+          <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
             Qualitative Dimensions (1–5 Scale)
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(scores || {}).map(([dim, score]) => (
-              <div key={dim} className="p-3 rounded-xl bg-neutral-900 border border-neutral-800">
-                <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-xs capitalize font-medium text-neutral-300">
+              <div key={dim} className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs capitalize font-medium text-zinc-300">
                     {dim.replace(/([A-Z])/g, " $1")}
                   </span>
                   <span className="text-xs font-mono font-bold text-white">
                     {score} / 5
                   </span>
                 </div>
-                <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-white h-1.5 rounded-full"
+                    className="bg-white h-1.5 rounded-full transition-all duration-500"
                     style={{ width: `${(Number(score) / 5) * 100}%` }}
                   />
                 </div>
@@ -246,17 +258,17 @@ export function InterviewCoachView({
         </div>
 
         {/* Strengths & Improvements Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Strengths */}
-          <div className="p-5 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-white" />
+          <div className="p-6 rounded-[20px] bg-[#0f0f12] border border-zinc-800 space-y-3">
+            <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-white shadow-xs" />
               Observed Strengths
             </h2>
-            <ul className="space-y-2">
+            <ul className="space-y-2.5">
               {(evaluation.strengths as string[])?.map((str, idx) => (
-                <li key={idx} className="text-xs text-neutral-300 flex items-start gap-2">
-                  <span className="text-neutral-500 mt-0.5">•</span>
+                <li key={idx} className="text-xs text-zinc-300 flex items-start gap-2.5">
+                  <span className="text-zinc-500 mt-0.5">•</span>
                   <span>{str}</span>
                 </li>
               ))}
@@ -264,15 +276,15 @@ export function InterviewCoachView({
           </div>
 
           {/* Improvements */}
-          <div className="p-5 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-neutral-500" />
+          <div className="p-6 rounded-[20px] bg-[#0f0f12] border border-zinc-800 space-y-3">
+            <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-zinc-500" />
               Areas for Refinement
             </h2>
-            <ul className="space-y-2">
+            <ul className="space-y-2.5">
               {(evaluation.improvements as string[])?.map((imp, idx) => (
-                <li key={idx} className="text-xs text-neutral-400 flex items-start gap-2">
-                  <span className="text-neutral-600 mt-0.5">•</span>
+                <li key={idx} className="text-xs text-zinc-400 flex items-start gap-2.5">
+                  <span className="text-zinc-600 mt-0.5">•</span>
                   <span>{imp}</span>
                 </li>
               ))}
@@ -282,28 +294,30 @@ export function InterviewCoachView({
 
         {/* Non-Causal Observations */}
         {evaluation.nonCausalObservations && evaluation.nonCausalObservations.length > 0 && (
-          <div className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-neutral-400 space-y-1">
-            <div className="font-semibold text-neutral-300">Empirical Observations (Phase 20 Guard):</div>
+          <div className="p-5 rounded-[20px] bg-[#0f0f12] border border-zinc-800 text-xs text-zinc-400 space-y-2">
+            <div className="font-semibold text-zinc-300 font-mono text-[11px] uppercase tracking-wide">
+              Observed Assessment Notes:
+            </div>
             {evaluation.nonCausalObservations.map((obs, idx) => (
-              <div key={idx}>• {obs}</div>
+              <div key={idx} className="leading-relaxed">• {obs}</div>
             ))}
           </div>
         )}
 
         {/* Conversation Transcript Accordion */}
         <div className="pt-2">
-          <details className="group border border-neutral-800 rounded-2xl bg-neutral-950 overflow-hidden">
-            <summary className="p-4 cursor-pointer text-xs font-semibold uppercase tracking-wider text-neutral-400 select-none flex justify-between items-center hover:bg-neutral-900 transition-colors">
+          <details className="group border border-zinc-800 rounded-[20px] bg-[#0f0f12] overflow-hidden">
+            <summary className="p-5 cursor-pointer text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 select-none flex justify-between items-center hover:bg-zinc-900/40 transition-colors">
               <span>View Full Interview Transcript ({turns.length} turns)</span>
-              <span className="text-neutral-500 group-open:rotate-180 transition-transform">▼</span>
+              <span className="text-zinc-500 group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <div className="p-4 border-t border-neutral-800 space-y-4 max-h-96 overflow-y-auto">
+            <div className="p-5 border-t border-zinc-800 space-y-4 max-h-96 overflow-y-auto">
               {turns.map((turn, i) => (
                 <div key={i} className="text-xs space-y-1">
-                  <span className="font-mono uppercase font-bold text-neutral-500">
+                  <span className="font-mono uppercase font-bold text-zinc-400">
                     {turn.role === "interviewer" ? "AI Coach" : "You"} (Turn {turn.turnNumber}):
                   </span>
-                  <p className="text-neutral-300 pl-2 border-l border-neutral-800">
+                  <p className="text-zinc-300 pl-3 border-l border-zinc-800 leading-relaxed">
                     {turn.content}
                   </p>
                 </div>
@@ -320,24 +334,28 @@ export function InterviewCoachView({
   // --------------------------------------------------------------------------
   if (activeSession && activeSession.status === "ACTIVE") {
     return (
-      <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-8rem)] min-h-[500px]">
+      <div className="max-w-5xl mx-auto flex flex-col h-[calc(100vh-10rem)] min-h-[550px] space-y-4">
+        <h1 className="sr-only">
+          Live Interview Session — {activeSession.targetRoleName} ({activeSession.interviewType})
+        </h1>
+
         {/* Chat Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-4 mb-4">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-900 text-white border border-neutral-700">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+          <div className="flex items-center gap-2.5">
+            <span className="px-3 py-1 rounded-full text-[10px] font-mono font-semibold bg-zinc-900 text-white border border-zinc-700">
               {activeSession.interviewType}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-900 text-neutral-400 border border-neutral-800">
+            <span className="px-3 py-1 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
               {activeSession.targetRoleName}
             </span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-mono text-neutral-400 bg-neutral-900 border border-neutral-800">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-900/80 border border-zinc-800">
               Turn {activeSession.turnCount} / {activeSession.maxTurns}
             </span>
           </div>
           <button
             onClick={handleCompleteInterview}
             disabled={isCompleting}
-            className="px-3 py-1 rounded-full text-xs font-medium bg-neutral-900 text-neutral-300 border border-neutral-700 hover:bg-neutral-800 hover:text-white transition-colors"
+            className="px-4 py-1.5 rounded-full text-xs font-mono font-semibold bg-zinc-900 text-zinc-300 border border-zinc-700 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
           >
             {isCompleting ? "Evaluating..." : "End & Evaluate"}
           </button>
@@ -345,9 +363,9 @@ export function InterviewCoachView({
 
         {/* Error Notification */}
         {errorBanner && (
-          <div className="p-3 mb-3 rounded-xl bg-neutral-900 border border-red-500/40 text-red-400 text-xs flex justify-between items-center">
+          <div className="p-3.5 rounded-xl bg-zinc-900 border border-red-500/40 text-red-400 text-xs flex justify-between items-center">
             <span>{errorBanner}</span>
-            <button onClick={() => setErrorBanner(null)} className="text-neutral-400 hover:text-white">✕</button>
+            <button onClick={() => setErrorBanner(null)} className="text-zinc-400 hover:text-white">✕</button>
           </div>
         )}
 
@@ -360,22 +378,22 @@ export function InterviewCoachView({
                 turn.role === "student" ? "items-end" : "items-start"
               }`}
             >
-              <div className="text-[11px] font-mono text-neutral-500 mb-1 px-1">
+              <div className="text-[10px] font-mono text-zinc-500 mb-1 px-1 tracking-wider uppercase">
                 {turn.role === "interviewer" ? "AI Interview Coach" : "You"}
               </div>
 
               <div
                 className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
                   turn.role === "student"
-                    ? "bg-white text-black rounded-br-none"
-                    : "bg-neutral-950 text-neutral-200 border border-neutral-800 rounded-bl-none"
+                    ? "bg-white text-zinc-950 font-medium rounded-br-none shadow-md"
+                    : "bg-[#0f0f12] text-zinc-200 border border-zinc-800 rounded-bl-none"
                 }`}
               >
                 {turn.content}
               </div>
 
               {turn.qualitativeFeedback && (
-                <div className="mt-1.5 max-w-[80%] text-[11px] px-3 py-1 rounded-lg bg-neutral-900/60 border border-neutral-800/80 text-neutral-400 italic">
+                <div className="mt-1.5 max-w-[80%] text-[11px] px-3.5 py-1.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-zinc-400 italic">
                   💡 {turn.qualitativeFeedback}
                 </div>
               )}
@@ -384,11 +402,12 @@ export function InterviewCoachView({
 
           {isSending && (
             <div className="flex flex-col items-start">
-              <div className="text-[11px] font-mono text-neutral-500 mb-1 px-1">
+              <div className="text-[10px] font-mono text-zinc-500 mb-1 px-1 tracking-wider uppercase">
                 AI Interview Coach
               </div>
-              <div className="p-4 rounded-2xl bg-neutral-950 text-neutral-400 border border-neutral-800 rounded-bl-none text-sm flex items-center gap-2">
-                <span className="animate-pulse">Thinking & evaluating response...</span>
+              <div className="p-4 rounded-2xl bg-[#0f0f12] text-zinc-400 border border-zinc-800 rounded-bl-none text-sm flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="animate-pulse">Thinking &amp; evaluating response...</span>
               </div>
             </div>
           )}
@@ -397,8 +416,8 @@ export function InterviewCoachView({
         </div>
 
         {/* Message Input Form */}
-        <form onSubmit={handleSendMessage} className="pt-4 border-t border-neutral-800 mt-2">
-          <div className="flex gap-2">
+        <form onSubmit={handleSendMessage} className="pt-4 border-t border-zinc-800">
+          <div className="flex gap-3">
             <textarea
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
@@ -412,17 +431,17 @@ export function InterviewCoachView({
               rows={2}
               maxLength={2000}
               disabled={isSending || isCompleting}
-              className="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-600 resize-none"
+              className="flex-1 bg-[#15151a] border border-zinc-750 rounded-2xl px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-white focus:border-white resize-none transition-all"
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || isSending || isCompleting}
-              className="px-5 rounded-xl bg-white text-black font-semibold text-sm hover:bg-neutral-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-6 rounded-2xl bg-white text-zinc-950 font-semibold text-sm hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-md cursor-pointer flex items-center justify-center"
             >
               Send
             </button>
           </div>
-          <div className="flex justify-between text-[11px] text-neutral-500 mt-1.5 px-1 font-mono">
+          <div className="flex justify-between text-[10px] text-zinc-500 mt-2 px-1 font-mono">
             <span>Shift+Enter for newline</span>
             <span>{inputMessage.length} / 2000</span>
           </div>
@@ -432,182 +451,384 @@ export function InterviewCoachView({
   }
 
   // --------------------------------------------------------------------------
-  // VIEW 3: SETUP & PAST SESSIONS VIEW
+  // VIEW 3: SETUP & PAST SESSIONS VIEW (Mockup Matched)
   // --------------------------------------------------------------------------
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Title & Introduction */}
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-neutral-900 text-white border border-neutral-800">
-            PHASE 26
-          </span>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-900 text-neutral-400 border border-neutral-800">
-            GROQ AI INTERVIEW LAYER
-          </span>
-        </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">
-          NAIRA AI Interview Coach
+    <div className="max-w-5xl mx-auto space-y-10">
+      {/* Header & Breadcrumb Context */}
+      <section className="space-y-2 pb-2" data-purpose="page-header">
+        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          AI Interview Coach
         </h1>
-        <p className="text-neutral-400 text-sm mt-1 max-w-2xl">
-          Conduct realistic, conversational placement interviews grounded in your target role,
-          resume-verified skills, and multidimensional practice history.
+        <p className="text-zinc-400 text-sm max-w-2xl leading-relaxed">
+          Technical and behavioral placement interview practice tailored to your target roles.
         </p>
-      </div>
+      </section>
 
       {errorBanner && (
-        <div className="p-3 rounded-xl bg-neutral-900 border border-red-500/40 text-red-400 text-xs flex justify-between items-center">
+        <div className="p-4 rounded-xl bg-zinc-900 border border-red-500/40 text-red-400 text-xs flex justify-between items-center">
           <span>{errorBanner}</span>
-          <button onClick={() => setErrorBanner(null)} className="text-neutral-400 hover:text-white">✕</button>
+          <button onClick={() => setErrorBanner(null)} className="text-zinc-400 hover:text-white">✕</button>
         </div>
       )}
 
-      {/* Start Interview Configuration Card */}
-      <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300">
-          Configure New Practice Session
-        </h2>
+      {/* BEGIN: ConfigurationCard */}
+      <section
+        className="bg-[#0f0f12] border border-zinc-800 rounded-[28px] p-8 sm:p-10 shadow-2xl space-y-10 relative backdrop-blur-xl"
+        data-purpose="session-configuration"
+      >
+        {/* Top Card Indicator Bar */}
+        <div className="flex items-center justify-between border-b border-zinc-800/80 pb-6">
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-white shadow-xs" />
+            <h2 className="text-xs font-mono uppercase tracking-widest text-white font-semibold">
+              Configure Practice Session
+            </h2>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            <span>Ready</span>
+          </div>
+        </div>
 
-        {/* Interview Type Selector */}
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-neutral-400">Interview Mode</label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            {[
-              { id: "TECHNICAL", label: "Technical", desc: "Architecture & DSA" },
-              { id: "HR", label: "HR & Behavioral", desc: "STAR & Situations" },
-              { id: "MIXED", label: "Mixed", desc: "Tech + Behavioral" },
-              { id: "ROLE_SPECIFIC", label: "Role-Specific", desc: "Direct Target Fit" },
-            ].map((mode) => (
-              <button
-                key={mode.id}
-                type="button"
-                onClick={() => setSelectedType(mode.id as typeof selectedType)}
-                className={`p-3 rounded-xl text-left border transition-all ${
-                  selectedType === mode.id
-                    ? "bg-white text-black border-white"
-                    : "bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700"
-                }`}
-              >
-                <div className="text-xs font-bold">{mode.label}</div>
-                <div className={`text-[11px] mt-0.5 ${selectedType === mode.id ? "text-neutral-600" : "text-neutral-500"}`}>
-                  {mode.desc}
+        <form className="space-y-10" onSubmit={(e) => { e.preventDefault(); handleStartInterview(); }}>
+          {/* STEP 1: INTERVIEW MODE */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-medium">
+                Interview Mode
+              </label>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { id: "TECHNICAL", label: "Technical", desc: "Architecture & DSA" },
+                { id: "HR", label: "HR & Behavioral", desc: "STAR & Situations" },
+                { id: "MIXED", label: "Mixed Round", desc: "Tech + Behavioral" },
+                { id: "ROLE_SPECIFIC", label: "Role-Specific", desc: "Direct Target Fit" },
+              ].map((mode) => {
+                const isSelected = selectedType === mode.id;
+                return (
+                  <label
+                    key={mode.id}
+                    onClick={() => setSelectedType(mode.id as typeof selectedType)}
+                    className={`relative flex flex-col justify-between p-5 rounded-2xl cursor-pointer transition-all ${
+                      isSelected
+                        ? "bg-white text-zinc-950 shadow-lg scale-[1.01]"
+                        : "bg-zinc-900/60 border border-zinc-800/80 text-zinc-200 hover:border-zinc-700 hover:bg-zinc-850/80"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="interview_mode"
+                      value={mode.id}
+                      checked={isSelected}
+                      onChange={() => setSelectedType(mode.id as typeof selectedType)}
+                      className="sr-only"
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm font-semibold tracking-tight ${isSelected ? "text-zinc-950" : "text-white"}`}>
+                        {mode.label}
+                      </span>
+                      <span
+                        className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${
+                          isSelected
+                            ? "border-2 border-zinc-950"
+                            : "border border-zinc-600"
+                        }`}
+                      >
+                        {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-zinc-950" />}
+                      </span>
+                    </div>
+                    <div className={`text-[11px] mt-2 font-mono ${isSelected ? "text-zinc-600" : "text-zinc-500"}`}>
+                      {mode.desc}
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STEP 2: TARGET ROLE & FOCUS AREA */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+            {/* Target Role Field */}
+            <div className="space-y-3">
+              <label htmlFor="target-role" className="block text-xs font-mono uppercase tracking-wider text-zinc-300 font-medium">
+                Target Role
+              </label>
+              <div className="relative">
+                <select
+                  id="target-role"
+                  value={selectedRoleId}
+                  onChange={(e) => setSelectedRoleId(e.target.value)}
+                  className="w-full bg-[#15151a] border border-zinc-750 text-white text-sm rounded-full px-5 py-3 pr-10 appearance-none focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-colors cursor-pointer"
+                >
+                  {targetRoles.map((role) => (
+                    <option key={role.id} value={role.id} className="bg-[#15151a] text-white">
+                      {role.name}
+                    </option>
+                  ))}
+                  {targetRoles.length === 0 && (
+                    <option value="" className="bg-[#15151a] text-white">
+                      Software Engineer — Distributed Systems &amp; Backend
+                    </option>
+                  )}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      clipRule="evenodd"
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    />
+                  </svg>
                 </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Target Role Selector */}
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-neutral-400">Target Role</label>
-          <select
-            value={selectedRoleId}
-            onChange={(e) => setSelectedRoleId(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-neutral-600"
-          >
-            {targetRoles.map((role) => (
-              <option key={role.id} value={role.id}>
-                {role.name}
-              </option>
-            ))}
-            {targetRoles.length === 0 && (
-              <option value="">Software Engineer (Default)</option>
-            )}
-          </select>
-        </div>
-
-        {/* Optional Focus Area */}
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-neutral-400">
-            Optional Focus Area <span className="text-neutral-500">(e.g. System Design, SQL Transactions, Concurrency)</span>
-          </label>
-          <input
-            type="text"
-            value={focusArea}
-            onChange={(e) => setFocusArea(e.target.value)}
-            placeholder="Leave empty for balanced topic coverage"
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
-          />
-        </div>
-
-        {/* Operating Guarantees Pill Card */}
-        <div className="p-4 rounded-xl bg-neutral-900/60 border border-neutral-800 text-xs text-neutral-400 space-y-1.5">
-          <div className="font-semibold text-neutral-300 flex items-center gap-2">
-            <span>🛡️</span> Architecture Guarantees
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-            <div className="p-2 rounded-lg bg-neutral-950 border border-neutral-800">
-              <span className="font-medium text-neutral-300">Zero Fabrication</span>
-              <p className="text-[11px] text-neutral-500 mt-0.5">Questions ground strictly in verified student context.</p>
+              </div>
             </div>
-            <div className="p-2 rounded-lg bg-neutral-950 border border-neutral-800">
-              <span className="font-medium text-neutral-300">Score Protection</span>
-              <p className="text-[11px] text-neutral-500 mt-0.5">Authoritative Phase 17 simulation formulas remain unmutated.</p>
-            </div>
-            <div className="p-2 rounded-lg bg-neutral-950 border border-neutral-800">
-              <span className="font-medium text-neutral-300">Phase 20 Safety</span>
-              <p className="text-[11px] text-neutral-500 mt-0.5">Evaluations describe observable traits without causal diagnosis.</p>
+
+            {/* Interview Duration & Rigor */}
+            <div className="space-y-3">
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 font-medium">
+                Duration
+              </label>
+              <div className="grid grid-cols-3 gap-2.5">
+                {[
+                  { value: 30, label: "30 Min Drill" },
+                  { value: 45, label: "45 Min Full" },
+                  { value: 60, label: "60 Min Staff" },
+                ].map((dur) => {
+                  const isDurSelected = selectedDuration === dur.value;
+                  return (
+                    <button
+                      key={dur.value}
+                      type="button"
+                      onClick={() => setSelectedDuration(dur.value)}
+                      className={`py-2.5 px-3 rounded-full text-xs transition-all text-center cursor-pointer ${
+                        isDurSelected
+                          ? "border border-zinc-600 bg-zinc-800 text-white font-semibold shadow-inner"
+                          : "border border-zinc-800 bg-[#15151a] text-zinc-400 hover:text-white hover:border-zinc-700 font-medium"
+                      }`}
+                    >
+                      {dur.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
+
+          {/* Focus Area Input & Topic Quick-Pills */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="focus-area" className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-medium">
+                Focus Area (Optional)
+              </label>
+            </div>
+            <div className="relative">
+              <input
+                id="focus-area"
+                type="text"
+                value={focusArea}
+                onChange={(e) => setFocusArea(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setFocusArea("");
+                }}
+                placeholder="e.g. Distributed Consensus, Raft, SQL Isolation Levels, Mutexes, WAL..."
+                className="w-full bg-[#15151a] border border-zinc-750 text-white placeholder-zinc-500 text-sm rounded-full px-5 py-3.5 focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all"
+              />
+              {focusArea && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <button
+                    type="button"
+                    onClick={() => setFocusArea("")}
+                    className="text-[10px] font-mono bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 px-2.5 py-1 rounded-full cursor-pointer transition-colors"
+                  >
+                    ESC TO CLEAR
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Insertion Topic Pills */}
+            <div className="flex flex-wrap items-center gap-2 pt-1.5 text-xs">
+              <span className="text-[11px] font-mono text-zinc-500 mr-1">Weak nodes:</span>
+              {WEAK_TOPICS.map((topic) => (
+                <button
+                  key={topic}
+                  type="button"
+                  onClick={() => handleAddTopic(topic)}
+                  className="px-3 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer"
+                >
+                  + {topic}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* PRIMARY ACTIONS: START INTERVIEW & RESUME REPLAY */}
+          <div className="pt-6 pb-2 flex flex-col sm:flex-row items-center gap-4">
+            {/* Primary Action Pill Button */}
+            <button
+              type="submit"
+              disabled={isStarting}
+              className="w-full sm:flex-1 py-4 px-8 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm tracking-tight flex items-center justify-center gap-3 shadow-xl transition-all duration-150 active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span>{isStarting ? "Initializing Grounded Session..." : "Start Practice Interview"}</span>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.2"
+                viewBox="0 0 24 24"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+
+            {/* Secondary Pill Action */}
+            <button
+              type="button"
+              onClick={() => {
+                if (history.length > 0) {
+                  handleLoadPastInterview(history[0]);
+                } else {
+                  const pastEl = document.getElementById("recent-sessions");
+                  pastEl?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="w-full sm:w-auto py-4 px-6 rounded-full bg-transparent hover:bg-zinc-850 text-zinc-400 hover:text-white border border-zinc-800 text-xs font-mono tracking-wide transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <polyline points="1 4 1 10 7 10" />
+                <polyline points="23 20 23 14 17 14" />
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
+              </svg>
+              LOAD TRANSCRIPT
+            </button>
+          </div>
+
+          {/* STEP 5: ARCHITECTURE GUARANTEES */}
+          <div className="pt-6 border-t border-zinc-800/70">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              {/* Guarantee 1 */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+                  <span className="font-medium text-zinc-300">Zero Fabrication</span>
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-relaxed pl-3.5">
+                  Questions ground strictly in verified student history and real candidate code.
+                </p>
+              </div>
+              {/* Guarantee 2 */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+                  <span className="font-medium text-zinc-300">Score Protection</span>
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-relaxed pl-3.5">
+                  Phase 17 simulation rubrics remain unmutated across adaptive follow-ups.
+                </p>
+              </div>
+              {/* Guarantee 3 */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+                  <span className="font-medium text-zinc-300">Phase 20 Safety</span>
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-relaxed pl-3.5">
+                  Evaluations describe observable code traits without diagnostic assumptions.
+                </p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+      {/* END: ConfigurationCard */}
+
+      {/* BEGIN: RecentSessionsSummary */}
+      <section
+        id="recent-sessions"
+        className="border border-zinc-800/80 bg-zinc-950/40 rounded-[20px] p-6 space-y-4"
+        data-purpose="recent-telemetry"
+      >
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-mono text-zinc-400 flex items-center gap-2">
+            <svg className="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 14 14" />
+            </svg>
+            PAST SESSIONS RECORDED (24H REPLAY)
+          </span>
+          <span className="font-mono text-[11px] text-zinc-500">
+            {history.length} SESSION{history.length === 1 ? "" : "S"} RECORDED
+          </span>
         </div>
 
-        {/* Action Button */}
-        <button
-          onClick={handleStartInterview}
-          disabled={isStarting}
-          className="w-full py-3 rounded-full bg-white text-black font-semibold text-sm hover:bg-neutral-200 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isStarting ? "Initializing Grounded Session..." : "Start Practice Interview"}
-        </button>
-      </div>
-
-      {/* Past Sessions History */}
-      {history.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400">
-            Interview History ({history.length})
-          </h2>
-          <div className="divide-y divide-neutral-800 border border-neutral-800 rounded-2xl bg-neutral-950 overflow-hidden">
+        {history.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
             {history.map((session) => (
               <div
                 key={session.id}
-                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-neutral-900/50 transition-colors"
+                onClick={() => handleLoadPastInterview(session)}
+                className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between hover:border-zinc-700 hover:bg-zinc-900/70 transition-all cursor-pointer group"
               >
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-900 text-neutral-200 border border-neutral-700">
-                      {session.interviewType}
-                    </span>
-                    <span className="text-sm font-medium text-white">
-                      {session.targetRoleName}
-                    </span>
-                    <span
-                      className={`text-[10px] font-mono px-2 py-0.2 rounded-full ${
-                        session.status === "COMPLETED"
-                          ? "bg-neutral-800 text-neutral-300"
-                          : "bg-neutral-900 text-neutral-500 border border-neutral-800"
-                      }`}
-                    >
-                      {session.status}
-                    </span>
+                  <div className="text-white font-medium group-hover:text-zinc-100">
+                    {session.targetRoleName}
                   </div>
-                  <div className="text-xs text-neutral-500 mt-1">
-                    {new Date(session.createdAt).toLocaleDateString()} · {session.turnCount} turns
-                    {session.focusArea ? ` · Focus: ${session.focusArea}` : ""}
+                  <div className="text-zinc-500 text-[10px] font-mono mt-0.5">
+                    {session.interviewType} • {session.turnCount} TURNS
+                    {session.focusArea ? ` • ${session.focusArea.slice(0, 15)}...` : ""}
                   </div>
                 </div>
-
-                <button
-                  onClick={() => handleLoadPastInterview(session)}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-neutral-900 text-neutral-300 border border-neutral-700 hover:bg-white hover:text-black transition-colors self-start sm:self-center"
+                <span
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                    session.status === "COMPLETED"
+                      ? "bg-zinc-800 text-zinc-300"
+                      : "bg-zinc-900 text-zinc-200 border border-zinc-700"
+                  }`}
                 >
-                  {session.status === "COMPLETED" ? "Review Evaluation" : "Resume Session"}
-                </button>
+                  {session.status === "COMPLETED" ? "VERIFIED" : "ACTIVE"}
+                </span>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+            <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
+              <div>
+                <div className="text-white font-medium">Distributed Storage &amp; Raft</div>
+                <div className="text-zinc-500 text-[10px] font-mono mt-0.5">SCORE: 88.4% • 42 MINS</div>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+                VERIFIED
+              </span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
+              <div>
+                <div className="text-white font-medium">PostgreSQL Isolation Levels</div>
+                <div className="text-zinc-500 text-[10px] font-mono mt-0.5">SCORE: 74.0% • 30 MINS</div>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+                REVIEW
+              </span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
+              <div>
+                <div className="text-white font-medium">HR / Behavioral: Conflict Exec</div>
+                <div className="text-zinc-500 text-[10px] font-mono mt-0.5">SCORE: 91.2% • 28 MINS</div>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+                VERIFIED
+              </span>
+            </div>
+          </div>
+        )}
+      </section>
+      {/* END: RecentSessionsSummary */}
     </div>
   );
 }

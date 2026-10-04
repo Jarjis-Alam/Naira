@@ -28,12 +28,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center font-medium font-sans tracking-tight transition-all duration-200 select-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-green";
 
     const variants = {
-      // Primary Filled: #8CFF5A fill, #050605 text, 12px radius
+      // Primary Filled: white fill, solid dark text, 12px radius
       filled:
-        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-bright-green rounded-buttons shadow-none",
-      // Accent Pill: #8CFF5A fill, #050605 text, 9999px pill radius
+        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-zinc-200 rounded-buttons shadow-none",
+      // Accent Pill: white fill, solid dark text, 9999px pill radius
       accent:
-        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-bright-green rounded-pills shadow-none",
+        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-zinc-200 rounded-pills shadow-none",
       // Outline / Secondary: dark elevated surface, 1px green border, off-white text
       outline:
         "bg-card-elevated/80 text-text-primary border border-green-border hover:border-primary-green hover:text-primary-green rounded-buttons",

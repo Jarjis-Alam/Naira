@@ -101,7 +101,7 @@ export function TestDetailAnalyticsView({ data: initialData }: TestDetailViewPro
                 onClick={() => handleDateChange(r)}
                 className={`px-2.5 py-1 rounded text-label-xs font-mono transition-colors ${
                   dateRange === r
-                    ? "bg-primary text-text-inverse font-semibold"
+                    ? "bg-primary text-black font-semibold"
                     : "bg-surface-high border border-border text-text-secondary hover:text-text-primary"
                 }`}
               >

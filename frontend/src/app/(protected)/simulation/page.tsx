@@ -34,26 +34,17 @@ export default async function SimulationHubPage() {
   const primaryRole = targets.primaryRole?.name || "Software Engineer";
   const primaryCompany = targets.primaryCompany?.name || "Tier-1 Tech Firm";
 
-  // Most recent completed sim for phase breakdown
   const latestComplete = completedSimulations[0] ?? null;
-
-  const breadcrumbs = [
-    { label: "NEXORA", href: "/dashboard" },
-    { label: "CORE OS", href: "/dashboard" },
-    { label: "PLACEMENT SIMULATIONS" },
-  ];
 
   return (
     <div className="space-y-6 pb-24 max-w-7xl mx-auto">
       {/* ── Top Header ── */}
       <PageHeader
-        breadcrumbs={breadcrumbs}
         title="Placement Simulations"
-        subtitle="Simulate your target company's complete interview lifecycle across 5 deterministic evaluation stages."
+        subtitle="Practice full-length interview rounds tailored to your target company."
         badge={{
-          label: "5 ROUND RIG",
+          label: "5 Rounds",
           variant: "green",
-          ping: true,
         }}
       />
 
@@ -64,11 +55,11 @@ export default async function SimulationHubPage() {
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-lime-pulse text-[18px]">schema</span>
               <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-bold">
-                Deterministic 5-Stage Formula
+                Interview Rounds
               </span>
             </div>
             <span className="text-[11px] font-mono text-sage-40 hidden sm:block">
-              20% Screening • 30% Coding • 15% Debug • 20% Tech • 15% HR
+              Screening (20%) • Coding (30%) • Debugging (15%) • Technical (20%) • HR (15%)
             </span>
           </div>
 
@@ -102,8 +93,8 @@ export default async function SimulationHubPage() {
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 text-[10px] font-mono font-bold uppercase tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse animate-ping" />
-                <span>ACTIVE — ROUND {String(activeSimulation.currentRoundOrder).padStart(2, "0")} OF 05</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse" />
+                <span>Round {activeSimulation.currentRoundOrder} of 5 in progress</span>
               </div>
               <h3 className="text-xl font-bold font-heading text-phosphor-white">
                 {activeSimulation.companyName} — {activeSimulation.roleName}
@@ -130,7 +121,7 @@ export default async function SimulationHubPage() {
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px] text-lime-pulse">analytics</span>
               <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold">
-                Latest Simulation Evaluation
+                Latest Simulation
               </h2>
             </div>
             <span className="px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse font-mono text-[10px] font-bold uppercase border border-lime-pulse/30">
@@ -169,11 +160,11 @@ export default async function SimulationHubPage() {
           <div className="flex items-center gap-2 mb-1">
             <span className="material-symbols-outlined text-[20px] text-lime-pulse">bolt</span>
             <h2 className="text-base font-bold font-heading text-phosphor-white">
-              Start New Placement Simulation
+              New Simulation
             </h2>
           </div>
           <p className="text-xs text-sage-40">
-            Configure your target company and role. Nexora dynamically calibrates questions to match industry benchmark standards.
+            Select a target company and role to practice tailored interview rounds.
           </p>
         </div>
 
@@ -193,7 +184,7 @@ export default async function SimulationHubPage() {
             <h2 className="text-sm font-bold text-phosphor-white">Simulation History</h2>
           </div>
           <span className="text-xs font-mono text-sage-40 uppercase">
-            {completedSimulations.length} COMPLETED
+            {completedSimulations.length} completed
           </span>
         </div>
 

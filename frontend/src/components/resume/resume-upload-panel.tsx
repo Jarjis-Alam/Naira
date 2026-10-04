@@ -162,7 +162,7 @@ export function ResumeUploadPanel({
               type="button"
               onClick={handleUpload}
               disabled={busy || !file}
-              className="bg-primary text-text-inverse font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 disabled:opacity-50"
+              className="bg-primary text-black font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-zinc-200 transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <span>{busy ? (retrying ? "Retrying analysis…" : "Reading document…") : "Analyse Resume"}</span>
               <span className="material-symbols-outlined text-[18px]">analytics</span>
@@ -172,6 +172,15 @@ export function ResumeUploadPanel({
                 Target: <span className="text-text-secondary">{targetLabel}</span>
               </span>
             )}
+          </div>
+
+          <div className="flex items-start gap-2 pt-1 text-[11px] font-mono text-text-muted">
+            <span className="material-symbols-outlined text-[15px] text-zinc-400 shrink-0 mt-0.5" aria-hidden="true">
+              lock
+            </span>
+            <span>
+              Privacy Guarantee: Resumes are stored privately in your candidate profile and parsed solely for ATS calibration. Your documents are never monetized or shared with external advertising networks.
+            </span>
           </div>
         </>
       )}
@@ -224,7 +233,7 @@ export function ResumeUploadPanel({
               type="button"
               onClick={handleCreateVariant}
               disabled={creating}
-              className="bg-primary text-text-inverse font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-primary-text transition-all inline-flex items-center gap-2 disabled:opacity-50"
+              className="bg-primary text-black font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-zinc-200 transition-all inline-flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <span>{creating ? "Analysing…" : "Build structured resume"}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

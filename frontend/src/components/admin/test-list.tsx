@@ -219,7 +219,7 @@ export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] 
           <Link
             href="/admin/tests/new"
             id="btn-admin-create-test"
-            className="inline-flex items-center justify-center gap-2 bg-primary text-text-inverse font-semibold text-body-sm px-4 py-2 rounded-lg hover:bg-primary-text transition-colors shadow-sm self-start sm:self-auto"
+            className="inline-flex items-center justify-center gap-2 bg-primary text-black font-semibold text-body-sm px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors shadow-sm self-start sm:self-auto"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
             <span>Build New Test</span>
@@ -470,7 +470,7 @@ export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] 
                           id={`btn-publish-test-${t.id}`}
                           disabled={isToggling}
                           onClick={() => handleUpdateStatus(t.id, "published")}
-                          className="inline-flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-label-xs font-mono font-semibold text-text-inverse hover:bg-primary-text transition-colors disabled:opacity-50"
+                          className="inline-flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-label-xs font-mono font-semibold text-black hover:bg-zinc-200 transition-colors disabled:opacity-50"
                         >
                           <span className="material-symbols-outlined text-[15px]">publish</span>
                           <span>Publish</span>
@@ -568,7 +568,7 @@ export function AdminTestList({ initialTests }: { initialTests: AdminTestItem[] 
             ) : (
               <Link
                 href="/admin/tests/new"
-                className="mt-3 inline-flex items-center gap-2 bg-primary text-text-inverse px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-primary-text transition-colors"
+                className="mt-3 inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-zinc-200 transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 Build First Assessment

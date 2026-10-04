@@ -10,6 +10,7 @@ import { searchCompanies, searchRoles } from "@/server/company-role-intelligence
 import { ApplicationsNewDialog } from "@/components/applications/applications-new-dialog";
 import { STATUS_META } from "@/lib/applications/status-meta";
 import { PageHeader } from "@/components/ui/page-header";
+import { CompactMetricStrip } from "@/components/ui/compact-metric-strip";
 
 export default async function ApplicationsPage() {
   const session = await auth();
@@ -22,19 +23,12 @@ export default async function ApplicationsPage() {
   ]);
   const countsByStatus = new Map(board.pipeline.map((p) => [p.status, p.count]));
 
-  const breadcrumbs = [
-    { label: "NEXORA", href: "/dashboard" },
-    { label: "CORE OS", href: "/dashboard" },
-    { label: "APPLICATIONS PIPELINE" },
-  ];
-
   return (
     <div className="space-y-6 pb-20 max-w-7xl mx-auto">
       {/* ── Top Header & New Application CTA ── */}
       <PageHeader
-        breadcrumbs={breadcrumbs}
-        title="Applications Pipeline"
-        subtitle="Where you are applying, stage tracking, deadline counters, and readiness alignment."
+        title="Applications"
+        subtitle="Track active applications, interview stages, and deadlines."
         actions={
           <ApplicationsNewDialog
             companies={companies}
@@ -44,106 +38,43 @@ export default async function ApplicationsPage() {
         }
       />
 
-      {/* ── Metric Strip: 4 Semantic Cards ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {/* Card 1: Active Applications (Green) */}
-        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-              Active Applications
-            </span>
-            <div className="w-8 h-8 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse">
-              <span className="material-symbols-outlined text-[18px]">work_history</span>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-              {board.totals.activeApplications}
-            </span>
-            <span className="text-[11px] font-mono text-lime-pulse">
-              in flight
-            </span>
-          </div>
-          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-lime-pulse h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, board.totals.activeApplications * 10)}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Card 2: Assessments / OA */}
-        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-              Assessments & OAs
-            </span>
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined text-[18px]">terminal</span>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-              {board.totals.assessments}
-            </span>
-            <span className="text-[11px] font-mono text-zinc-300">active rounds</span>
-          </div>
-          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-white h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, board.totals.assessments * 25)}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Card 3: Interviews */}
-        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-              Interview Rounds
-            </span>
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined text-[18px]">videocam</span>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-              {board.totals.interviews}
-            </span>
-            <span className="text-[11px] font-mono text-zinc-400">live stages</span>
-          </div>
-          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-zinc-300 h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, board.totals.interviews * 25)}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Card 4: Offers Received */}
-        <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 flex flex-col justify-between shadow-md hover:border-[#88957f]/60 transition-all group">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-              Offers Received
-            </span>
-            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <span className="material-symbols-outlined text-[18px]">emoji_events</span>
-            </div>
-          </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold font-heading text-phosphor-white tracking-tight">
-              {board.totals.offers}
-            </span>
-            <span className="text-[11px] font-mono text-zinc-400">secured</span>
-          </div>
-          <div className="mt-3 w-full bg-[#0c0f0e] h-1.5 rounded-full overflow-hidden border border-[#3f4a38]/20">
-            <div
-              className="bg-zinc-400 h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, board.totals.offers * 50)}%` }}
-            />
-          </div>
-        </div>
-      </div>
+      {/* ── Metric Strip: 4 Semantic Items ── */}
+      <CompactMetricStrip
+        items={[
+          {
+            id: "active",
+            label: "Active Applications",
+            value: board.totals.activeApplications,
+            detail: "in flight",
+            statusText: "Pipeline",
+            progressPct: Math.min(100, board.totals.activeApplications * 10),
+          },
+          {
+            id: "assessments",
+            label: "Assessments & OAs",
+            value: board.totals.assessments,
+            detail: "active rounds",
+            statusText: "OA Stage",
+            progressPct: Math.min(100, board.totals.assessments * 25),
+          },
+          {
+            id: "interviews",
+            label: "Interview Rounds",
+            value: board.totals.interviews,
+            detail: "live stages",
+            statusText: "Interviews",
+            progressPct: Math.min(100, board.totals.interviews * 25),
+          },
+          {
+            id: "offers",
+            label: "Offers Received",
+            value: board.totals.offers,
+            detail: "secured",
+            statusText: "Offers",
+            progressPct: Math.min(100, board.totals.offers * 50),
+          },
+        ]}
+      />
 
       {/* ── Filter Navigation Pills ── */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -156,20 +87,20 @@ export default async function ApplicationsPage() {
               key={status}
               className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-mono transition-all shrink-0 ${
                 hasCount
-                  ? "border-lime-pulse/30 bg-lime-pulse/10 text-lime-pulse font-semibold"
-                  : "border-[#3f4a38]/40 bg-[#191c1b] text-sage-40"
+                  ? "border-zinc-700 bg-white/10 text-white font-semibold"
+                  : "border-zinc-800 bg-[#0d0d10] text-zinc-400"
               }`}
               title={meta?.description ?? STATUS_LABELS[status]}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  hasCount ? "bg-lime-pulse" : "bg-sage-40/40"
+                  hasCount ? "bg-white" : "bg-zinc-600"
                 }`}
               />
               <span>{meta?.label ?? STATUS_LABELS[status]}</span>
               <span
                 className={`font-bold ml-0.5 ${
-                  hasCount ? "text-phosphor-white" : "text-sage-40/60"
+                  hasCount ? "text-white" : "text-zinc-500"
                 }`}
               >
                 ({count})
@@ -181,12 +112,12 @@ export default async function ApplicationsPage() {
 
       {/* ── Upcoming Deadlines & Events ── */}
       {board.upcoming.length > 0 && (
-        <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md">
+        <section className="rounded-xl border border-zinc-800 bg-[#0d0d10] p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-3.5">
             <span className="material-symbols-outlined text-[18px] text-zinc-400">
               schedule
             </span>
-            <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold">
+            <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-400 font-semibold">
               Upcoming Deadlines & Interviews
             </h2>
           </div>
@@ -195,18 +126,18 @@ export default async function ApplicationsPage() {
               <li key={`${event.applicationId}-${event.kind}-${event.date}`}>
                 <Link
                   href={`/applications/${event.applicationId}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-[#3f4a38]/30 hover:border-lime-pulse/50 bg-[#111413] px-4 py-2.5 transition-all group"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800/80 hover:border-zinc-600 bg-zinc-900/60 px-4 py-2.5 transition-all group"
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse shrink-0 group-hover:scale-125 transition-transform" />
-                    <span className="text-xs text-phosphor-white font-medium truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 group-hover:scale-125 transition-transform" />
+                    <span className="text-xs text-white font-medium truncate">
                       {event.companyName} — {event.label}
                     </span>
                   </span>
-                  <span className="text-[11px] font-mono text-sage-40 shrink-0">
+                  <span className="text-[11px] font-mono text-zinc-400 shrink-0">
                     {formatDay(event.date)}
                     {event.daysRemaining !== null ? (
-                      <span className="text-lime-pulse ml-2 font-semibold">
+                      <span className="text-white ml-2 font-semibold">
                         · {event.daysRemaining}d remaining
                       </span>
                     ) : (
@@ -222,17 +153,26 @@ export default async function ApplicationsPage() {
 
       {/* ── Application Pipeline Cards ── */}
       {board.cards.length === 0 ? (
-        <section className="rounded-2xl border border-dashed border-[#3f4a38]/60 bg-[#191c1b]/40 p-12 text-center">
-          <div className="w-12 h-12 rounded-full bg-[#191c1b] border border-[#3f4a38]/40 flex items-center justify-center text-sage-40 mx-auto mb-3">
+        <section className="rounded-xl border border-dashed border-zinc-800 bg-[#0d0d10]/40 p-12 text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-[#0d0d10] border border-zinc-800 flex items-center justify-center text-zinc-400 mx-auto">
             <span className="material-symbols-outlined text-[24px]">send</span>
           </div>
-          <p className="font-heading text-lg font-semibold text-phosphor-white">
-            {board.emptyState?.title ?? "No applications recorded"}
-          </p>
-          <p className="text-xs text-sage-40 mt-1.5 max-w-md mx-auto leading-relaxed">
-            {board.emptyState?.message ??
-              "Track your first application — it automatically inherits your target company and role preferences."}
-          </p>
+          <div>
+            <p className="font-heading text-lg font-semibold text-white">
+              {board.emptyState?.title ?? "No applications recorded"}
+            </p>
+            <p className="text-xs text-zinc-400 mt-1.5 max-w-md mx-auto leading-relaxed">
+              {board.emptyState?.message ??
+                "Start tracking your applications to monitor interview stages and deadlines."}
+            </p>
+          </div>
+          <div className="pt-2">
+            <ApplicationsNewDialog
+              companies={companies}
+              roles={roles}
+              defaults={board.defaults}
+            />
+          </div>
         </section>
       ) : (
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -241,16 +181,16 @@ export default async function ApplicationsPage() {
             return (
               <article
                 key={card.id}
-                className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 flex flex-col gap-3.5 hover:border-[#88957f]/70 transition-all duration-200 shadow-md group"
+                className="rounded-xl border border-zinc-800 bg-[#0d0d10] p-5 flex flex-col gap-3.5 hover:border-zinc-700 transition-all duration-200 shadow-sm group"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="font-heading text-base font-bold text-phosphor-white truncate group-hover:text-lime-pulse transition-colors">
+                    <h3 className="font-heading text-base font-bold text-white truncate group-hover:text-zinc-200 transition-colors">
                       {card.companyName}
                     </h3>
-                    <p className="text-xs text-sage-40 truncate">{card.roleName}</p>
+                    <p className="text-xs text-zinc-400 truncate">{card.roleName}</p>
                   </div>
-                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full font-medium border border-[#3f4a38]/40 bg-[#111413] text-lime-pulse shrink-0">
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full font-medium border border-zinc-800 bg-zinc-900/60 text-white shrink-0">
                     {meta?.label ?? card.statusLabel}
                   </span>
                 </div>
@@ -266,18 +206,18 @@ export default async function ApplicationsPage() {
                 </div>
 
                 {card.nextEvent && (
-                  <p className="text-[11px] font-mono text-sage-40 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse" />
+                  <p className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
                     <span>Next: {card.nextEvent.label} · {formatDay(card.nextEvent.date)}</span>
                   </p>
                 )}
 
                 <Link
                   href={`/applications/${card.id}`}
-                  className="mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-[#3f4a38]/40 hover:border-lime-pulse bg-[#111413] text-phosphor-white px-4 py-2 text-xs font-semibold transition-all group-hover:bg-lime-pulse/10"
+                  className="mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-zinc-800 hover:border-zinc-600 bg-zinc-900/60 text-white px-4 py-2 text-xs font-semibold transition-all group-hover:bg-zinc-800"
                 >
                   <span>Open Application</span>
-                  <span className="material-symbols-outlined text-[15px] text-lime-pulse">
+                  <span className="material-symbols-outlined text-[15px] text-white">
                     arrow_forward
                   </span>
                 </Link>
@@ -302,9 +242,9 @@ function Metric({
   isPercent?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-[#111413] border border-[#3f4a38]/30 px-2 py-1.5">
-      <p className="text-[9px] font-mono uppercase tracking-wide text-sage-40">{label}</p>
-      <p className="text-xs font-mono font-bold text-phosphor-white mt-0.5">
+    <div className="rounded-lg bg-zinc-900/60 border border-zinc-800/80 px-2 py-1.5">
+      <p className="text-[9px] font-mono uppercase tracking-wide text-zinc-400">{label}</p>
+      <p className="text-xs font-mono font-bold text-white mt-0.5">
         {value !== null ? (isPercent ? `${value}%` : value) : note ?? "—"}
       </p>
     </div>

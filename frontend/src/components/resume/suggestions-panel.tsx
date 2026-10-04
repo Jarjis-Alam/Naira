@@ -213,7 +213,7 @@ export function SuggestionsPanel({
                     type="button"
                     onClick={() => decide(suggestion, "accepted")}
                     disabled={busyId === suggestion.id}
-                    className="bg-primary text-text-inverse font-semibold text-[12px] px-4 py-2 rounded-lg hover:bg-primary-text transition-all disabled:opacity-50"
+                    className="bg-primary text-black font-semibold text-[12px] px-4 py-2 rounded-lg hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50"
                   >
                     {busyId === suggestion.id ? "Applying…" : "Accept"}
                   </button>

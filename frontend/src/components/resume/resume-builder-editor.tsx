@@ -320,7 +320,7 @@ export function ResumeBuilderEditor({
             type="button"
             onClick={handleSave}
             disabled={busy !== null}
-            className="bg-primary text-text-inverse font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-primary-text transition-all disabled:opacity-50"
+            className="bg-primary text-black font-semibold text-body-sm px-5 py-2.5 rounded-lg hover:bg-zinc-200 transition-all cursor-pointer disabled:opacity-50"
           >
             {busy === "save" ? "Saving…" : "Save changes"}
           </button>

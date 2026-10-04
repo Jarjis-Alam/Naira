@@ -24,7 +24,7 @@ export class GroqProvider implements AIProvider {
   private readonly apiKey?: string;
 
   constructor(apiKey?: string, defaultModel?: string) {
-    this.apiKey = apiKey || process.env.GROQ_API_KEY;
+    this.apiKey = apiKey !== undefined ? apiKey : process.env.GROQ_API_KEY;
     this.defaultModel =
       defaultModel || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
   }

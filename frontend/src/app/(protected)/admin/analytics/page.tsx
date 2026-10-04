@@ -11,8 +11,8 @@ import {
 import { AdminAnalyticsDashboard } from "@/components/admin/analytics/admin-analytics-dashboard";
 
 export const metadata = {
-  title: "Admin Analytics & Telemetry | Nexora",
-  description: "Comprehensive institutional analytics, difficulty distributions, and test telemetry.",
+  title: "Admin Analytics | Naira",
+  description: "Institutional performance analytics, score distributions, and assessment telemetry.",
 };
 
 export default async function AdminAnalyticsPage() {

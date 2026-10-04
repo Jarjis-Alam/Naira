@@ -563,7 +563,7 @@ export default async function AssessmentResultPage({
 
             <Link
               href="/roadmap"
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60 shrink-0"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-primary/60 shrink-0"
             >
               <span>View Roadmap</span>
               <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
@@ -572,10 +572,10 @@ export default async function AssessmentResultPage({
         </section>
       )}
 
-      {/* Result to next step */}
+      {/* Next Steps */}
       <section className="flex flex-col gap-4 rounded-xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div>
-          <p className="text-label-xs font-mono uppercase tracking-wider text-primary-text">Result → Next Step</p>
+          <p className="text-label-xs font-mono uppercase tracking-wider text-primary-text">Next Steps</p>
           <h3 className="mt-1 text-title-md font-semibold text-text-primary">
             {attempt.testType === "baseline" ? "Your benchmark is ready to explore." : "Keep building your placement readiness."}
           </h3>
@@ -595,7 +595,7 @@ export default async function AssessmentResultPage({
           </Link>
           <Link
             href="/roadmap"
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60"
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-primary/60"
           >
             View Roadmap
             <span className="material-symbols-outlined text-[17px]">map</span>
@@ -624,7 +624,7 @@ export default async function AssessmentResultPage({
         </div>
       </section>
 
-      {/* Execution OS: TODAY'S PLAN Continuation */}
+      {/* Today's Plan Continuation */}
       {dailyPlan.hasEnoughData && (
         <section className="rounded-xl border border-secondary/30 bg-surface p-5 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/70 pb-3">
@@ -633,11 +633,11 @@ export default async function AssessmentResultPage({
                 task_alt
               </span>
               <h3 className="text-title-md font-bold text-text-primary">
-                TODAY&apos;S PLAN
+                Today&apos;s Plan
               </h3>
             </div>
             <span className="text-label-xs font-mono text-secondary uppercase font-semibold">
-              Execution Progress: {dailyPlan.completedCount} / {dailyPlan.totalCount} Complete ({dailyPlan.progressPercent}%)
+              Daily Progress: {dailyPlan.completedCount} of {dailyPlan.totalCount} completed ({dailyPlan.progressPercent}%)
             </span>
           </div>
 
@@ -674,9 +674,9 @@ export default async function AssessmentResultPage({
               {nextAction ? (
                 <Link
                   href={nextAction.ctaHref}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60"
+                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-primary/60"
                 >
-                  <span>CONTINUE TODAY&apos;S PLAN</span>
+                  <span>Continue Today&apos;s Plan</span>
                   <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
                 </Link>
               ) : (
@@ -684,7 +684,7 @@ export default async function AssessmentResultPage({
                   href="/dashboard"
                   className="inline-flex h-10 items-center gap-2 rounded-lg bg-secondary/15 border border-secondary/30 px-5 text-body-sm font-semibold text-secondary transition-colors hover:bg-secondary/25"
                 >
-                  <span>VIEW TODAY&apos;S PROGRESS</span>
+                  <span>View Progress</span>
                   <span className="material-symbols-outlined text-[17px]">check</span>
                 </Link>
               )}
@@ -721,7 +721,7 @@ export default async function AssessmentResultPage({
         </Link>
         <Link
           href="/dashboard"
-          className="flex h-11 items-center gap-2 rounded-lg bg-primary px-6 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60"
+          className="flex h-11 items-center gap-2 rounded-lg bg-primary px-6 text-body-sm font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-primary/60"
         >
           Return to Dashboard
           <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

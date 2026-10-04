@@ -337,7 +337,7 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
       return "border border-tertiary text-tertiary";
     }
     if (isAnswered) {
-      return "bg-primary text-text-inverse font-bold border border-primary";
+      return "bg-primary text-black font-bold border border-primary";
     }
     return "bg-surface-high text-text-muted border border-border hover:border-border-variant";
   };
@@ -349,9 +349,8 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           <NexoraLogo size="sm" />
           <div className="min-w-0">
-            <p className="text-label-xs font-mono uppercase tracking-wider text-text-muted">Naira • Active Exam</p>
-            <h1 className="max-w-[11rem] truncate text-body-sm font-bold text-text-primary sm:max-w-md">
-              Naira • {testTitle}
+            <h1 className="max-w-[14rem] truncate text-body-sm font-bold text-text-primary sm:max-w-md">
+              {testTitle}
             </h1>
           </div>
         </div>
@@ -382,7 +381,7 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
 
           <button
             onClick={() => setShowSubmitModal(true)}
-            className="inline-flex h-10 items-center rounded-lg bg-primary px-2.5 text-[11px] font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/60 sm:px-3 sm:text-body-sm"
+            className="inline-flex h-10 items-center rounded-lg bg-primary px-2.5 text-[11px] font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-primary/60 sm:px-3 sm:text-body-sm"
           >
             <span className="sm:hidden">Finish</span>
             <span className="hidden sm:inline">Finish Exam</span>
@@ -456,30 +455,37 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
             <div className="mx-auto w-full max-w-3xl space-y-7 md:space-y-8">
               {/* Question metadata bar */}
               <div className="flex flex-col items-start justify-between gap-3 border-b border-border/70 pb-5 sm:flex-row sm:items-center">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="text-label-xs text-text-muted uppercase font-mono tracking-wider">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-xs text-text-muted font-medium">
                     {currentQ.questionType === "single_choice"
-                      ? "MULTIPLE CHOICE — SINGLE ANSWER"
-                      : "MULTIPLE CHOICE — SELECT ALL THAT APPLY"}
+                      ? "Single choice"
+                      : "Multiple choice"}
                   </span>
+                  <span className="text-zinc-600">•</span>
                   {currentQ.sectionTitle && (
-                    <span className="rounded border border-primary/30 bg-primary/10 px-2 py-1 text-label-xs font-mono uppercase text-primary-text font-semibold">
-                      {currentQ.sectionTitle}
-                    </span>
+                    <>
+                      <span className="text-xs font-mono text-text-secondary">
+                        {currentQ.sectionTitle}
+                      </span>
+                      <span className="text-zinc-600">•</span>
+                    </>
                   )}
-                  <span className="rounded border border-border bg-surface-high px-2 py-1 text-label-xs font-mono uppercase text-primary-text">
-                    {currentQ.subjectCode} • {currentQ.topicName}
+                  <span className="text-xs font-mono text-text-secondary">
+                    {currentQ.subjectCode} — {currentQ.topicName}
                   </span>
                   {initialState.markingPolicy?.negativeMarkingEnabled && (
-                    <span className="rounded border border-error/30 bg-error/10 px-2 py-1 text-label-xs font-mono text-error">
-                      +{currentQ.marks} / -{(currentQ.marks * (initialState.markingPolicy.negativeMarkRate || 0)).toFixed(2)}
-                    </span>
+                    <>
+                      <span className="text-zinc-600">•</span>
+                      <span className="text-xs font-mono text-zinc-400">
+                        +{currentQ.marks} / -{(currentQ.marks * (initialState.markingPolicy.negativeMarkRate || 0)).toFixed(2)}
+                      </span>
+                    </>
                   )}
                 </div>
 
-                <div className="flex items-center gap-1.5 rounded border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-label-xs font-mono text-secondary">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-text-muted">
                   <span className="material-symbols-outlined text-[14px]">cloud_done</span>
-                  <span>{isSaving ? "Saving..." : "Auto-saved"}</span>
+                  <span>{isSaving ? "Saving..." : "Saved"}</span>
                 </div>
               </div>
 
@@ -535,7 +541,7 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
                         <div
                           className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono text-label-xs font-bold flex-shrink-0 mt-0.5 ${
                             isSelected
-                              ? "bg-primary text-text-inverse"
+                              ? "bg-primary text-black border border-primary"
                               : "bg-surface-high border border-border text-text-muted"
                           }`}
                         >
@@ -594,7 +600,7 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
                 }
               }}
               aria-label={currentIndex === totalQuestions - 1 ? "Review and submit assessment" : "Next question"}
-              className="flex h-11 items-center gap-1.5 rounded-lg bg-primary px-4 text-body-sm font-semibold text-text-inverse transition-colors hover:bg-primary-text focus:outline-none focus:ring-2 focus:ring-primary/70 sm:gap-2 sm:px-6"
+              className="flex h-11 items-center gap-1.5 rounded-lg bg-primary px-4 text-body-sm font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-primary/70 sm:gap-2 sm:px-6"
             >
               {currentIndex === totalQuestions - 1 ? (
                 <>
@@ -661,7 +667,7 @@ export function ExamEngine({ initialState }: ExamEngineProps) {
               <button
                 onClick={handleFinalSubmit}
                 disabled={isSubmitting}
-                className="flex-1 bg-primary text-text-inverse font-semibold text-body-sm py-2.5 rounded hover:bg-primary-text transition-colors disabled:opacity-50"
+                className="flex-1 bg-primary text-black font-semibold text-body-sm py-2.5 rounded hover:bg-zinc-200 transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? "Grading..." : "Submit Exam"}
               </button>

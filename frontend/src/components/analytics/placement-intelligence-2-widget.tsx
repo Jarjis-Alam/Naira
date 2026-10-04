@@ -19,11 +19,8 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-neutral-border/60 pb-3">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary-green/10 text-primary-green border border-primary-green/20">
-            2.0
-          </span>
-          <h3 className="text-title-sm font-bold font-mono tracking-wider uppercase text-text-primary">
-            PLACEMENT INTELLIGENCE
+          <h3 className="text-sm font-semibold text-text-primary">
+            Placement Intelligence
           </h3>
         </div>
         <Link
@@ -43,7 +40,7 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[9px] font-mono font-bold text-primary-green">
-                    PRIORITY #{priorities[0].priorityNumber}
+                    Priority {priorities[0].priorityNumber}
                   </span>
                   <span
                     className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold uppercase ${
@@ -65,7 +62,7 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
 
               <Link
                 href={priorities[0].recommendedAction.ctaHref}
-                className="px-3 py-1.5 rounded-buttons bg-primary-green text-void-black font-semibold text-label-xs font-mono hover:bg-bright-green transition-colors shrink-0 text-center"
+                className="px-3 py-1.5 rounded-buttons bg-primary-green text-void-black font-semibold text-label-xs font-mono hover:bg-zinc-200 transition-colors shrink-0 text-center"
               >
                 {priorities[0].recommendedAction.ctaLabel}
               </Link>
@@ -78,7 +75,7 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
             <div className="p-3 rounded-md bg-card-elevated border border-neutral-border space-y-2">
               <span className="text-[10px] font-mono text-primary-green uppercase font-semibold flex items-center gap-1">
                 <span className="material-symbols-outlined text-[13px]">verified</span>
-                Verified Strengths
+                Strengths
               </span>
               {strengths.length > 0 ? (
                 <div className="space-y-1.5">
@@ -98,7 +95,7 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
             <div className="p-3 rounded-md bg-card-elevated border border-neutral-border space-y-2">
               <span className="text-[10px] font-mono text-error uppercase font-semibold flex items-center gap-1">
                 <span className="material-symbols-outlined text-[13px]">flag</span>
-                Target Focus Areas
+                Focus Areas
               </span>
               {weaknesses.length > 0 ? (
                 <div className="space-y-1.5">
@@ -118,7 +115,7 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
           {/* Trajectory Signals */}
           {trends.length > 0 && (
             <div className="pt-2 border-t border-neutral-border/60 flex items-center justify-between text-[11px] font-mono text-text-muted">
-              <span>Trajectory Signals:</span>
+              <span>Performance Trends:</span>
               <div className="flex items-center gap-3">
                 {trends.slice(0, 2).map((t) => (
                   <span key={t.dimensionId} className="flex items-center gap-1">
@@ -144,11 +141,11 @@ export function PlacementIntelligence2Widget({ intelligence }: Props) {
         <div className="py-6 text-center space-y-3">
           <span className="material-symbols-outlined text-[28px] text-text-muted">insights</span>
           <p className="text-body-sm text-text-secondary max-w-md mx-auto">
-            Multi-dimensional placement intelligence activates once baseline performance data is recorded.
+            Detailed placement intelligence activates after you complete your baseline assessment.
           </p>
           <Link
             href="/assessment"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-buttons bg-primary-green text-void-black font-semibold text-label-xs font-mono hover:bg-bright-green transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-buttons bg-primary-green text-void-black font-semibold text-label-xs font-mono hover:bg-zinc-200 transition-colors"
           >
             <span>Start Baseline Assessment</span>
             <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

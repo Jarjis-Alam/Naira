@@ -8,6 +8,7 @@ import {
 } from "@/server/outcome-intelligence";
 import { formatDateShort } from "@/lib/applications/domain";
 import { PageHeader } from "@/components/ui/page-header";
+import { CompactMetricStrip } from "@/components/ui/compact-metric-strip";
 
 export default async function OutcomesPage() {
   const session = await auth();
@@ -21,50 +22,28 @@ export default async function OutcomesPage() {
 
   const hasAny = analytics.totals.applications > 0;
 
-  const breadcrumbs = [
-    { label: "NEXORA", href: "/dashboard" },
-    { label: "PREPARATION", href: "/tests" },
-    { label: "POST-INTERVIEW INTELLIGENCE" },
-  ];
-
   return (
     <div className="space-y-6 pb-20 max-w-7xl mx-auto">
       {/* ── Top Header ── */}
       <PageHeader
-        breadcrumbs={breadcrumbs}
-        title="Interview Outcomes & Gate Debriefs"
-        subtitle="Empirical diagnostic breakdown of completed interview loops, evaluator signal capture, and precision syllabus recalibration."
-        badge={{
-          label: "TELEMETRY SYNC: ACTIVE",
-          variant: "green",
-          ping: true,
-        }}
+        title="Interview Outcomes"
+        subtitle="Review interview results, evaluator feedback, and observed preparation gaps."
       />
 
-      {/* Non-causal disclaimer — Phase 20 invariant */}
-      <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#191c1b] border border-white/20 shadow-md">
-        <span className="material-symbols-outlined text-[18px] text-zinc-400 flex-shrink-0 mt-0.5">
-          info
-        </span>
-        <span className="font-mono text-xs text-zinc-300 leading-relaxed">
-          {CAUSALITY_DISCLAIMER}
-        </span>
-      </div>
-
       {!hasAny ? (
-        <section className="rounded-2xl border border-dashed border-[#3f4a38]/60 bg-[#191c1b]/40 p-12 text-center shadow-md">
-          <div className="w-12 h-12 rounded-full bg-[#191c1b] border border-[#3f4a38]/40 flex items-center justify-center text-sage-40 mx-auto mb-3">
+        <section className="rounded-xl border border-dashed border-zinc-800 bg-[#0d0d10]/40 p-12 text-center shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-[#0d0d10] border border-zinc-800 flex items-center justify-center text-zinc-400 mx-auto mb-3">
             <span className="material-symbols-outlined text-[24px]">verified</span>
           </div>
-          <p className="font-heading text-lg font-semibold text-phosphor-white">
+          <p className="font-heading text-lg font-semibold text-white">
             No application outcomes recorded
           </p>
-          <p className="text-xs text-sage-40 mt-1.5 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs text-zinc-400 mt-1.5 max-w-md mx-auto leading-relaxed">
             Outcome intelligence is generated once you track application progression and record outcomes in the Applications workspace.
           </p>
           <Link
             href="/applications"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-6 py-2.5 text-xs transition-all shadow-[0_0_20px_rgba(255,255,255,0.25)]"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-white text-black font-semibold hover:bg-zinc-200 px-6 py-2.5 text-xs transition-all shadow-sm"
           >
             <span>Go to Applications</span>
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -73,128 +52,47 @@ export default async function OutcomesPage() {
       ) : (
         <>
           {/* ── Top Metric Summary Strip ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Card 1: Applications */}
-            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-                  TOTAL APPLICATIONS
-                </span>
-                <div className="w-8 h-8 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse">
-                  <span className="material-symbols-outlined text-[18px]">rule</span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold font-heading text-phosphor-white">
-                    {analytics.totals.applications}
-                  </span>
-                  <span className="text-[11px] font-mono text-lime-pulse">Tracked</span>
-                </div>
-                <p className="text-[11px] text-sage-40 mt-1">
-                  {analytics.totals.offers} Offers • {analytics.totals.interviews} Advanced
-                </p>
-              </div>
-              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
-                <div
-                  className="bg-lime-pulse h-full rounded-full"
-                  style={{ width: `${Math.min(100, analytics.totals.applications * 15)}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Card 2: Interviews */}
-            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-                  INTERVIEW ROUNDS
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined text-[18px]">insights</span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold font-heading text-phosphor-white">
-                    {analytics.totals.interviews}
-                  </span>
-                  <span className="text-[11px] font-mono text-zinc-300">Stages reached</span>
-                </div>
-                <p className="text-[11px] text-sage-40 mt-1">
-                  Evaluator signal across recorded loops
-                </p>
-              </div>
-              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
-                <div
-                  className="bg-white h-full rounded-full"
-                  style={{ width: `${Math.min(100, analytics.totals.interviews * 20)}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Card 3: Offers Received */}
-            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-                  OFFERS EXTENDED
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined text-[18px]">emoji_events</span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold font-heading text-lime-pulse">
-                    {analytics.totals.offers}
-                  </span>
-                  <span className="text-[11px] font-mono text-zinc-300">Offers secured</span>
-                </div>
-                <p className="text-[11px] text-sage-40 mt-1">
-                  High-alignment company offers
-                </p>
-              </div>
-              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
-                <div
-                  className="bg-zinc-300 h-full rounded-full"
-                  style={{ width: `${Math.min(100, analytics.totals.offers * 50)}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Card 4: Terminal Results */}
-            <div className="rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-5 shadow-md flex flex-col justify-between group hover:border-[#88957f]/60 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-sage-40 font-semibold">
-                  TERMINAL RESULTS
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined text-[18px]">update</span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold font-heading text-zinc-400">
-                    {analytics.totals.rejections}
-                  </span>
-                  <span className="text-[11px] font-mono text-zinc-400">Post-mortems</span>
-                </div>
-                <p className="text-[11px] text-sage-40 mt-1">
-                  Provides empirical feedback for recalibration
-                </p>
-              </div>
-              <div className="w-full bg-[#0c0f0e] h-1.5 rounded-full mt-3.5 overflow-hidden border border-[#3f4a38]/20">
-                <div
-                  className="bg-zinc-400 h-full rounded-full"
-                  style={{ width: `${Math.min(100, analytics.totals.rejections * 25)}%` }}
-                />
-              </div>
-            </div>
-          </div>
+          <CompactMetricStrip
+            items={[
+              {
+                id: "total-apps",
+                label: "Total Applications",
+                value: analytics.totals.applications,
+                detail: `${analytics.totals.offers} offers secured`,
+                statusText: "Tracked",
+                progressPct: Math.min(100, analytics.totals.applications * 15),
+              },
+              {
+                id: "interviews",
+                label: "Interview Rounds",
+                value: analytics.totals.interviews,
+                detail: "stages reached",
+                statusText: "Evaluator Loops",
+                progressPct: Math.min(100, analytics.totals.interviews * 20),
+              },
+              {
+                id: "offers",
+                label: "Offers Received",
+                value: analytics.totals.offers,
+                detail: "secured",
+                statusText: "High Alignment",
+                progressPct: Math.min(100, analytics.totals.offers * 50),
+              },
+              {
+                id: "rejections",
+                label: "Rejections",
+                value: analytics.totals.rejections,
+                detail: "recorded loops",
+                statusText: "Feedback",
+                progressPct: Math.min(100, analytics.totals.rejections * 25),
+              },
+            ]}
+          />
 
           {/* ── Stage Distribution Pill Strip ── */}
           <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-5 shadow-md">
             <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-3">
-              Stage Distribution (Recorded Outcomes)
+              Stage Distribution
             </h2>
             <div className="flex flex-wrap gap-2">
               {analytics.stageDistribution.map((s) => (
@@ -214,7 +112,7 @@ export default async function OutcomesPage() {
             {/* Historical patterns */}
             <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
               <h2 className="text-xs font-mono uppercase tracking-wider text-sage-40 font-semibold mb-3">
-                Historical Patterns (Evidence-Backed)
+                Historical Patterns
               </h2>
               {analytics.patterns.length === 0 ? (
                 <p className="text-xs text-sage-40 py-2">
@@ -356,6 +254,16 @@ export default async function OutcomesPage() {
           </ol>
         </section>
       )}
+
+      {/* Non-causal disclaimer — Phase 20 invariant */}
+      <footer className="pt-4 border-t border-outline-variant/30 flex items-start gap-2.5 text-zinc-400">
+        <span className="material-symbols-outlined text-[16px] text-zinc-500 shrink-0 mt-0.5">
+          info
+        </span>
+        <p className="font-mono text-[11px] text-zinc-400 leading-relaxed">
+          {CAUSALITY_DISCLAIMER}
+        </p>
+      </footer>
     </div>
   );
 }

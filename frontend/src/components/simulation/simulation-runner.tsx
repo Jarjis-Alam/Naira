@@ -137,16 +137,16 @@ export function SimulationRunner({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-widest text-primary font-bold">
-                PLACEMENT SIMULATION • {simulation.isGeneralizedRole ? "ROLE BENCHMARK" : "COMPANY TARGET"}
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">
+                {simulation.isGeneralizedRole ? "Role Benchmark" : "Company Target"}
               </span>
             </div>
             <h1 className="text-headline-sm sm:text-headline-md font-bold text-text-primary tracking-tight">
               {simulation.companyName} — {simulation.roleName}
             </h1>
             <p className="text-body-sm text-text-secondary max-w-2xl leading-relaxed">
-              Experience the multi-round screening and technical evaluation process before facing the real placement committee.
+              Multi-round evaluation covering technical problems and behavioral assessments.
             </p>
           </div>
 
@@ -158,11 +158,11 @@ export function SimulationRunner({
                   : "bg-primary/15 text-primary-text border-primary/30"
               }`}
             >
-              {isSimulationCompleted ? "SIMULATION COMPLETED" : "IN PROGRESS"}
+              {isSimulationCompleted ? "Completed" : "In Progress"}
             </span>
             {isSimulationCompleted && simulation.overallReadinessScore !== null && (
               <div className="px-4 py-1.5 rounded-lg bg-surface-high border border-border font-mono text-center">
-                <span className="text-label-xs text-text-muted block">READINESS</span>
+                <span className="text-label-xs text-text-muted block">Readiness</span>
                 <span className="text-title-md font-bold text-secondary">
                   {simulation.overallReadinessScore}%
                 </span>
@@ -250,8 +250,8 @@ export function SimulationRunner({
           <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-secondary/30 space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/60 pb-6">
               <div>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-secondary font-bold">
-                  EVALUATION COMPLETE
+                <span className="text-[11px] font-mono uppercase tracking-wider text-secondary font-semibold">
+                  Evaluation Report
                 </span>
                 <h2 className="text-title-lg sm:text-headline-sm font-bold text-text-primary mt-1">
                   Placement Readiness Report
@@ -261,7 +261,7 @@ export function SimulationRunner({
                 </p>
               </div>
               <div className="p-4 rounded-xl bg-surface-high border border-border text-center">
-                <span className="text-[10px] font-mono text-text-muted uppercase block">OVERALL READINESS</span>
+                <span className="text-[10px] font-mono text-text-muted uppercase block">Overall Readiness</span>
                 <span className="text-3xl sm:text-4xl font-bold font-mono text-secondary">
                   {simulation.summaryReport.overallReadinessScore}%
                 </span>
@@ -462,7 +462,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(1)}
                   disabled={submitting}
-                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none cursor-pointer disabled:opacity-50"
                 >
                   <span>{submitting ? "Submitting Screening..." : "Submit Screening Answers"}</span>
                   <span className="material-symbols-outlined text-[18px]">send</span>
@@ -507,7 +507,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(2)}
                   disabled={submitting}
-                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none cursor-pointer disabled:opacity-50"
                 >
                   <span>{submitting ? "Running Test Cases..." : "Run Test Cases & Submit Round"}</span>
                   <span className="material-symbols-outlined text-[18px]">play_arrow</span>
@@ -549,7 +549,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(3)}
                   disabled={submitting}
-                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none cursor-pointer disabled:opacity-50"
                 >
                   <span>{submitting ? "Verifying Bug Fix..." : "Submit Verified Fix"}</span>
                   <span className="material-symbols-outlined text-[18px]">build</span>
@@ -562,7 +562,7 @@ export function SimulationRunner({
             <div className="space-y-4">
               <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
                 <span className="text-[10px] font-mono uppercase text-primary-green font-bold block">
-                  INTERVIEWER ARCHITECTURE PROMPT
+                  Technical Question
                 </span>
                 <p className="text-body-sm text-text-primary font-semibold leading-relaxed">
                   &ldquo;How does a B+ Tree index accelerate SQL queries, and in what real-world scenario would adding an index actually degrade write performance?&rdquo;
@@ -583,7 +583,7 @@ export function SimulationRunner({
 
               <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
                 <span className="text-[10px] font-mono uppercase text-bright-green font-bold block">
-                  FOLLOW-UP QUESTION
+                  Follow-up Question
                 </span>
                 <p className="text-body-sm text-text-primary font-semibold leading-relaxed">
                   &ldquo;What is the trade-off between optimistic locking and pessimistic locking under high database contention?&rdquo;
@@ -607,7 +607,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(4)}
                   disabled={submitting}
-                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none cursor-pointer disabled:opacity-50"
                 >
                   <span>{submitting ? "Evaluating Technical Depth..." : "Submit Technical Interview"}</span>
                   <span className="material-symbols-outlined text-[18px]">record_voice_over</span>
@@ -620,7 +620,7 @@ export function SimulationRunner({
             <div className="space-y-4">
               <div className="p-4 rounded-cards bg-card-elevated/70 border border-neutral-border space-y-2">
                 <span className="text-[10px] font-mono uppercase text-primary-green font-bold block">
-                  HR BEHAVIORAL PROMPT (STAR METHOD)
+                  Behavioral Question (STAR)
                 </span>
                 <p className="text-body-sm text-text-primary font-semibold leading-relaxed">
                   &ldquo;Describe a challenging technical roadblock you encountered in a recent project. How did you diagnose the problem, collaborate with others, and what measurable outcome did you achieve?&rdquo;
@@ -644,7 +644,7 @@ export function SimulationRunner({
                   type="button"
                   onClick={() => handleRoundSubmit(5)}
                   disabled={submitting}
-                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
+                  className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none cursor-pointer disabled:opacity-50"
                 >
                   <span>{submitting ? "Finalizing Simulation..." : "Submit Final HR Interview & Generate Report"}</span>
                   <span className="material-symbols-outlined text-[18px]">check_circle</span>

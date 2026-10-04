@@ -48,6 +48,7 @@ export function NexoraLogo({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full"
+          aria-hidden="true"
         >
           {/* Left Shape */}
           <path d="M100 100 L240 240 V400 H100 Z" fill="currentColor" />

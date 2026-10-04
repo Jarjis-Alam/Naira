@@ -10,7 +10,6 @@ import { STATUS_META } from "@/lib/applications/status-meta";
 import { ApplicationActions } from "@/components/applications/application-actions";
 import { getOutcomeAnalysis } from "@/server/outcome-intelligence";
 import { OutcomePanel } from "@/components/applications/outcome-panel";
-import { Eyebrow } from "@/components/ui/eyebrow";
 
 export default async function ApplicationDetailPage({
   params,
@@ -23,18 +22,13 @@ export default async function ApplicationDetailPage({
     notFound();
   }
 
-  let detail;
-  try {
-    detail = await getApplicationDetail(userId, (await params).id);
-  } catch {
+  const { id } = await params;
+  const detail = await getApplicationDetail(userId, id);
+  if (!detail) {
     notFound();
   }
 
-  // Phase 20 — outcome analysis when the application carries an outcome.
-  const OUTCOME_STATUSES = ["REJECTED", "WITHDRAWN", "OFFER", "CLOSED"];
-  const outcomeDetail = OUTCOME_STATUSES.includes(detail.application.status)
-    ? await getOutcomeAnalysis(userId, detail.application.id).catch(() => null)
-    : null;
+  const outcomeDetail = await getOutcomeAnalysis(userId, id).catch(() => null);
 
   const { application: app, readiness, gaps, checklist, timeline } = detail;
   const meta = STATUS_META[app.status];
@@ -54,11 +48,15 @@ export default async function ApplicationDetailPage({
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
-      {/* Breadcrumb + Header */}
+      {/* Back Link + Header */}
       <header className="space-y-3 border-b border-circuit-border/60 pb-6">
-        <Eyebrow system="NEXORA" category="APPLICATION DETAIL">
-          {app.companyName}
-        </Eyebrow>
+        <Link
+          href="/applications"
+          className="inline-flex items-center gap-1.5 text-caption font-mono text-sage-40 hover:text-phosphor-white transition-colors"
+        >
+          <span className="material-symbols-outlined text-[14px]">arrow_back</span>
+          <span>Back to Applications</span>
+        </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
@@ -113,7 +111,7 @@ export default async function ApplicationDetailPage({
       <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium">
-            Application Readiness Dimensions
+            Application Readiness
           </h2>
           <p className="text-caption font-mono text-sage-40">{readiness.headline}</p>
         </div>
@@ -134,14 +132,14 @@ export default async function ApplicationDetailPage({
           ))}
         </div>
         <p className="text-[11px] font-mono text-sage-40 mt-4 pt-3 border-t border-circuit-border/40">
-          Independent measurements from Phases 15, 16, 17, and 18 — preserved as distinct dimensions.
+          Readiness tracked across preparation, target role fit, resume ATS, and interview performance.
         </p>
       </section>
 
       {/* Resume association */}
       <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
         <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
-          Resume Association
+          Resume
         </h2>
         {app.resume.variantId ? (
           <div className="flex flex-wrap items-center gap-3">
@@ -160,7 +158,7 @@ export default async function ApplicationDetailPage({
           </div>
         ) : (
           <p className="text-body-sm text-sage-60">
-            No resume variant attached. Attach a Phase 18 variant from the actions below to snapshot compatibility.
+            No resume attached. Attach a tailored resume from the actions below.
           </p>
         )}
       </section>
@@ -169,7 +167,7 @@ export default async function ApplicationDetailPage({
         {/* Gaps */}
         <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
           <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
-            Application Gaps
+            Preparation Gaps
           </h2>
           {gaps.length === 0 ? (
             <p className="text-body-sm text-sage-40">
@@ -216,7 +214,7 @@ export default async function ApplicationDetailPage({
         {/* Checklist */}
         <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
           <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-3">
-            Application Checklist
+            Checklist
           </h2>
           <ul className="space-y-2.5">
             {checklist.map((item) => (
@@ -328,7 +326,7 @@ export default async function ApplicationDetailPage({
       {/* Timeline */}
       <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
         <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-4">
-          Timeline & Event Log
+          Timeline
         </h2>
         <ol className="relative border-l border-circuit-border/60 ml-2 space-y-4">
           {timeline.map((event) => (
@@ -364,7 +362,7 @@ export default async function ApplicationDetailPage({
       {detail.notes && (
         <section className="rounded-cards border border-circuit-border bg-ground-iron p-6 shadow-none">
           <h2 className="text-caption font-mono uppercase tracking-wider text-moss-70 font-medium mb-2">
-            Private Notes
+            Notes
           </h2>
           <p className="text-body-sm text-sage-60 whitespace-pre-wrap">{detail.notes}</p>
         </section>

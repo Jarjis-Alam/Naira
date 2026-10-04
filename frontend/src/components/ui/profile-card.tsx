@@ -161,7 +161,7 @@ export function ProfileCard({
 
             {/* Verified Badge */}
             <div
-              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-text-inverse shadow-md"
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-black shadow-md"
               title="Verified Creator"
             >
               <span className="material-symbols-outlined text-[14px]">check</span>

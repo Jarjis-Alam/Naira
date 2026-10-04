@@ -13,7 +13,7 @@ import { getResumeHealth } from "@/server/resume-intelligence";
 import { getApplicationDashboardCard } from "@/server/application-intelligence";
 import { getOutcomeDashboardCard } from "@/server/outcome-intelligence";
 import { PlacementIntelligence2Widget } from "@/components/analytics/placement-intelligence-2-widget";
-import { MetricCardV2 } from "@/components/ui/metric-card-v2";
+import { CompactMetricStrip } from "@/components/ui/compact-metric-strip";
 import { QuickActionsGrid } from "@/components/ui/quick-actions-grid";
 import { ActivityTimeline } from "@/components/ui/activity-timeline";
 import { getGreeting, formatDateTime } from "@/lib/utils";
@@ -196,183 +196,94 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6 pb-16 max-w-7xl mx-auto">
-      {/* ── 1. Hero Greeting & Inspiration Card (Monochrome) ── */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        {/* Left Greeting & Category Tabs */}
-        <div className="lg:col-span-7 space-y-4">
-          <div>
-            <span className="text-xs text-text-muted tracking-wide block">
-              Good afternoon,
-            </span>
-            <h1 className="text-3xl font-extrabold tracking-tight font-heading text-white flex items-center gap-2 mt-0.5">
-              {firstName} <span className="inline-block animate-wave origin-[70%_70%]">👋</span>
-            </h1>
-            <p className="text-xs text-text-muted mt-1">
-              Here&apos;s your placement preparation at a glance.
-            </p>
-          </div>
-
-          {/* Horizontal Pill Navigation Tabs */}
-          <div className="flex items-center gap-2 pt-1 overflow-x-auto pb-1 text-xs scrollbar-none">
-            <Link
-              href="/dashboard"
-              className="px-4 py-1.5 rounded-full bg-white text-black font-semibold flex items-center gap-1.5 shadow-sm shrink-0 transition-all"
-            >
-              <span className="material-symbols-outlined text-[15px]">dashboard</span>
-              <span>Overview</span>
-            </Link>
-            <Link
-              href="/tests"
-              className="px-3.5 py-1.5 rounded-full bg-surface-container text-text-secondary hover:text-white border border-outline-variant flex items-center gap-1.5 transition-colors shrink-0"
-            >
-              <span className="material-symbols-outlined text-[15px]">code</span>
-              <span>Preparation</span>
-            </Link>
-            <Link
-              href="/applications"
-              className="px-3.5 py-1.5 rounded-full bg-surface-container text-text-secondary hover:text-white border border-outline-variant flex items-center gap-1.5 transition-colors shrink-0"
-            >
-              <span className="material-symbols-outlined text-[15px]">send</span>
-              <span>Applications</span>
-            </Link>
-            <Link
-              href="/resume"
-              className="px-3.5 py-1.5 rounded-full bg-surface-container text-text-secondary hover:text-white border border-outline-variant flex items-center gap-1.5 transition-colors shrink-0"
-            >
-              <span className="material-symbols-outlined text-[15px]">description</span>
-              <span>Resume</span>
-            </Link>
-            <Link
-              href="/simulation"
-              className="px-3.5 py-1.5 rounded-full bg-surface-container text-text-secondary hover:text-white border border-outline-variant flex items-center gap-1.5 transition-colors shrink-0"
-            >
-              <span className="material-symbols-outlined text-[15px]">videocam</span>
-              <span>Simulations</span>
-            </Link>
-          </div>
+      {/* ── 1. Page Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs text-text-muted tracking-wide block">
+            {getGreeting()},
+          </span>
+          <h1 className="text-3xl font-extrabold tracking-tight font-heading text-white flex items-center gap-2 mt-0.5">
+            {firstName} <span className="inline-block animate-wave origin-[70%_70%]">👋</span>
+          </h1>
+          <p className="text-xs text-text-muted mt-1">
+            Here&apos;s your placement preparation at a glance.
+          </p>
         </div>
 
-        {/* Right Inspiration Landscape Graphic Card (Monochrome) */}
-        <div className="lg:col-span-5">
-          <div className="relative overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-low h-28 p-5 flex items-center justify-between shadow-md">
-            {/* Background Mountain/Silver Graphic */}
-            <div className="absolute inset-y-0 right-0 w-3/5 pointer-events-none overflow-hidden">
-              <svg
-                className="absolute inset-0 w-full h-full"
-                fill="none"
-                preserveAspectRatio="none"
-                viewBox="0 0 300 120"
-              >
-                <defs>
-                  <radialGradient cx="65%" cy="35%" id="sunGlow" r="60%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-                    <stop offset="40%" stopColor="#a1a1aa" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#141418" stopOpacity="0" />
-                  </radialGradient>
-                </defs>
-                {/* Glowing Silver Orb */}
-                <circle cx="210" cy="40" fill="url(#sunGlow)" r="28" />
-                {/* Back Mountains */}
-                <path d="M80 120 L160 55 L240 120 Z" fill="#27272a" opacity="0.6" />
-                <path d="M150 120 L230 40 L310 120 Z" fill="#27272a" opacity="0.4" />
-                {/* Front Layer Mountains */}
-                <path d="M100 120 L180 75 L250 120 Z" fill="#18181b" opacity="0.95" />
-                <path d="M190 120 L260 60 L330 120 Z" fill="#18181b" opacity="0.95" />
-              </svg>
-              {/* Pillars Words */}
-              <div className="absolute right-4 top-3 text-[8px] font-mono tracking-widest text-text-muted uppercase flex flex-col gap-0.5 text-right font-semibold">
-                <span>LEARN</span>
-                <span>BUILD</span>
-                <span>APPLY</span>
-                <span>GROW</span>
-              </div>
-            </div>
-
-            {/* Quote Text */}
-            <div className="relative z-10 max-w-[65%]">
-              <p className="text-xs text-white italic font-medium leading-relaxed">
-                “Small, consistent steps<br />compound into opportunities.”
-              </p>
-              <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 mt-2 block font-semibold">
-                NEXORA
-              </span>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/planner"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[16px]">event_note</span>
+            <span>Study Planner</span>
+          </Link>
+          <Link
+            href="/tests"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-high border border-outline-variant text-zinc-300 hover:text-white text-xs font-semibold transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">quiz</span>
+            <span>Practice Tests</span>
+          </Link>
         </div>
-      </section>
+      </div>
 
-      {/* ── 2. 4-Column Readiness Metric Cards ── */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1: Preparation Readiness */}
-        <MetricCardV2
-          title="Preparation Readiness"
-          value={
-            dataSufficiency.hasCompletedBaseline && readiness.score !== null
-              ? `${readiness.score}%`
-              : "--"
-          }
-          accentColor="green"
-          icon="query_stats"
-          progressPct={dataSufficiency.hasCompletedBaseline ? readiness.score : 0}
-          footerText={
-            dataSufficiency.hasCompletedBaseline
-              ? "Keep going. Consistency matters."
-              : "Complete baseline assessment"
-          }
-          href={baselineTestId ? `/tests` : "/tests"}
-        />
-
-        {/* Metric 2: Target Readiness */}
-        <MetricCardV2
-          title="Target Readiness"
-          value={
-            targetStrategy.readiness.targetScore !== null
-              ? `${targetStrategy.readiness.targetScore}%`
-              : "--"
-          }
-          accentColor="pink"
-          icon="radar"
-          progressPct={targetStrategy.readiness.targetScore}
-          footerText={
-            targetStrategy.readiness.targetScore !== null
-              ? `${targetStrategy.gaps.length} target gaps remaining`
-              : "Set a target to measure this."
-          }
-          href="/target"
-        />
-
-        {/* Metric 3: Resume ATS Compatibility */}
-        <MetricCardV2
-          title="Resume ATS Compatibility"
-          value={resumeHealth?.atsScore ? `${resumeHealth.atsScore}%` : "--"}
-          accentColor="blue"
-          icon="description"
-          progressPct={resumeHealth?.atsScore}
-          footerText={
-            resumeHealth?.atsScore
-              ? "Your resume is on the right track."
-              : "Upload resume to scan ATS."
-          }
-          href="/resume"
-        />
-
-        {/* Metric 4: Interview Readiness */}
-        <MetricCardV2
-          title="Interview Readiness"
-          value={
-            latestSimulation?.overallReadinessScore !== null && latestSimulation?.overallReadinessScore !== undefined
-              ? `${latestSimulation.overallReadinessScore}%`
-              : "--"
-          }
-          accentColor="amber"
-          icon="videocam"
-          progressPct={latestSimulation?.overallReadinessScore}
-          footerText={
-            latestSimulation?.overallReadinessScore !== null && latestSimulation?.overallReadinessScore !== undefined
-              ? `Last simulation: ${latestSimulation.overallReadinessScore}%`
-              : "Complete a simulation to measure."
-          }
-          href="/simulation"
+      {/* ── 2. Unified 4-Metric Overview Strip ── */}
+      <section aria-label="Performance Overview">
+        <CompactMetricStrip
+          items={[
+            {
+              id: "prep",
+              label: "Preparation",
+              value:
+                dataSufficiency.hasCompletedBaseline && readiness.score !== null
+                  ? `${readiness.score}%`
+                  : "--",
+              detail: dataSufficiency.hasCompletedBaseline
+                ? "Calibrated"
+                : "Baseline pending",
+              progressPct: dataSufficiency.hasCompletedBaseline ? readiness.score : 0,
+              href: baselineTestId ? "/tests" : "/tests",
+            },
+            {
+              id: "target",
+              label: "Target Fit",
+              value:
+                targetStrategy.readiness.targetScore !== null
+                  ? `${targetStrategy.readiness.targetScore}%`
+                  : "--",
+              detail:
+                targetStrategy.readiness.targetScore !== null
+                  ? `${targetStrategy.gaps.length} gaps remaining`
+                  : "Set target role",
+              progressPct: targetStrategy.readiness.targetScore,
+              href: "/target",
+            },
+            {
+              id: "ats",
+              label: "Resume ATS",
+              value: resumeHealth?.atsScore ? `${resumeHealth.atsScore}%` : "--",
+              detail: resumeHealth?.atsScore ? "Analyzed" : "Upload resume",
+              progressPct: resumeHealth?.atsScore,
+              href: "/resume",
+            },
+            {
+              id: "interview",
+              label: "Simulation",
+              value:
+                latestSimulation?.overallReadinessScore !== null &&
+                latestSimulation?.overallReadinessScore !== undefined
+                  ? `${latestSimulation.overallReadinessScore}%`
+                  : "--",
+              detail:
+                latestSimulation?.overallReadinessScore !== null &&
+                latestSimulation?.overallReadinessScore !== undefined
+                  ? "Latest verified"
+                  : "Start mock",
+              progressPct: latestSimulation?.overallReadinessScore,
+              href: "/simulation",
+            },
+          ]}
         />
       </section>
 
@@ -380,88 +291,72 @@ export default async function DashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column (7 cols): Today + Focus Areas + Intelligence Engine */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Today Card */}
-          <div className="bg-surface-container-low rounded-2xl p-5 border border-outline-variant shadow-md">
-            <div className="flex items-center justify-between mb-4">
+          {/* Today's Focus Card (Flattened, no nested cards) */}
+          <div className="bg-surface-container-low rounded-2xl p-6 border border-outline-variant shadow-md space-y-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-text-muted">
+                <span className="material-symbols-outlined text-[18px] text-white">
                   calendar_today
                 </span>
-                <h2 className="text-sm font-bold text-white">Today</h2>
+                <h2 className="text-sm font-bold text-white">Today&apos;s Focus</h2>
                 <span className="text-[10px] bg-surface-container border border-outline-variant text-text-muted px-2 py-0.5 rounded-full font-mono">
                   {currentDateFormatted}
                 </span>
               </div>
               <Link
-                href="/roadmap"
+                href="/planner"
                 className="text-xs text-text-muted hover:text-white flex items-center gap-1 transition-colors font-mono"
               >
-                View All <span className="text-sm leading-none">→</span>
+                Plan Details <span className="text-sm leading-none">→</span>
               </Link>
             </div>
-            <p className="text-[11px] text-text-muted mb-3.5">
-              Your next best action based on your progress.
-            </p>
 
-            {/* Inner Focus Item Box */}
-            <div className="bg-surface-container rounded-xl p-4 border border-outline-variant/60">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 mt-0.5">
-                    <span className="material-symbols-outlined text-[20px]">
-                      database
-                    </span>
-                  </div>
-                  <div>
-                    <span className="inline-block px-2 py-0.5 rounded-md bg-white/15 text-white text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 mt-0.5">
+                  <span className="material-symbols-outlined text-[20px]">
+                    flag
+                  </span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block px-2 py-0.5 rounded text-white bg-white/15 text-[10px] font-mono font-bold uppercase tracking-wider">
                       {prepFocus.category}
                     </span>
                     <h3 className="text-sm font-bold text-white leading-tight">
                       {prepFocus.label}
                     </h3>
-                    <p className="text-[11px] text-text-muted mt-1">
-                      {prepFocus.detail}
-                    </p>
                   </div>
+                  <p className="text-xs text-text-secondary mt-1.5 leading-relaxed">
+                    {prepFocus.detail}
+                  </p>
                 </div>
-
-                {/* Start Practice Pill Button */}
-                <Link
-                  href={topAction?.route || (baselineTestId ? `/tests` : "/tests")}
-                  className="px-4 py-2 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-zinc-200 transition-all shrink-0"
-                >
-                  <span>Start Practice</span>
-                  <span className="text-sm leading-none">→</span>
-                </Link>
               </div>
 
-              {/* Metadata pills row */}
-              <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-outline-variant/40 text-[10px] text-text-muted">
-                <span className="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant flex items-center gap-1.5 font-mono">
-                  <span className="material-symbols-outlined text-[13px] text-text-muted">
-                    quiz
-                  </span>
-                  10 questions
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant flex items-center gap-1.5 font-mono">
-                  <span className="material-symbols-outlined text-[13px] text-text-muted">
-                    schedule
-                  </span>
-                  ~25 mins
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant flex items-center gap-1.5 font-mono">
-                  <span className="material-symbols-outlined text-[13px] text-text-muted">
-                    bolt
-                  </span>
-                  Based on your performance
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-surface-container-high border border-outline-variant flex items-center gap-1.5 font-mono">
-                  <span className="material-symbols-outlined text-[13px] text-text-muted">
-                    psychology
-                  </span>
-                  Adaptive
-                </span>
-              </div>
+              {/* Start Practice CTA */}
+              <Link
+                href={topAction?.route || (baselineTestId ? `/tests` : "/tests")}
+                className="px-5 py-2.5 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:bg-zinc-200 transition-all shrink-0 self-start sm:self-center"
+              >
+                <span>Start Practice</span>
+                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </Link>
+            </div>
+
+            {/* Clean metadata strip without nested card borders */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-3 border-t border-outline-variant/40 text-[11px] font-mono text-text-muted">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[14px]">quiz</span>
+                10 questions
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[14px]">schedule</span>
+                ~25 mins
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[14px]">psychology</span>
+                Adaptive
+              </span>
             </div>
           </div>
 
@@ -482,7 +377,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
             <p className="text-[11px] text-text-muted mb-4">
-              Topics to focus on based on your performance and targets.
+              Key topics to practice based on your performance.
             </p>
 
             {/* Table Container */}
@@ -660,7 +555,7 @@ export default async function DashboardPage() {
 
               {targetStrategy.readiness.targetScore !== null && (
                 <div className="pt-2.5 border-t border-outline-variant/40 flex items-center justify-between">
-                  <span className="text-[11px] text-text-muted">Target Fit Score</span>
+                  <span className="text-[11px] text-text-muted">Target Fit</span>
                   <span className="text-sm font-mono font-bold text-white">
                     {targetStrategy.readiness.targetScore}%
                   </span>

@@ -741,13 +741,13 @@ export async function getActiveStudyPlan(userId: string): Promise<AdaptiveStudyP
     generatedAt: existingPlan.generatedAt.toISOString(),
     validFrom: existingPlan.validFrom.toISOString(),
     validUntil: existingPlan.validUntil ? existingPlan.validUntil.toISOString() : null,
-    summary: existingPlan.summary || "Evidence-calibrated preparation schedule.",
+    summary: existingPlan.summary || "Daily study plan tailored to your weak areas and target roles.",
     todaySchedule,
     weeklySchedule,
     whyThisPlan: {
-      title: "Evidence-Backed Allocation Architecture",
+      title: "Allocation Rationale",
       description:
-        "Nexora weights your preparation schedule based on validated deficiencies, target company benchmarks, and retention spacing rather than uniform subject splitting.",
+        "Your schedule is weighted toward your active focus areas, target requirements, and retention spacing rather than uniform subject splitting.",
       keyDrivers: topDrivers,
     },
     emptyState: null,

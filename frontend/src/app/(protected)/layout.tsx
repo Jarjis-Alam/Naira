@@ -1,5 +1,7 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { TopHeader } from "@/components/layout/top-header";
+import { SkipToContent } from "@/components/ui/skip-to-content";
+import { BackToTop } from "@/components/ui/back-to-top";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { tests } from "@/db/schema";
@@ -24,6 +26,7 @@ export default async function ProtectedLayout({
 
   return (
     <div className="flex min-h-screen bg-void-black text-sage-60 tech-grid">
+      <SkipToContent />
       <Sidebar baselineTestId={baselineTestId} isAdmin={isAdmin} />
       <div className="flex-1 md:ml-60 min-h-screen flex flex-col overflow-x-hidden">
         <TopHeader session={session} />
@@ -36,6 +39,7 @@ export default async function ProtectedLayout({
           </div>
         </main>
       </div>
+      <BackToTop />
     </div>
   );
 }

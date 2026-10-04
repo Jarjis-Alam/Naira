@@ -122,6 +122,11 @@ export function ClickSpark({
 
   // ── Click handler ─────────────────────────────────────────────────────────
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // Respect system preference for reduced motion
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();

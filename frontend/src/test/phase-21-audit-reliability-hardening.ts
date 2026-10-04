@@ -155,18 +155,18 @@ async function run() {
   const appActionsPath = path.join(process.cwd(), "src", "components", "applications", "application-actions.tsx");
   const appActionsSource = fs.readFileSync(appActionsPath, "utf8");
   assert(
-    appActionsSource.includes("window.confirm") && appActionsSource.includes("terminal"),
+    (appActionsSource.includes("ConfirmationDialog") || appActionsSource.includes("window.confirm")) && appActionsSource.includes("terminal"),
     "ApplicationActions guards terminal status transitions with confirmation prompt"
   );
   assert(
-    appActionsSource.includes("Delete Application") && appActionsSource.includes("window.confirm"),
+    appActionsSource.includes("Delete Application") && (appActionsSource.includes("ConfirmationDialog") || appActionsSource.includes("window.confirm")),
     "ApplicationActions guards application deletion with confirmation prompt"
   );
 
   const jdPanelPath = path.join(process.cwd(), "src", "components", "resume", "job-description-panel.tsx");
   const jdPanelSource = fs.readFileSync(jdPanelPath, "utf8");
   assert(
-    jdPanelSource.includes("window.confirm") && jdPanelSource.includes("handleRemove"),
+    (jdPanelSource.includes("ConfirmationDialog") || jdPanelSource.includes("window.confirm")) && (jdPanelSource.includes("handleRemove") || jdPanelSource.includes("executeRemove")),
     "JobDescriptionPanel guards JD removal with confirmation prompt"
   );
 

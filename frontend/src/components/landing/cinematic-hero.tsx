@@ -55,7 +55,7 @@ export function CinematicHero({ isAuthenticated }: CinematicHeroProps) {
   };
 
   return (
-    <section className="relative w-screen h-screen min-h-screen overflow-hidden bg-black text-white select-none">
+    <section className="relative w-full h-screen min-h-screen overflow-hidden bg-black text-white select-none">
       {/* 1. Full-screen Cinematic Video Background (Edge-to-Edge) */}
       <video
         ref={videoRef}

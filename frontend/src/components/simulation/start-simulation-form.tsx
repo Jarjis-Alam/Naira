@@ -92,7 +92,7 @@ export function StartSimulationForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none disabled:opacity-50"
+          className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none cursor-pointer disabled:opacity-50"
         >
           <span>{isSubmitting ? "Initializing Rounds..." : "Start Placement Simulation"}</span>
           <span className="material-symbols-outlined text-[18px]">play_arrow</span>

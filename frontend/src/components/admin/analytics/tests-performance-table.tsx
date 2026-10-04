@@ -164,7 +164,7 @@ export function TestsPerformanceTable({
                             onClick={() => onSelectForCompare(t.id)}
                             className={`rounded px-2 py-1 text-label-xs font-mono transition-colors border ${
                               isSelected
-                                ? "bg-primary text-text-inverse border-primary font-semibold"
+                                ? "bg-primary text-black border-primary font-semibold"
                                 : "bg-surface-high text-text-secondary border-border hover:text-text-primary hover:bg-surface-highest"
                             }`}
                           >

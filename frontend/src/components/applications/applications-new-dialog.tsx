@@ -110,7 +110,7 @@ export function ApplicationsNewDialog({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-bright-green transition-all inline-flex items-center gap-2 shadow-none self-start"
+        className="bg-primary-green text-void-black font-semibold text-body-sm px-6 py-2.5 rounded-buttons hover:bg-zinc-200 transition-all inline-flex items-center gap-2 shadow-none self-start cursor-pointer"
       >
         <span>New Application</span>
         <span className="material-symbols-outlined text-[18px]">add_link</span>
@@ -317,7 +317,7 @@ export function ApplicationsNewDialog({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-buttons bg-primary-green px-5 py-2 text-body-sm font-semibold text-void-black hover:bg-bright-green disabled:opacity-60"
+                  className="rounded-buttons bg-primary-green px-5 py-2 text-body-sm font-semibold text-void-black hover:bg-zinc-200 disabled:opacity-60 cursor-pointer"
                 >
                   {saving ? "Creating…" : "Create Application"}
                 </button>

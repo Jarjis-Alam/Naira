@@ -93,7 +93,7 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
     <section className="rounded-2xl border border-border/80 bg-surface/90 p-5 space-y-5">
       <div>
         <h2 className="text-[10px] font-mono uppercase tracking-wider text-text-muted font-bold">
-          Outcome Intelligence
+          Outcome Analysis
         </h2>
         <p className="text-body-sm text-text-primary mt-2">
           <span className="font-semibold">Outcome: </span>
@@ -133,7 +133,7 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
       {/* Observations (engine-rendered, non-causal) */}
       {analysis.observations.length > 0 && (
         <div>
-          <p className={labelCls}>Observed preparation signals</p>
+          <p className={labelCls}>Observed signals</p>
           <ul className="mt-2 space-y-1.5">
             {analysis.observations.map((o, idx) => (
               <li key={idx} className="text-body-sm text-text-secondary">
@@ -156,7 +156,7 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
       {/* Next focus */}
       {analysis.nextFocus.length > 0 && (
         <div>
-          <p className={labelCls}>Next preparation focus</p>
+          <p className={labelCls}>Next focus</p>
           <ul className="mt-2 space-y-1.5">
             {analysis.nextFocus.slice(0, 3).map((f) => (
               <li key={`${f.domain}-${f.topic}`} className="flex items-center justify-between gap-3">
@@ -190,7 +190,7 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
       {/* Reflection form (student-reported) */}
       <details className="rounded-lg border border-border/60 p-3" open={Boolean(reflection)}>
         <summary className="cursor-pointer text-[11px] font-mono uppercase text-text-muted">
-          {reflection ? "Student reflection (edit)" : "Add student reflection"}
+          {reflection ? "Personal reflection (edit)" : "Add reflection"}
         </summary>
         <form
           className="mt-3 space-y-2.5"
@@ -218,7 +218,7 @@ export function OutcomePanel({ detail }: { detail: ApplicationOutcomeDetail }) {
           <button
             type="submit"
             disabled={busy}
-            className="rounded-lg bg-primary px-4 py-2 text-body-sm font-semibold text-text-inverse hover:bg-primary-text disabled:opacity-60"
+            className="rounded-lg bg-primary px-4 py-2 text-body-sm font-semibold text-black hover:bg-zinc-200 cursor-pointer disabled:opacity-60"
           >
             {busy ? "Saving…" : "Save reflection"}
           </button>

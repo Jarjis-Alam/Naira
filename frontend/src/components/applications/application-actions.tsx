@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { STATUS_META } from "@/lib/applications/status-meta";
 import { INTERVIEW_TYPES, type ApplicationStatus } from "@/lib/applications/domain";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 type Transition = { status: ApplicationStatus; label: string; terminal: boolean };
 
@@ -28,6 +29,21 @@ export function ApplicationActions({
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    confirmLabel: string;
+    isDestructive: boolean;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    confirmLabel: "Confirm",
+    isDestructive: true,
+    onConfirm: () => {},
+  });
 
   const transitions: Transition[] = allowedTransitions.map((status) => ({
     status,
@@ -88,13 +104,24 @@ export function ApplicationActions({
               type="button"
               disabled={busy !== null}
               onClick={() => {
-                if (
-                  t.terminal &&
-                  typeof window !== "undefined" &&
-                  !window.confirm(
-                    `Mark this application as "${t.label}"? This is a terminal state that closes the application.`
-                  )
-                ) {
+                if (t.terminal) {
+                  setConfirmConfig({
+                    isOpen: true,
+                    title: `Transition to ${t.label}`,
+                    description: `Mark this application as "${t.label}"? This is a terminal state that closes the application.`,
+                    confirmLabel: `Mark as ${t.label}`,
+                    isDestructive: true,
+                    onConfirm: () => {
+                      setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+                      call(
+                        `status-${t.status}`,
+                        `/api/student/applications/${applicationId}?action=status`,
+                        "PATCH",
+                        { status: t.status },
+                        `Status updated to ${t.label}`
+                      );
+                    },
+                  });
                   return;
                 }
                 call(
@@ -105,7 +132,7 @@ export function ApplicationActions({
                   `Status updated to ${t.label}`
                 );
               }}
-              className={`rounded-lg px-3 py-1.5 text-[11px] font-mono font-bold uppercase transition-colors disabled:opacity-50 ${t.terminal ? "border border-zinc-700 text-zinc-400 hover:bg-zinc-800" : "bg-primary/10 text-primary-text hover:bg-primary/20"}`}
+              className={`rounded-lg px-3 py-1.5 text-[11px] font-mono font-bold uppercase transition-colors disabled:opacity-50 cursor-pointer ${t.terminal ? "border border-zinc-700 text-zinc-400 hover:bg-zinc-800" : "bg-primary/10 text-primary-text hover:bg-primary/20"}`}
             >
               {busy === `status-${t.status}` ? "…" : t.label}
             </button>
@@ -316,11 +343,25 @@ export function ApplicationActions({
       </form>
 
       {error && (
-        <p className="text-body-sm text-zinc-400" role="alert">
-          {error}
-        </p>
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 animate-in fade-in duration-150"
+        >
+          <span className="material-symbols-outlined text-[16px] text-red-400 shrink-0">error</span>
+          <span>{error}</span>
+        </div>
       )}
-      {success && <p className="text-body-sm text-white">{success}</p>}
+      {success && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 animate-in fade-in duration-150"
+        >
+          <span className="material-symbols-outlined text-[16px] text-emerald-400 shrink-0">check_circle</span>
+          <span>{success}</span>
+        </div>
+      )}
 
       {/* Destructive zone */}
       <div className="pt-4 border-t border-border/60 flex items-center justify-between">
@@ -328,33 +369,47 @@ export function ApplicationActions({
         <button
           type="button"
           disabled={busy !== null}
-          onClick={async () => {
-            if (
-              typeof window !== "undefined" &&
-              !window.confirm(
-                "Delete this application? All recorded events, assessments, and interview logs for this application will be permanently removed."
-              )
-            ) {
-              return;
-            }
-            setBusy("delete");
-            try {
-              const res = await fetch(`/api/student/applications/${applicationId}`, { method: "DELETE" });
-              if (!res.ok) {
-                const b = await res.json().catch(() => ({}));
-                throw new Error(b?.error ?? "Failed to delete application");
-              }
-              router.push("/applications");
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Failed to delete application");
-              setBusy(null);
-            }
+          onClick={() => {
+            setConfirmConfig({
+              isOpen: true,
+              title: "Delete Application",
+              description:
+                "Delete this application? All recorded events, assessments, and interview logs for this application will be permanently removed.",
+              confirmLabel: "Delete Application",
+              isDestructive: true,
+              onConfirm: async () => {
+                setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
+                setBusy("delete");
+                try {
+                  const res = await fetch(`/api/student/applications/${applicationId}`, { method: "DELETE" });
+                  if (!res.ok) {
+                    const b = await res.json().catch(() => ({}));
+                    throw new Error(b?.error ?? "Failed to delete application");
+                  }
+                  router.push("/applications");
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : "Failed to delete application");
+                  setBusy(null);
+                }
+              },
+            });
           }}
-          className="rounded-lg border border-zinc-700 px-3 py-1.5 text-[11px] font-mono font-semibold text-zinc-400 hover:bg-zinc-800 transition-colors disabled:opacity-50"
+          className="rounded-lg border border-zinc-700 px-3 py-1.5 text-[11px] font-mono font-semibold text-zinc-400 hover:bg-zinc-800 transition-colors disabled:opacity-50 cursor-pointer"
         >
           {busy === "delete" ? "Deleting…" : "Delete Application"}
         </button>
       </div>
+
+      <ConfirmationDialog
+        isOpen={confirmConfig.isOpen}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+        confirmLabel={confirmConfig.confirmLabel}
+        isDestructive={confirmConfig.isDestructive}
+        isLoading={busy === "delete"}
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
+      />
     </section>
   );
 }

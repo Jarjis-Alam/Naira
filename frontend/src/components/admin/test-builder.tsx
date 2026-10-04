@@ -731,7 +731,7 @@ export function TestBuilder({
                 setCurrentStep("review");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-label-xs font-mono font-bold text-text-inverse hover:bg-primary-text transition-colors shadow-sm"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-label-xs font-mono font-bold text-black hover:bg-zinc-200 transition-colors shadow-sm"
             >
               <span>Review & Deploy</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -755,7 +755,7 @@ export function TestBuilder({
                 onClick={() => setCurrentStep(step.id)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-label-xs font-mono whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-primary text-text-inverse font-bold shadow-sm"
+                    ? "bg-primary text-black font-bold shadow-sm"
                     : isCompleted
                     ? "bg-surface-high text-text-primary hover:bg-surface-highest"
                     : "text-text-muted hover:text-text-primary hover:bg-surface-high/60"
@@ -952,8 +952,8 @@ export function TestBuilder({
                   }`}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      negativeMarkingEnabled ? "translate-x-5" : "translate-x-0"
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out ${
+                      negativeMarkingEnabled ? "bg-black translate-x-5" : "bg-white translate-x-0"
                     }`}
                   />
                 </button>
@@ -1015,8 +1015,8 @@ export function TestBuilder({
                 }`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    randomizeQuestions ? "translate-x-5" : "translate-x-0"
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out ${
+                    randomizeQuestions ? "bg-black translate-x-5" : "bg-white translate-x-0"
                   }`}
                 />
               </button>
@@ -1053,8 +1053,8 @@ export function TestBuilder({
                 }`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    randomizeOptions ? "translate-x-5" : "translate-x-0"
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out ${
+                    randomizeOptions ? "bg-black translate-x-5" : "bg-white translate-x-0"
                   }`}
                 />
               </button>
@@ -1140,7 +1140,7 @@ export function TestBuilder({
               type="button"
               id="btn-add-section"
               onClick={addSection}
-              className="inline-flex items-center gap-1.5 bg-primary text-text-inverse px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-primary-text transition-colors shadow-sm self-start sm:self-auto"
+              className="inline-flex items-center gap-1.5 bg-primary text-black px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-zinc-200 transition-colors shadow-sm self-start sm:self-auto"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
               <span>Add Section</span>
@@ -1337,7 +1337,7 @@ export function TestBuilder({
                             className={`px-3 py-1 rounded text-label-xs font-mono font-bold transition-colors ${
                               isSelected
                                 ? "bg-secondary/15 text-secondary cursor-not-allowed"
-                                : "bg-primary text-text-inverse hover:bg-primary-text"
+                                : "bg-primary text-black hover:bg-zinc-200 cursor-pointer"
                             }`}
                           >
                             {isSelected ? "Added" : "+ Add"}
@@ -1463,7 +1463,7 @@ export function TestBuilder({
               type="button"
               id="btn-add-pool"
               onClick={() => addPoolToSection(activeSectionId)}
-              className="inline-flex items-center gap-1.5 bg-primary text-text-inverse px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-primary-text transition-colors shadow-sm self-start sm:self-auto"
+              className="inline-flex items-center gap-1.5 bg-primary text-black px-4 py-2 rounded-lg text-body-sm font-semibold hover:bg-zinc-200 transition-colors shadow-sm self-start sm:self-auto"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
               <span>Create Pool in {activeSection?.title}</span>
@@ -1639,8 +1639,8 @@ export function TestBuilder({
                   }`}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      isScheduled ? "translate-x-5" : "translate-x-0"
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out ${
+                      isScheduled ? "bg-black translate-x-5" : "bg-white translate-x-0"
                     }`}
                   />
                 </button>
@@ -1802,7 +1802,7 @@ export function TestBuilder({
               id="btn-deploy-assessment"
               disabled={!canPublish || loading}
               onClick={() => setShowPublishConfirm(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-text-inverse px-6 py-2.5 rounded-lg text-body-sm font-bold hover:bg-primary-text transition-colors shadow-sm disabled:opacity-50"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-black px-6 py-2.5 rounded-lg text-body-sm font-bold hover:bg-zinc-200 transition-colors shadow-sm disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-[18px]">publish</span>
               <span>Deploy Assessment</span>
@@ -1841,7 +1841,7 @@ export function TestBuilder({
             type="button"
             disabled={!canPublish || loading}
             onClick={() => setShowPublishConfirm(true)}
-            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary text-text-inverse text-body-sm font-bold hover:bg-primary-text transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg bg-primary text-black text-body-sm font-bold hover:bg-zinc-200 transition-colors disabled:opacity-50"
           >
             <span>Deploy</span>
             <span className="material-symbols-outlined text-[16px]">check</span>
@@ -1925,7 +1925,7 @@ export function TestBuilder({
                 id="btn-confirm-publish-assessment"
                 disabled={loading}
                 onClick={handleCreateTest}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-text-inverse text-body-sm font-bold hover:bg-primary-text transition-colors shadow-sm disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-black text-body-sm font-bold hover:bg-zinc-200 transition-colors shadow-sm disabled:opacity-50"
               >
                 {loading ? (
                   <>

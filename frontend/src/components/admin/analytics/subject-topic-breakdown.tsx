@@ -209,7 +209,7 @@ export function SubjectTopicBreakdown({
                 onClick={() => setTopicSort(opt.value)}
                 className={`px-2.5 py-1 rounded text-label-xs font-mono transition-colors ${
                   topicSort === opt.value
-                    ? "bg-primary text-text-inverse font-semibold"
+                    ? "bg-primary text-black font-semibold"
                     : "bg-surface border border-border text-text-secondary hover:text-text-primary"
                 }`}
               >

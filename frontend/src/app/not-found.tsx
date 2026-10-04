@@ -23,7 +23,7 @@ export default function NotFound() {
         <div className="pt-2 flex flex-col sm:flex-row gap-3">
           <Link
             href="/dashboard"
-            className="flex-1 bg-primary text-text-inverse font-semibold text-body-sm py-2.5 px-4 rounded hover:bg-primary-text transition-colors inline-flex items-center justify-center gap-2"
+            className="flex-1 bg-primary text-black font-semibold text-body-sm py-2.5 px-4 rounded hover:bg-zinc-200 transition-colors inline-flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">dashboard</span>
             Dashboard
