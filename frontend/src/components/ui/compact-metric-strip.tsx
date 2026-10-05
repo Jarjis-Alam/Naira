@@ -19,7 +19,7 @@ interface CompactMetricStripProps {
 export function CompactMetricStrip({ items, className = "" }: CompactMetricStripProps) {
   return (
     <div
-      className={`rounded-xl border border-zinc-800 bg-[#0d0d10] divide-y sm:divide-y-0 sm:divide-x divide-zinc-800/80 grid grid-cols-2 lg:grid-cols-4 shadow-sm ${className}`}
+      className={`rounded-lg border border-zinc-800/80 bg-[#0d0d10] divide-y sm:divide-y-0 sm:divide-x divide-zinc-800/80 grid grid-cols-2 lg:grid-cols-4 shadow-sm ${className}`}
     >
       {items.map((item) => {
         const hasProgress = typeof item.progressPct === "number" && !isNaN(item.progressPct);

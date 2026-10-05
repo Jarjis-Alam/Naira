@@ -48,23 +48,19 @@ export default async function RoadmapPage() {
       />
 
       {/* ── Master Target Cockpit Hero Banner ── */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 p-6 md:p-8 shadow-xl">
-        {/* Ambient Chromatic Glow */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 left-1/3 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-
+      <div className="relative overflow-hidden rounded-lg bg-[#191c1b] border border-[#3f4a38]/40 p-6 md:p-8 shadow-md">
         <div className="relative z-10 flex flex-col gap-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#111413] border border-[#3f4a38]/40 flex items-center justify-center text-lime-pulse shadow-inner shrink-0">
-                <span className="material-symbols-outlined text-[26px]">hub</span>
+              <div className="w-10 h-10 rounded-md bg-[#111413] border border-[#3f4a38]/40 flex items-center justify-center text-lime-pulse shadow-inner shrink-0">
+                <span className="material-symbols-outlined text-[22px]">hub</span>
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-phosphor-white tracking-tight">
                     {roadmap.targets.primaryCompany?.name || "Target Benchmark"} — {roadmap.targets.primaryRole?.name || "Software Engineering"}
                   </h2>
-                  <span className="px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 text-[10px] font-mono uppercase tracking-wider font-semibold">
+                  <span className="px-2 py-0.5 rounded-sm bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30 text-[10px] font-mono uppercase tracking-wider font-semibold">
                     {roadmap.targets.configured ? "Target Configured" : "General Track"}
                   </span>
                 </div>
@@ -81,8 +77,8 @@ export default async function RoadmapPage() {
               </div>
             </div>
 
-            {/* Master Gauge Pill Indicator */}
-            <div className="flex items-center gap-4 bg-[#111413] px-5 py-2.5 rounded-full border border-[#3f4a38]/40 shadow-inner self-start lg:self-auto">
+            {/* Master Gauge Indicator */}
+            <div className="flex items-center gap-4 bg-[#111413] px-4 py-2 rounded-lg border border-[#3f4a38]/40 shadow-inner self-start lg:self-auto">
               <div className="flex flex-col text-right">
                 <span className="text-[10px] font-mono text-sage-40 uppercase tracking-wider">
                   Readiness
@@ -129,7 +125,7 @@ export default async function RoadmapPage() {
           {/* 4 Semantic Progress Metric Blocks */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {/* Metric 1: Core CS */}
-            <div className="p-4 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
+            <div className="p-4 rounded-lg bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   Core CS
@@ -148,7 +144,7 @@ export default async function RoadmapPage() {
             </div>
 
             {/* Metric 2: DSA Mastery */}
-            <div className="p-4 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
+            <div className="p-4 rounded-lg bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   Algorithmic DSA
@@ -167,7 +163,7 @@ export default async function RoadmapPage() {
             </div>
 
             {/* Metric 3: Database / SQL */}
-            <div className="p-4 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
+            <div className="p-4 rounded-lg bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   DBMS &amp; SQL
@@ -186,7 +182,7 @@ export default async function RoadmapPage() {
             </div>
 
             {/* Metric 4: Aptitude */}
-            <div className="p-4 rounded-xl bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
+            <div className="p-4 rounded-lg bg-[#111413] border border-[#3f4a38]/30 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-sage-40">
                   Quantitative Aptitude
@@ -208,7 +204,7 @@ export default async function RoadmapPage() {
       </div>
 
       {/* ── Progression Loop Indicator ── */}
-      <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] font-mono text-xs shadow-md">
+      <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 rounded-lg border border-[#3f4a38]/40 bg-[#191c1b] font-mono text-xs shadow-sm">
         <span className="text-sage-40 uppercase tracking-wider text-[10px] mr-1 font-semibold">
           Workflow:
         </span>
@@ -221,7 +217,7 @@ export default async function RoadmapPage() {
         ].map((item, idx, arr) => (
           <div key={item.step} className="flex items-center gap-2">
             <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] transition-colors ${
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm border text-[11px] transition-colors ${
                 item.active
                   ? "border-lime-pulse/30 bg-lime-pulse/10 text-lime-pulse font-semibold"
                   : "border-[#3f4a38]/30 bg-[#111413] text-sage-40"
@@ -239,11 +235,11 @@ export default async function RoadmapPage() {
 
       {/* ── Zero-Data Experience Banner ── */}
       {!roadmap.hasBaseline && (
-        <section className="p-6 sm:p-8 rounded-2xl bg-[#191c1b] border border-[#3f4a38]/40 relative overflow-hidden shadow-md">
+        <section className="p-6 sm:p-8 rounded-lg bg-[#191c1b] border border-[#3f4a38]/40 relative overflow-hidden shadow-sm">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-start gap-4 max-w-2xl">
-              <div className="w-12 h-12 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse shrink-0">
-                <span className="material-symbols-outlined text-[24px]">flag</span>
+              <div className="w-10 h-10 rounded-md bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse shrink-0">
+                <span className="material-symbols-outlined text-[20px]">flag</span>
               </div>
               <div>
                 <h2 className="text-lg font-bold font-heading text-phosphor-white">
@@ -256,9 +252,9 @@ export default async function RoadmapPage() {
             </div>
             <Link
               href={baselineHref}
-              className="bg-lime-pulse text-void-black font-semibold text-xs px-6 py-2.5 rounded-full hover:bg-mint-frost transition-all flex items-center gap-2 whitespace-nowrap shadow-[0_0_15px_rgba(255,255,255,0.2)] shrink-0"
+              className="bg-lime-pulse text-void-black font-semibold text-xs px-5 py-2 rounded-md hover:bg-mint-frost transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
             >
-              <span className="material-symbols-outlined text-[18px]">play_arrow</span>
+              <span className="material-symbols-outlined text-[16px]">play_arrow</span>
               <span>Take Baseline Assessment</span>
             </Link>
           </div>
@@ -267,7 +263,7 @@ export default async function RoadmapPage() {
 
       {/* ── Upcoming Application Focus ── */}
       {nextApplicationEvent && dailyPlan.actions.length > 0 && (
-        <section className="p-5 rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] space-y-3 shadow-md">
+        <section className="p-5 rounded-lg border border-[#3f4a38]/40 bg-[#191c1b] space-y-3 shadow-sm">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <p className="text-xs font-semibold text-phosphor-white">
               {nextApplicationEvent.companyName} {nextApplicationEvent.label.toLowerCase()} in{" "}
@@ -307,7 +303,7 @@ export default async function RoadmapPage() {
         {/* LEFT COLUMN: Preparation Focus & Targets */}
         <div className="lg:col-span-5 space-y-6">
           {/* Card: PREPARATION FOCUS */}
-          <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md space-y-4">
+          <section className="rounded-lg border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-mono tracking-wider uppercase text-sage-40 font-semibold">
                 Preparation Focus
@@ -325,7 +321,7 @@ export default async function RoadmapPage() {
                   return (
                     <div
                       key={item.id}
-                      className="p-3.5 rounded-xl bg-[#111413] border border-[#3f4a38]/30 space-y-2"
+                      className="p-3.5 rounded-md bg-[#111413] border border-[#3f4a38]/30 space-y-2"
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-semibold text-phosphor-white">
@@ -351,18 +347,18 @@ export default async function RoadmapPage() {
                 })}
               </div>
             ) : !roadmap.hasBaseline ? (
-              <div className="p-4 rounded-xl bg-[#111413] border border-[#3f4a38]/30 text-center font-mono text-xs text-sage-40">
+              <div className="p-4 rounded-md bg-[#111413] border border-[#3f4a38]/30 text-center font-mono text-xs text-sage-40">
                 <p>No assessment data available yet.</p>
               </div>
             ) : (
-              <div className="p-3.5 rounded-xl bg-lime-pulse/10 border border-lime-pulse/30 text-phosphor-white text-xs font-mono">
+              <div className="p-3.5 rounded-md bg-lime-pulse/10 border border-lime-pulse/30 text-phosphor-white text-xs font-mono">
                 No critical gaps detected — maintain momentum with periodic practice.
               </div>
             )}
           </section>
 
           {/* Card: PLACEMENT TARGET */}
-          <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md space-y-4">
+          <section className="rounded-lg border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono tracking-wider uppercase text-sage-40 font-semibold">
                 Placement Targets
@@ -407,7 +403,7 @@ export default async function RoadmapPage() {
                 </p>
                 <Link
                   href="/profile"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#111413] border border-[#3f4a38]/40 text-phosphor-white hover:border-lime-pulse text-xs font-mono font-medium transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#111413] border border-[#3f4a38]/40 text-phosphor-white hover:border-lime-pulse text-xs font-mono font-medium transition-all"
                 >
                   <span className="material-symbols-outlined text-[15px] text-lime-pulse">add_circle</span>
                   <span>Set Targets</span>
@@ -421,7 +417,7 @@ export default async function RoadmapPage() {
         <div className="lg:col-span-7 space-y-6">
           {/* Execution OS: TODAY'S OPERATIONAL FOCUS */}
           {dailyPlan.hasEnoughData && todayActiveAction && (
-            <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+            <section className="rounded-lg border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -429,7 +425,7 @@ export default async function RoadmapPage() {
                     <span className="text-xs font-mono tracking-wider uppercase text-sage-40 font-semibold">
                       Today&apos;s Focus
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#282b29] border border-[#3f4a38]/40 text-lime-pulse">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-sm bg-[#282b29] border border-[#3f4a38]/40 text-lime-pulse">
                       {dailyPlan.completedCount} / {dailyPlan.totalCount} completed
                     </span>
                   </div>
@@ -443,7 +439,7 @@ export default async function RoadmapPage() {
 
                 <Link
                   href={todayActiveAction.ctaHref}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-5 py-2.5 text-xs transition-all shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                  className="inline-flex items-center justify-center gap-2 rounded-md bg-lime-pulse text-void-black font-semibold hover:bg-mint-frost px-4 py-2 text-xs transition-all shrink-0"
                 >
                   <span>
                     {todayActiveAction.status === "COMPLETED"
@@ -457,7 +453,7 @@ export default async function RoadmapPage() {
           )}
 
           {/* Next Actions */}
-          <section className="rounded-2xl border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-md">
+          <section className="rounded-lg border border-[#3f4a38]/40 bg-[#191c1b] p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-phosphor-white">
                 Next Actions
@@ -472,7 +468,7 @@ export default async function RoadmapPage() {
               {roadmap.nextActions.map((action) => (
                 <article
                   key={action.id}
-                  className="p-5 rounded-xl bg-[#111413] border border-[#3f4a38]/30 hover:border-lime-pulse/50 transition-all relative"
+                  className="p-5 rounded-md bg-[#111413] border border-[#3f4a38]/30 hover:border-lime-pulse/50 transition-all relative"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
@@ -481,7 +477,7 @@ export default async function RoadmapPage() {
                       </span>
                       {action.category && (
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider ${
                             action.category === "FIX"
                               ? "bg-white/10 text-zinc-300 border border-white/20"
                               : action.category === "REINFORCE"
@@ -507,7 +503,7 @@ export default async function RoadmapPage() {
 
                   <Link
                     href={action.ctaHref}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-lime-pulse/10 text-lime-pulse border border-lime-pulse/30 hover:bg-lime-pulse hover:text-void-black transition-all"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold bg-lime-pulse/10 text-lime-pulse border border-lime-pulse/30 hover:bg-lime-pulse hover:text-void-black transition-all"
                   >
                     <span>{action.ctaLabel}</span>
                     <span className="material-symbols-outlined text-[15px]">arrow_forward</span>

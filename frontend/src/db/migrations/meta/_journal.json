@@ -141,6 +141,13 @@
       "when": 1789100000000,
       "tag": "0019_phase_26_ai_interview_coach",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789200000000,
+      "tag": "0020_phase_27_password_reset_tokens",
+      "breakpoints": true
     }
   ]
 }

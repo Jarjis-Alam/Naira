@@ -1,15 +1,20 @@
 import * as React from "react";
 
 // ============================================================
-// Pill — Core reusable pill component (Monochrome Pill System)
+// Pill — Core reusable pill/tag component (Restrained Monochrome System)
+// Level 2 / Level 4 shape hierarchy:
+// - Default: restrained geometry (rounded-sm / rounded-md)
+// - shape="pill": rounded-full (strictly for avatars, status dots, circular chips)
 // ============================================================
 
-type PillVariant =
-  | "green" | "blue" | "purple" | "amber" | "rose" | "neutral" | "ghost";
+export type PillVariant =
+  | "green" | "blue" | "purple" | "amber" | "rose" | "neutral" | "ghost" | "inline" | "plain";
 
-type PillSize = "sm" | "md" | "lg";
+export type PillSize = "sm" | "md" | "lg";
 
-type PillType =
+export type PillShape = "rounded" | "pill" | "square";
+
+export type PillType =
   | "status"    // with live dot indicator, e.g. [ ● ACTIVE ]
   | "category"  // e.g. [ REINFORCE ] [ REVIEW ]
   | "meta"      // e.g. [ 10 QUESTIONS ] [ ~25 MIN ]
@@ -20,6 +25,7 @@ type PillType =
 export interface PillProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: PillVariant;
   size?: PillSize;
+  shape?: PillShape;
   type?: PillType;
   active?: boolean;
   dot?: boolean;       // show a status dot
@@ -30,19 +36,39 @@ export interface PillProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantClasses: Record<PillVariant, string> = {
-  green:   "bg-white/15 text-white border-white/30",
+  green:   "bg-white/12 text-white border-white/25",
   blue:    "bg-white/10 text-zinc-200 border-white/20",
   purple:  "bg-white/10 text-zinc-300 border-white/20",
-  amber:   "bg-zinc-800/80 text-zinc-300 border-zinc-700",
-  rose:    "bg-zinc-800/80 text-zinc-300 border-zinc-700",
+  amber:   "bg-zinc-800/80 text-zinc-300 border-zinc-700/80",
+  rose:    "bg-zinc-800/80 text-zinc-300 border-zinc-700/80",
   neutral: "bg-zinc-900/80 text-zinc-400 border-zinc-800",
-  ghost:   "bg-transparent text-zinc-500 border-zinc-800",
+  ghost:   "bg-transparent text-zinc-400 border-zinc-800",
+  inline:  "bg-transparent text-zinc-400 border-transparent p-0 tracking-normal normal-case font-sans",
+  plain:   "bg-transparent text-zinc-400 border-zinc-800/60 font-sans normal-case",
 };
 
 const sizeClasses: Record<PillSize, string> = {
-  sm: "text-[10px] px-2 py-[3px] gap-[3px]",
-  md: "text-[11px] px-2.5 py-1 gap-1",
-  lg: "text-[12px] px-3 py-[5px] gap-1.5",
+  sm: "text-[10px] px-2 py-[2px] gap-[3px]",
+  md: "text-[11px] px-2.5 py-[3px] gap-1",
+  lg: "text-[12px] px-3 py-1 gap-1.5",
+};
+
+const shapeClasses: Record<PillShape, Record<PillSize, string>> = {
+  rounded: {
+    sm: "rounded-sm",
+    md: "rounded-md",
+    lg: "rounded-md",
+  },
+  pill: {
+    sm: "rounded-full",
+    md: "rounded-full",
+    lg: "rounded-full",
+  },
+  square: {
+    sm: "rounded-none",
+    md: "rounded-none",
+    lg: "rounded-none",
+  },
 };
 
 const dotColorMap: Record<PillVariant, string> = {
@@ -53,11 +79,14 @@ const dotColorMap: Record<PillVariant, string> = {
   rose:    "bg-zinc-400",
   neutral: "bg-zinc-500",
   ghost:   "bg-zinc-600",
+  inline:  "bg-zinc-500",
+  plain:   "bg-zinc-500",
 };
 
 export function Pill({
   variant = "neutral",
   size = "md",
+  shape = "rounded",
   type = "label",
   active = false,
   dot = false,
@@ -68,8 +97,10 @@ export function Pill({
   children,
   ...props
 }: PillProps) {
-  const base =
-    "inline-flex items-center border rounded-full font-mono uppercase tracking-[0.08em] leading-none whitespace-nowrap select-none font-medium";
+  const isInline = variant === "inline";
+  const base = isInline
+    ? "inline-flex items-center text-xs leading-normal select-none"
+    : `inline-flex items-center border font-mono uppercase tracking-[0.04em] leading-none whitespace-nowrap select-none font-medium ${shapeClasses[shape][size]}`;
 
   const typeClass =
     type === "status" ? "gap-[5px]" :
@@ -88,7 +119,7 @@ export function Pill({
 
   return (
     <Tag
-      className={`${base} ${appliedVariant} ${sizeClasses[size]} ${typeClass} ${activeClass} ${className}`}
+      className={`${base} ${appliedVariant} ${isInline ? "" : sizeClasses[size]} ${typeClass} ${activeClass} ${className}`}
       {...props}
     >
       {(dot || type === "status") && (
@@ -105,7 +136,7 @@ export function Pill({
 // ============================================================
 // StatusPill — Semantic shortcuts for common states
 // ============================================================
-interface StatusPillProps extends Omit<PillProps, "variant" | "dot" | "type"> {
+export interface StatusPillProps extends Omit<PillProps, "variant" | "dot" | "type"> {
   status:
     | "active" | "completed" | "in-progress" | "pending"
     | "applied" | "interview" | "offer" | "rejected"
@@ -151,22 +182,41 @@ export function StatusPill({ status, children, ...props }: StatusPillProps) {
 
 // ============================================================
 // MetaPill — For metadata like "10 QUESTIONS" "~25 MIN" "DSA"
+// Supports inline typography mode or restrained badge mode
 // ============================================================
-export function MetaPill({ children, className = "", ...props }: PillProps) {
+export interface MetaPillProps extends PillProps {
+  inline?: boolean;
+}
+
+export function MetaPill({ inline = false, children, className = "", ...props }: MetaPillProps) {
+  if (inline) {
+    return (
+      <span className={`inline-flex items-center gap-1.5 text-xs text-zinc-400 font-mono ${className}`}>
+        {children}
+      </span>
+    );
+  }
   return (
-    <Pill variant="neutral" size="sm" type="label" className={`font-mono ${className}`} {...props}>
+    <Pill
+      variant="neutral"
+      size="sm"
+      shape="rounded"
+      type="label"
+      className={`font-mono text-zinc-400 bg-zinc-900/60 border-zinc-800/80 ${className}`}
+      {...props}
+    >
       {children}
     </Pill>
   );
 }
 
 // ============================================================
-// PillTabBar — Container for tab pills
+// PillTabBar — Container for tabs (now restrained Level 2 surface)
 // ============================================================
 export function PillTabBar({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`flex gap-1 p-1 bg-void-black border border-outline-variant rounded-full w-fit ${className}`}
+      className={`flex gap-1 p-1 bg-void-black border border-circuit-border rounded-lg w-fit ${className}`}
       role="tablist"
     >
       {children}
@@ -175,7 +225,7 @@ export function PillTabBar({ children, className = "" }: { children: React.React
 }
 
 // ============================================================
-// PillTab — Individual tab item
+// PillTab — Individual tab item (restrained Level 2 geometry)
 // ============================================================
 export interface PillTabProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
@@ -187,12 +237,12 @@ export function PillTab({ active = false, children, className = "", ...props }: 
       role="tab"
       aria-selected={active}
       className={`
-        inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full
+        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md
         font-sans font-medium text-[13px] tracking-[-0.01em] leading-none
         border transition-all duration-200 cursor-pointer
         ${active
           ? "bg-white text-black font-semibold border-white"
-          : "bg-transparent text-zinc-400 border-transparent hover:bg-zinc-800 hover:text-white"
+          : "bg-transparent text-zinc-400 border-transparent hover:bg-zinc-850 hover:text-white"
         }
         ${className}
       `}

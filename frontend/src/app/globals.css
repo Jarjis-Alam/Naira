@@ -159,22 +159,22 @@
   --element-gap:    20px;
 
   /* =========================================================================
-     BORDER RADII
+     BORDER RADII — Restrained geometric hierarchy (Level 0–4)
      ========================================================================= */
   --radius-cards:   8px;
-  --radius-cards-lg: 16px;  /* UI 2.0 — card rounded-2xl */
-  --radius-cards-xl: 20px;  /* UI 2.0 — hero/spotlight cards */
+  --radius-cards-lg: 12px;  /* Restrained card radius */
+  --radius-cards-xl: 14px;  /* Hero/spotlight surfaces */
   --radius-icons:   0px;
-  --radius-pills:   9999px;
-  --radius-inputs:  8px;
-  --radius-buttons: 12px;
+  --radius-pills:   9999px; /* Reserved strictly for avatars/dots */
+  --radius-inputs:  6px;
+  --radius-buttons: 6px;    /* Restrained button radius */
   --radius-sm:      4px;
-  --radius-md:      8px;
-  --radius-lg:      12px;
-  --radius-xl:      16px;
-  --radius-2xl:     24px;
+  --radius-md:      6px;
+  --radius-lg:      10px;
+  --radius-xl:      14px;
+  --radius-2xl:     18px;
   --radius-full:    9999px;
-  --radius-DEFAULT: 8px;
+  --radius-DEFAULT: 6px;
 
   /* =========================================================================
      UI 2.0 — SURFACE CONTAINER HIERARCHY (Pure Monochrome Obsidian/Zinc)
@@ -280,19 +280,19 @@
   --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
 
-  /* Radii */
+  /* Radii — Restrained geometric hierarchy */
   --radius-cards:   8px;
-  --radius-cards-lg: 16px;
-  --radius-cards-xl: 20px;
-  --radius-buttons: 12px;
+  --radius-cards-lg: 12px;
+  --radius-cards-xl: 14px;
+  --radius-buttons: 6px;
   --radius-pills:   9999px;
-  --radius-inputs:  8px;
-  --radius-DEFAULT: 8px;
+  --radius-inputs:  6px;
+  --radius-DEFAULT: 6px;
   --radius-sm:      4px;
-  --radius-md:      8px;
-  --radius-lg:      12px;
-  --radius-xl:      16px;
-  --radius-2xl:     24px;
+  --radius-md:      6px;
+  --radius-lg:      10px;
+  --radius-xl:      14px;
+  --radius-2xl:     18px;
   --radius-full:    9999px;
 
   /* UI 2.0 surface containers */
@@ -441,19 +441,23 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  border-radius: var(--radius-pills);
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border: 1px solid transparent;
   white-space: nowrap;
   transition: var(--transition-base);
   cursor: default;
   user-select: none;
+}
+
+.pill-pill {
+  border-radius: var(--radius-full);
 }
 
 /* Pill size variants */
@@ -563,11 +567,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 .pill-tab-bar {
   display: flex;
-  gap: 4px;
-  padding: 4px;
+  gap: 2px;
+  padding: 3px;
   background-color: var(--color-void-black);
   border: 1px solid var(--color-circuit-border);
-  border-radius: var(--radius-pills);
+  border-radius: var(--radius-md);
   width: fit-content;
 }
 
@@ -618,7 +622,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #ffffff;
   color: #000000 !important;
   border: 1px solid transparent;
-  border-radius: var(--radius-pills);
+  border-radius: var(--radius-buttons);
   padding: 10px 24px;
   font-family: var(--font-inter-variable);
   font-size: 14px; font-weight: 600;
@@ -707,7 +711,7 @@ button.bg-white:disabled,
   background-color: transparent;
   color: var(--color-sage-60);
   border: 1px solid var(--color-pine-15);
-  border-radius: var(--radius-pills);
+  border-radius: var(--radius-buttons);
   padding: 6px 14px;
   font-family: var(--font-inter-variable);
   font-size: 13px; font-weight: 500;

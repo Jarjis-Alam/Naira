@@ -58,7 +58,7 @@ export function PageHeader({
 
           {badge && (
             <span
-              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold uppercase tracking-wider ${badgeStyle} ml-1`}
+              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border text-[10px] font-semibold uppercase tracking-[0.03em] ${badgeStyle} ml-1`}
             >
               {badge.ping && (
                 <span className="w-1.5 h-1.5 rounded-full bg-current animate-ping" />

@@ -19,6 +19,7 @@ function LoginForm() {
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
   const [ssoLoading, setSsoLoading] = useState<string | null>(null);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,9 +68,37 @@ function LoginForm() {
     setNotice("Campus SSO gateway is active for partner universities. Contact your campus administrator for credentials.");
   }
 
-  function handleForgotPassword(e: React.MouseEvent) {
+  async function handleForgotPassword(e: React.MouseEvent) {
     e.preventDefault();
-    setNotice("Password recovery link has been dispatched if an account exists for the entered email.");
+    setError("");
+    setNotice("");
+
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
+      setError("Please enter your email address in the field above to receive a password recovery link.");
+      return;
+    }
+
+    setForgotLoading(true);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        setError(data?.error || "Unable to request password recovery. Please try again.");
+      } else {
+        setNotice(data?.message || "If an account exists for this email, a password recovery link has been sent.");
+      }
+    } catch {
+      setError("Password recovery service is temporarily unavailable. Please try again.");
+    } finally {
+      setForgotLoading(false);
+    }
   }
 
   return (
@@ -158,9 +187,10 @@ function LoginForm() {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-xs text-zinc-400 hover:text-white transition-colors duration-150 cursor-pointer"
+              disabled={forgotLoading}
+              className="text-xs text-zinc-400 hover:text-white transition-colors duration-150 cursor-pointer disabled:opacity-50"
             >
-              Forgot password?
+              {forgotLoading ? "Sending link..." : "Forgot password?"}
             </button>
           </div>
           <div className="relative">

@@ -96,11 +96,11 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
               onClick={() => setMobileMenuOpen(false)}
               aria-current={active ? "page" : undefined}
               className={`
-                relative flex items-center gap-2.5 px-3 py-2 rounded-full
-                text-[13px] font-medium transition-all duration-150 group
+                relative flex items-center gap-2.5 px-3 py-1.5 rounded-md
+                text-[13px] font-medium transition-colors duration-150 group
                 ${active
-                  ? "bg-white/15 text-white border border-white/30 shadow-sm"
-                  : "border border-transparent hover:bg-white/5 hover:border-white/10 text-text-secondary hover:text-white"
+                  ? "bg-white/10 text-white font-medium"
+                  : "hover:bg-white/5 text-text-secondary hover:text-white"
                 }
               `}
             >
@@ -121,7 +121,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
               <span
                 className={`flex-1 truncate transition-colors ${
                   active
-                    ? "text-white font-semibold"
+                    ? "text-white font-medium"
                     : "text-text-secondary group-hover:text-white"
                 }`}
               >
@@ -130,7 +130,7 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
 
               {/* Active dot */}
               {active && (
-                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 shadow-sm" />
+                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
               )}
             </Link>
           );
@@ -175,9 +175,9 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
       <div className="mt-3 pt-3 border-t border-outline-variant/60 space-y-2">
         {/* User Profile Card */}
         {session?.user && (
-          <div className="flex items-center gap-2 p-2 rounded-xl bg-surface-container border border-outline-variant/60">
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-surface-container/60 border border-outline-variant/40">
             {/* Avatar */}
-            <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center font-mono text-[11px] font-semibold text-white shrink-0">
+            <div className="w-7 h-7 rounded-full bg-white/10 border border-white/20 flex items-center justify-center font-mono text-[11px] font-semibold text-white shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
@@ -199,20 +199,15 @@ export function Sidebar({ baselineTestId, isAdmin: initialIsAdmin }: SidebarProp
           </div>
         )}
 
-        {/* UI 2.0 Motivation Card (Monochrome) */}
-        <div className="relative overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low border border-outline-variant/80 mb-3 shadow-md">
-          <div className="relative z-10">
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              <span className="text-[10px] font-mono text-white uppercase tracking-widest font-semibold">Momentum</span>
-            </div>
-            <p className="text-[11px] text-zinc-300 font-medium leading-tight">
-              Discipline today.<br/>Placement tomorrow.
-            </p>
+        {/* Momentum Indicator */}
+        <div className="rounded-lg p-3 bg-surface-container/40 border border-outline-variant/40 mb-2">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-white/80" />
+            <span className="text-[10px] font-mono text-white/90 uppercase tracking-widest font-semibold">Momentum</span>
           </div>
-          {/* Decorative orbs */}
-          <div className="absolute -right-3 -bottom-4 w-20 h-20 bg-white/5 rounded-full blur-lg pointer-events-none" />
-          <div className="absolute right-1 bottom-1 w-12 h-12 rounded-full border border-white/10 bg-gradient-to-tr from-white/10 to-transparent" />
+          <p className="text-[11px] text-zinc-400 font-normal leading-snug">
+            Discipline today. Placement tomorrow.
+          </p>
         </div>
       </div>
     </div>

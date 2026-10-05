@@ -32,14 +32,14 @@ export default async function TargetStrategyPage() {
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
           <Link
             href="/profile"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary hover:bg-surface-container-high transition-colors text-xs font-semibold"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-surface-container border border-outline-variant/40 text-text-primary hover:bg-surface-container-high transition-colors text-xs font-semibold"
           >
             <span className="material-symbols-outlined text-[16px]">edit</span>
             <span>Manage Targets</span>
           </Link>
           <Link
             href="/roadmap"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 active:scale-95 transition-all shadow-md"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 active:scale-95 transition-all shadow-sm"
           >
             <span>View Roadmap</span>
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -51,8 +51,8 @@ export default async function TargetStrategyPage() {
 
       {/* EMPTY STATES */}
       {emptyState && (
-        <div className="rounded-2xl border border-lime-pulse/30 bg-surface-container-low/90 p-8 text-center max-w-2xl mx-auto my-12 space-y-5">
-          <div className="w-14 h-14 rounded-2xl bg-lime-pulse/10 border border-lime-pulse/25 text-lime-pulse flex items-center justify-center mx-auto">
+        <div className="rounded-lg border border-lime-pulse/30 bg-surface-container-low/90 p-8 text-center max-w-2xl mx-auto my-12 space-y-5">
+          <div className="w-14 h-14 rounded-lg bg-lime-pulse/10 border border-lime-pulse/25 text-lime-pulse flex items-center justify-center mx-auto">
             <span className="material-symbols-outlined text-[32px]">
               {emptyState.type === "no_target" ? "ads_click" : "verified"}
             </span>
@@ -71,7 +71,7 @@ export default async function TargetStrategyPage() {
           <div className="pt-2">
             <Link
               href={emptyState.ctaHref}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-lime-pulse text-void-black font-semibold text-sm hover:brightness-110 transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-lime-pulse text-void-black font-semibold text-sm hover:brightness-110 transition-all shadow-sm"
             >
               <span>{emptyState.ctaLabel}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -99,28 +99,28 @@ export default async function TargetStrategyPage() {
           )}
 
           {/* Primary Active Target Spotlight Card */}
-          <div className="relative overflow-hidden rounded-2xl bg-surface-container-low border border-outline-variant/40 p-6 sm:p-8 transition-all shadow-md">
+          <div className="relative overflow-hidden rounded-lg bg-surface-container-low border border-outline-variant/40 p-6 sm:p-8 transition-all shadow-sm">
             {/* Ambient glow accent */}
             <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-lime-pulse/10 blur-3xl pointer-events-none"></div>
 
             <div className="flex flex-col gap-6 relative z-10">
-              {/* Card Pill Tags Bar */}
+              {/* Card Tags Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-pulse/15 border border-lime-pulse/35 text-lime-pulse font-mono text-[11px] font-bold tracking-wider uppercase">
-                    <span className="w-2 h-2 rounded-full bg-lime-pulse"></span>
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-lime-pulse/15 border border-lime-pulse/35 text-lime-pulse font-mono text-[11px] font-bold tracking-wider uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-lime-pulse"></span>
                     Primary Target
                   </span>
                   {target.primaryRole?.category && (
-                    <span className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
+                    <span className="px-2.5 py-1 rounded-sm bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
                       {target.primaryRole.category}
                     </span>
                   )}
-                  <span className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
+                  <span className="px-2.5 py-1 rounded-sm bg-surface-container-high border border-outline-variant/30 text-text-secondary font-mono text-[11px] tracking-wider uppercase">
                     {readiness.targetLevel || "CALIBRATING"}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 bg-surface-container px-3.5 py-1.5 rounded-full border border-outline-variant/40">
+                <div className="flex items-center gap-2 bg-surface-container px-3 py-1 rounded-md border border-outline-variant/40">
                   <span className="font-mono text-[11px] text-text-muted uppercase tracking-wider">Target Fit</span>
                   <span className="font-mono text-lg font-bold text-lime-pulse leading-none">
                     {readiness.targetScore !== null ? `${readiness.targetScore}%` : "--"}
@@ -166,14 +166,14 @@ export default async function TargetStrategyPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href="/simulation"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 transition-all shadow-sm"
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 transition-all shadow-sm"
                   >
                     <span className="material-symbols-outlined text-[16px]">play_circle</span>
                     <span>Run Mock Interview</span>
                   </Link>
                   <Link
                     href="/profile"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/40 text-text-primary hover:border-outline transition-colors text-xs font-medium"
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-surface-container-high border border-outline-variant/40 text-text-primary hover:border-outline transition-colors text-xs font-medium"
                   >
                     <span className="material-symbols-outlined text-[16px]">tune</span>
                     <span>Edit Target Parameters</span>
@@ -255,7 +255,7 @@ export default async function TargetStrategyPage() {
                         .map((r) => (
                           <span
                             key={r.id}
-                            className="px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-secondary text-[11px]"
+                            className="px-2 py-0.5 rounded-sm bg-surface-container border border-outline-variant/40 text-text-secondary text-[11px]"
                           >
                             {r.name}
                           </span>
@@ -272,7 +272,7 @@ export default async function TargetStrategyPage() {
                         .map((c) => (
                           <span
                             key={c.id}
-                            className="px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant/40 text-text-secondary text-[11px]"
+                            className="px-2 py-0.5 rounded-sm bg-surface-container border border-outline-variant/40 text-text-secondary text-[11px]"
                           >
                             {c.name}
                           </span>
@@ -286,10 +286,10 @@ export default async function TargetStrategyPage() {
 
           {/* Strategy Recommendation Banner */}
           {preparationStrategy.summary && (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-surface-container border border-outline-variant/30 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-lg bg-surface-container border border-outline-variant/30 relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-lime-pulse"></div>
               <div className="flex items-center gap-3.5 pl-2">
-                <div className="w-10 h-10 rounded-full bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse shrink-0">
+                <div className="w-9 h-9 rounded-md bg-lime-pulse/15 border border-lime-pulse/30 flex items-center justify-center text-lime-pulse shrink-0">
                   <span className="material-symbols-outlined text-[20px]">lightbulb</span>
                 </div>
                 <div className="flex flex-col">
@@ -309,7 +309,7 @@ export default async function TargetStrategyPage() {
                 {preparationStrategy.practiceHref && (
                   <Link
                     href={preparationStrategy.practiceHref}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 transition-all shadow-sm"
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-lime-pulse text-void-black font-semibold text-xs hover:brightness-110 transition-all shadow-sm"
                   >
                     <span>Start Priority Practice</span>
                     <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -377,7 +377,7 @@ export default async function TargetStrategyPage() {
                       </td>
                       <td className="py-3.5 px-4">
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-sm font-bold uppercase ${
                             row.targetNeed === "HIGH"
                               ? "bg-lime-pulse/20 text-lime-pulse border border-lime-pulse/35"
                               : row.targetNeed === "MEDIUM"
@@ -390,7 +390,7 @@ export default async function TargetStrategyPage() {
                       </td>
                       <td className="py-3.5 px-4">
                         <span
-                          className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-bold uppercase ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-sm font-bold uppercase ${
                             row.studentState === "STRONG"
                               ? "bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/30"
                               : row.studentState === "DEVELOPING"
@@ -406,7 +406,7 @@ export default async function TargetStrategyPage() {
                       <td className="py-3.5 px-4 text-right">
                         <Link
                           href={`/tests?domain=${encodeURIComponent(row.domain)}`}
-                          className="px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/40 text-text-secondary hover:text-white hover:border-lime-pulse font-mono text-[11px] transition-colors inline-block"
+                          className="px-2.5 py-1 rounded-md bg-surface-container-high border border-outline-variant/40 text-text-secondary hover:text-white hover:border-lime-pulse font-mono text-[11px] transition-colors inline-block"
                         >
                           Practice
                         </Link>
@@ -439,7 +439,7 @@ export default async function TargetStrategyPage() {
                 {gaps.map((gap) => (
                   <div
                     key={gap.id}
-                    className="rounded-2xl border border-white/20 bg-surface-container-low p-5 hover:border-white/40 transition-colors space-y-3"
+                    className="rounded-lg border border-white/20 bg-surface-container-low p-5 hover:border-white/40 transition-colors space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
@@ -452,7 +452,7 @@ export default async function TargetStrategyPage() {
                       </div>
                       <div className="flex items-center gap-2 self-start sm:self-auto">
                         <span
-                          className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold uppercase ${
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-sm font-bold uppercase ${
                             gap.priority === "CRITICAL"
                               ? "bg-white/20 text-white border border-white/30"
                               : "bg-white/10 text-zinc-300 border border-white/20"
@@ -460,10 +460,10 @@ export default async function TargetStrategyPage() {
                         >
                           {gap.priority}
                         </span>
-                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/25 font-bold uppercase">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-sm bg-lime-pulse/15 text-lime-pulse border border-lime-pulse/25 font-bold uppercase">
                           {gap.targetRelevance} Relevance
                         </span>
-                        <span className="text-xs font-mono text-zinc-300 font-semibold bg-surface-container px-2.5 py-1 rounded-full border border-outline-variant/40">
+                        <span className="text-xs font-mono text-zinc-300 font-semibold bg-surface-container px-2 py-0.5 rounded-sm border border-outline-variant/40">
                           {gap.currentAccuracy}% Accuracy
                         </span>
                       </div>
@@ -570,7 +570,7 @@ export default async function TargetStrategyPage() {
           </div>
 
           {/* Preparation Strategy */}
-          <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-low p-6 space-y-4">
+          <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-white tracking-tight">
                 Preparation Strategy
@@ -588,7 +588,7 @@ export default async function TargetStrategyPage() {
               {preparationStrategy.practiceHref && (
                 <Link
                   href={preparationStrategy.practiceHref}
-                  className="px-4 py-2 rounded-full bg-lime-pulse text-void-black hover:brightness-110 font-semibold text-xs transition-all inline-flex items-center gap-2 shadow-sm"
+                  className="px-3.5 py-2 rounded-md bg-lime-pulse text-void-black hover:brightness-110 font-semibold text-xs transition-all inline-flex items-center gap-2 shadow-sm"
                 >
                   <span className="material-symbols-outlined text-[16px]">play_arrow</span>
                   <span>Start Priority Practice</span>
@@ -596,14 +596,14 @@ export default async function TargetStrategyPage() {
               )}
               <Link
                 href={preparationStrategy.roadmapHref}
-                className="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/40 text-text-primary hover:bg-surface-container-high font-medium text-xs transition-colors inline-flex items-center gap-2"
+                className="px-3.5 py-2 rounded-md bg-surface-container border border-outline-variant/40 text-text-primary hover:bg-surface-container-high font-medium text-xs transition-colors inline-flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-[16px]">alt_route</span>
                 <span>View Strategic Roadmap</span>
               </Link>
               <Link
                 href="/dashboard"
-                className="px-4 py-2 rounded-full bg-surface-container border border-outline-variant/40 text-text-secondary hover:text-white font-mono text-xs transition-colors inline-flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-md bg-surface-container border border-outline-variant/40 text-text-secondary hover:text-white font-mono text-xs transition-colors inline-flex items-center gap-1.5"
               >
                 <span>Today&apos;s Execution Plan</span>
                 <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

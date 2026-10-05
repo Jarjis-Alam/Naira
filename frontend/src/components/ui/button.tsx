@@ -28,15 +28,15 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center font-medium font-sans tracking-tight transition-all duration-200 select-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-green";
 
     const variants = {
-      // Primary Filled: white fill, solid dark text, 12px radius
+      // Primary Filled: white fill, solid dark text, restrained radius
       filled:
         "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-zinc-200 rounded-buttons shadow-none",
-      // Accent Pill: white fill, solid dark text, 9999px pill radius
+      // Accent: white fill, solid dark text, restrained radius
       accent:
-        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-zinc-200 rounded-pills shadow-none",
-      // Outline / Secondary: dark elevated surface, 1px green border, off-white text
+        "bg-primary-green text-void-black font-semibold border border-primary-green hover:bg-zinc-200 rounded-buttons shadow-none",
+      // Outline / Secondary: dark elevated surface, 1px border, off-white text
       outline:
-        "bg-card-elevated/80 text-text-primary border border-green-border hover:border-primary-green hover:text-primary-green rounded-buttons",
+        "bg-card-elevated/80 text-text-primary border border-circuit-border hover:border-zinc-500 hover:text-white rounded-buttons",
       // Ghost: transparent fill, subtle hover
       ghost:
         "bg-transparent text-text-secondary hover:text-text-primary hover:bg-card-standard rounded-buttons border border-transparent",

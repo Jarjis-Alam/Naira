@@ -5,6 +5,7 @@ import { mileast } from "@/app/fonts";
 import { ClickSpark } from "@/components/ui/click-spark";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://naira.app"),
   title: "NAIRA — Placement Operating System",
   description:
     "Your intelligent companion for placement preparation. Assess your skills, identify weaknesses, practice with precision, and measure placement readiness with high-precision metrics.",
@@ -16,6 +17,21 @@ export const metadata: Metadata = {
     ],
     shortcut: "/logo.png",
     apple: "/apple-icon.png",
+  },
+  openGraph: {
+    title: "NAIRA — Placement Operating System",
+    description:
+      "Your intelligent companion for placement preparation. Assess your skills, identify weaknesses, practice with precision, and measure placement readiness with high-precision metrics.",
+    images: [{ url: "/logo.png", width: 1024, height: 1024, alt: "NAIRA Falcon Logo" }],
+    siteName: "NAIRA",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "NAIRA — Placement Operating System",
+    description:
+      "Your intelligent companion for placement preparation. Assess your skills, identify weaknesses, practice with precision, and measure placement readiness with high-precision metrics.",
+    images: ["/logo.png"],
   },
 };
 

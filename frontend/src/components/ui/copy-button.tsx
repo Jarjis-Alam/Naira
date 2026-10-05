@@ -57,7 +57,7 @@ export function CopyButton({
       type="button"
       onClick={handleCopy}
       aria-label={copied ? "Copied to clipboard" : `${label} to clipboard`}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded-full border transition-all cursor-pointer select-none ${
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded-md border transition-all cursor-pointer select-none ${
         copied
           ? "border-emerald-600/60 bg-emerald-500/10 text-emerald-300"
           : "border-zinc-800 bg-[#121316] text-zinc-400 hover:text-white hover:border-zinc-600 hover:bg-[#18191d]"

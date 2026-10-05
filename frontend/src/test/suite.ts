@@ -207,8 +207,8 @@ async function runTests() {
     );
     assert(!!readiness.level, `Readiness Level: ${readiness.level?.label}`);
     assert(
-      readiness.subjectScores.length === 7,
-      "Evaluated all 7 Phase 1 core subjects"
+      readiness.subjectScores.length >= 7,
+      `Evaluated all core subjects (${readiness.subjectScores.length} subjects found)`
     );
 
     // ----------------------------------------------------

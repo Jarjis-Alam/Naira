@@ -12,58 +12,58 @@ export function TopHeader({ session }: TopHeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-void-black/85 backdrop-blur-xl border-b border-outline-variant flex items-center justify-between px-4 sm:px-6 lg:px-8">
-      {/* System Status / Workspace Indicator */}
+      {/* System Context / Breadcrumb */}
       <div className="flex-1 max-w-md md:max-w-lg mr-4 hidden sm:block">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant text-text-muted text-xs font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-white shadow-xs" />
-          <span className="text-zinc-300 font-medium tracking-tight">NAIRA OS</span>
-          <span className="text-zinc-600">·</span>
+        <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+          <span className="text-zinc-200 font-medium">NAIRA OS</span>
+          <span className="text-zinc-600">/</span>
           <span className="text-zinc-400 truncate">Placement Intelligence System</span>
         </div>
       </div>
 
       {/* Right Controls & Profile */}
-      <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
         {/* Notifications Icon Button */}
         <Link
           href="/dashboard"
           title="Notifications"
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center text-text-muted hover:text-white hover:border-white/40 transition-colors relative"
+          className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-surface-container-low border border-outline-variant/60 flex items-center justify-center text-text-muted hover:text-white hover:border-zinc-700 transition-colors relative"
         >
-          <span className="material-symbols-outlined text-[18px] sm:text-[20px]">
+          <span className="material-symbols-outlined text-[18px]">
             notifications
           </span>
-          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-white ring-2 ring-black" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white ring-2 ring-black" />
         </Link>
 
         {/* Roadmap / Calendar Icon Button */}
         <Link
           href="/roadmap"
           title="Roadmap Schedule"
-          className="hidden sm:flex w-10 h-10 rounded-full bg-surface-container-low border border-outline-variant items-center justify-center text-text-muted hover:text-white hover:border-white/40 transition-colors"
+          className="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-surface-container-low border border-outline-variant/60 items-center justify-center text-text-muted hover:text-white hover:border-zinc-700 transition-colors"
         >
-          <span className="material-symbols-outlined text-[20px]">
+          <span className="material-symbols-outlined text-[18px]">
             calendar_today
           </span>
         </Link>
 
-        {/* Profile Pill */}
+        {/* Profile Control */}
         <Link
           href="/profile"
-          className="flex items-center gap-2 pl-1 sm:pl-1.5 py-1 pr-3 sm:pr-3.5 rounded-full bg-surface-container-low border border-outline-variant hover:border-white/40 transition-colors group cursor-pointer"
+          className="flex items-center gap-2 pl-1 sm:pl-1.5 py-1 pr-2.5 sm:pr-3 rounded-md bg-surface-container-low border border-outline-variant/60 hover:border-zinc-700 transition-colors group cursor-pointer"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-heading text-[13px] font-bold group-hover:scale-105 transition-transform">
+          <div className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-heading text-[12px] font-bold transition-transform">
             {initial}
           </div>
           <div className="hidden sm:flex flex-col text-left">
-            <span className="text-[12px] font-semibold text-white leading-tight truncate max-w-[120px]">
+            <span className="text-[12px] font-medium text-white leading-tight truncate max-w-[120px]">
               {userName}
             </span>
             <span className="text-[10px] font-mono text-text-muted leading-tight truncate max-w-[120px]">
               {userEmail || "CST • Naira"}
             </span>
           </div>
-          <span className="material-symbols-outlined text-text-muted text-[16px] ml-0.5 group-hover:text-white transition-colors">
+          <span className="material-symbols-outlined text-text-muted text-[15px] ml-0.5 group-hover:text-white transition-colors">
             expand_more
           </span>
         </Link>

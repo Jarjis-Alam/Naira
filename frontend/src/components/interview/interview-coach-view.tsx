@@ -198,13 +198,13 @@ export function InterviewCoachView({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-5">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-semibold bg-zinc-900 text-zinc-200 border border-zinc-700 uppercase">
+              <span className="px-2.5 py-0.5 rounded-sm text-[10px] font-mono font-semibold bg-zinc-900 text-zinc-200 border border-zinc-700 uppercase">
                 {activeSession.interviewType} INTERVIEW
               </span>
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
+              <span className="px-2.5 py-0.5 rounded-sm text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
                 {activeSession.targetRoleName}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-800 text-white">
+              <span className="px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-zinc-800 text-white">
                 COMPLETED
               </span>
             </div>
@@ -214,14 +214,14 @@ export function InterviewCoachView({
           </div>
           <button
             onClick={handleResetToSetup}
-            className="px-6 py-2.5 rounded-full text-xs font-mono font-semibold bg-white text-zinc-950 hover:bg-zinc-200 transition-colors shadow-md cursor-pointer self-start sm:self-center"
+            className="px-5 py-2 rounded-md text-xs font-mono font-semibold bg-white text-zinc-950 hover:bg-zinc-200 transition-colors shadow-sm cursor-pointer self-start sm:self-center"
           >
             Start Another Session
           </button>
         </div>
 
         {/* Overall Summary */}
-        <div className="p-6 rounded-[20px] bg-[#0f0f12] border border-zinc-800 space-y-3">
+        <div className="p-6 rounded-lg bg-[#0f0f12] border border-zinc-800 space-y-3">
           <h2 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
             Performance Overview
           </h2>
@@ -342,20 +342,20 @@ export function InterviewCoachView({
         {/* Chat Header */}
         <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
           <div className="flex items-center gap-2.5">
-            <span className="px-3 py-1 rounded-full text-[10px] font-mono font-semibold bg-zinc-900 text-white border border-zinc-700">
+            <span className="px-2.5 py-0.5 rounded-sm text-[10px] font-mono font-semibold bg-zinc-900 text-white border border-zinc-700">
               {activeSession.interviewType}
             </span>
-            <span className="px-3 py-1 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
+            <span className="px-2.5 py-0.5 rounded-sm text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
               {activeSession.targetRoleName}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-900/80 border border-zinc-800">
+            <span className="px-2 py-0.5 rounded-sm text-[10px] font-mono text-zinc-400 bg-zinc-900/80 border border-zinc-800">
               Turn {activeSession.turnCount} / {activeSession.maxTurns}
             </span>
           </div>
           <button
             onClick={handleCompleteInterview}
             disabled={isCompleting}
-            className="px-4 py-1.5 rounded-full text-xs font-mono font-semibold bg-zinc-900 text-zinc-300 border border-zinc-700 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-1.5 rounded-md text-xs font-mono font-semibold bg-zinc-900 text-zinc-300 border border-zinc-700 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
           >
             {isCompleting ? "Evaluating..." : "End & Evaluate"}
           </button>
@@ -560,7 +560,7 @@ export function InterviewCoachView({
                   id="target-role"
                   value={selectedRoleId}
                   onChange={(e) => setSelectedRoleId(e.target.value)}
-                  className="w-full bg-[#15151a] border border-zinc-750 text-white text-sm rounded-full px-5 py-3 pr-10 appearance-none focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-colors cursor-pointer"
+                  className="w-full bg-[#15151a] border border-zinc-750 text-white text-sm rounded-md px-4 py-2.5 pr-10 appearance-none focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-colors cursor-pointer"
                 >
                   {targetRoles.map((role) => (
                     <option key={role.id} value={role.id} className="bg-[#15151a] text-white">
@@ -602,7 +602,7 @@ export function InterviewCoachView({
                       key={dur.value}
                       type="button"
                       onClick={() => setSelectedDuration(dur.value)}
-                      className={`py-2.5 px-3 rounded-full text-xs transition-all text-center cursor-pointer ${
+                      className={`py-2 px-3 rounded-md text-xs transition-all text-center cursor-pointer ${
                         isDurSelected
                           ? "border border-zinc-600 bg-zinc-800 text-white font-semibold shadow-inner"
                           : "border border-zinc-800 bg-[#15151a] text-zinc-400 hover:text-white hover:border-zinc-700 font-medium"
@@ -633,14 +633,14 @@ export function InterviewCoachView({
                   if (e.key === "Escape") setFocusArea("");
                 }}
                 placeholder="e.g. Distributed Consensus, Raft, SQL Isolation Levels, Mutexes, WAL..."
-                className="w-full bg-[#15151a] border border-zinc-750 text-white placeholder-zinc-500 text-sm rounded-full px-5 py-3.5 focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all"
+                className="w-full bg-[#15151a] border border-zinc-750 text-white placeholder-zinc-500 text-sm rounded-md px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all"
               />
               {focusArea && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <button
                     type="button"
                     onClick={() => setFocusArea("")}
-                    className="text-[10px] font-mono bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 px-2.5 py-1 rounded-full cursor-pointer transition-colors"
+                    className="text-[10px] font-mono bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 px-2 py-0.5 rounded-sm cursor-pointer transition-colors"
                   >
                     ESC TO CLEAR
                   </button>
@@ -656,7 +656,7 @@ export function InterviewCoachView({
                   key={topic}
                   type="button"
                   onClick={() => handleAddTopic(topic)}
-                  className="px-3 py-1 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-sm bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer"
                 >
                   + {topic}
                 </button>
@@ -666,11 +666,11 @@ export function InterviewCoachView({
 
           {/* PRIMARY ACTIONS: START INTERVIEW & RESUME REPLAY */}
           <div className="pt-6 pb-2 flex flex-col sm:flex-row items-center gap-4">
-            {/* Primary Action Pill Button */}
+            {/* Primary Action Button */}
             <button
               type="submit"
               disabled={isStarting}
-              className="w-full sm:flex-1 py-4 px-8 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm tracking-tight flex items-center justify-center gap-3 shadow-xl transition-all duration-150 active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:flex-1 py-3 px-6 rounded-md bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm tracking-tight flex items-center justify-center gap-2 shadow-sm transition-all duration-150 active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{isStarting ? "Initializing Grounded Session..." : "Start Practice Interview"}</span>
               <svg
@@ -687,7 +687,7 @@ export function InterviewCoachView({
               </svg>
             </button>
 
-            {/* Secondary Pill Action */}
+            {/* Secondary Action */}
             <button
               type="button"
               onClick={() => {
@@ -698,7 +698,7 @@ export function InterviewCoachView({
                   pastEl?.scrollIntoView({ behavior: "smooth" });
                 }
               }}
-              className="w-full sm:w-auto py-4 px-6 rounded-full bg-transparent hover:bg-zinc-850 text-zinc-400 hover:text-white border border-zinc-800 text-xs font-mono tracking-wide transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto py-3 px-5 rounded-md bg-transparent hover:bg-zinc-850 text-zinc-400 hover:text-white border border-zinc-800 text-xs font-mono tracking-wide transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <polyline points="1 4 1 10 7 10" />
@@ -785,7 +785,7 @@ export function InterviewCoachView({
                   </div>
                 </div>
                 <span
-                  className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded-sm ${
                     session.status === "COMPLETED"
                       ? "bg-zinc-800 text-zinc-300"
                       : "bg-zinc-900 text-zinc-200 border border-zinc-700"
@@ -798,30 +798,30 @@ export function InterviewCoachView({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
-            <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
+            <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
               <div>
                 <div className="text-white font-medium">Distributed Storage &amp; Raft</div>
                 <div className="text-zinc-500 text-[10px] font-mono mt-0.5">SCORE: 88.4% • 42 MINS</div>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-sm bg-zinc-800 text-zinc-300">
                 VERIFIED
               </span>
             </div>
-            <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
+            <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
               <div>
                 <div className="text-white font-medium">PostgreSQL Isolation Levels</div>
                 <div className="text-zinc-500 text-[10px] font-mono mt-0.5">SCORE: 74.0% • 30 MINS</div>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-sm bg-zinc-800 text-zinc-400">
                 REVIEW
               </span>
             </div>
-            <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
+            <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between">
               <div>
                 <div className="text-white font-medium">HR / Behavioral: Conflict Exec</div>
                 <div className="text-zinc-500 text-[10px] font-mono mt-0.5">SCORE: 91.2% • 28 MINS</div>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-sm bg-zinc-800 text-zinc-300">
                 VERIFIED
               </span>
             </div>

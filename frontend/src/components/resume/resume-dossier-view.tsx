@@ -73,23 +73,25 @@ export function ResumeDossierView({
     <div className="w-full max-w-6xl mx-auto space-y-4 pb-16 font-sans">
       {/* ── 1. RESUME HEADER & ACTIVE DOSSIER SELECTOR ── */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-3 pb-1">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="space-y-1">
+          <div className="flex items-baseline gap-3 flex-wrap">
             <h1 className="text-2xl font-bold tracking-tight text-white font-heading">
               Resume
             </h1>
             <span className="sr-only">Resume Intelligence</span>
-            <span className="px-2.5 py-0.5 bg-[#15151a] border border-zinc-800 rounded-full font-mono text-[10px] text-zinc-400">
-              v{activeVariant?.versions?.length ? (3.0 + activeVariant.versions.length * 0.1).toFixed(1) : "3.2"} ATS-READY
-            </span>
-            {activeVariant?.updatedAt && (
-              <span className="px-2.5 py-0.5 bg-[#15151a] border border-zinc-800 rounded-full font-mono text-[10px] text-zinc-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
-                <span>
-                  Updated {new Date(activeVariant.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                </span>
-              </span>
-            )}
+            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+              <span className="text-white font-medium">v{activeVariant?.versions?.length ? (3.0 + activeVariant.versions.length * 0.1).toFixed(1) : "3.2"}</span>
+              <span className="text-zinc-600">·</span>
+              <span className="text-zinc-300">ATS-Ready</span>
+              {activeVariant?.updatedAt && (
+                <>
+                  <span className="text-zinc-600">·</span>
+                  <span className="text-zinc-400">
+                    Updated {new Date(activeVariant.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <p className="text-xs text-zinc-400">
             Analyze ATS compatibility, match target roles, and resolve critical gaps.
@@ -103,7 +105,7 @@ export function ResumeDossierView({
             type="button"
             onClick={() => window.print()}
             title="Print or Save PDF"
-            className="no-print flex items-center gap-1.5 px-3 py-1.5 bg-[#121316] border border-zinc-800 rounded-full hover:border-zinc-600 hover:text-white text-zinc-400 transition-colors cursor-pointer text-xs font-mono"
+            className="no-print flex items-center gap-1.5 px-2.5 py-1.5 bg-[#121316] border border-zinc-800 rounded-md hover:border-zinc-600 hover:text-white text-zinc-400 transition-colors cursor-pointer text-xs font-mono"
           >
             <span className="material-symbols-outlined text-[15px]">print</span>
             <span>Print</span>
@@ -125,7 +127,7 @@ export function ResumeDossierView({
             <button
               type="button"
               onClick={() => setVariantDropdownOpen(!variantDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#121316] border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors cursor-pointer text-xs"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#121316] border border-zinc-800 rounded-md hover:border-zinc-600 transition-colors cursor-pointer text-xs"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-white shadow-xs" />
               <span className="font-mono text-white font-medium tracking-tight text-[11px]">
@@ -142,7 +144,7 @@ export function ResumeDossierView({
 
             {/* Dropdown Menu */}
             {variantDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[#15151a] border border-zinc-800 p-2 shadow-2xl z-50 space-y-1">
+              <div className="absolute right-0 top-full mt-2 w-72 rounded-lg bg-[#15151a] border border-zinc-800 p-1.5 shadow-2xl z-50 space-y-1">
                 <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
                   Switch Resume Dossier
                 </div>
@@ -153,7 +155,7 @@ export function ResumeDossierView({
                       setVariantDropdownOpen(false);
                       router.push(`/resume?variantId=${v.id}`);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-colors ${
+                    className={`w-full text-left px-3 py-2 rounded-md text-xs flex items-center justify-between transition-colors ${
                       activeVariant?.id === v.id
                         ? "bg-white text-black font-semibold"
                         : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
@@ -173,7 +175,7 @@ export function ResumeDossierView({
                       setVariantDropdownOpen(false);
                       setActiveSecondaryTab(activeSecondaryTab === "upload" ? null : "upload");
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 rounded-md text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 flex items-center gap-2"
                   >
                     <span className="material-symbols-outlined text-[15px]">add</span>
                     <span>Upload New Variant</span>
@@ -187,7 +189,7 @@ export function ResumeDossierView({
           <button
             type="button"
             onClick={() => setActiveSecondaryTab(activeSecondaryTab === "upload" ? null : "upload")}
-            className="px-3 py-1.5 bg-[#121316] hover:bg-[#18181b] border border-zinc-800 text-white text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-[#121316] hover:bg-[#18181b] border border-zinc-800 text-white text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <span className="material-symbols-outlined text-[15px]">upload_file</span>
             <span>Upload New</span>
@@ -196,25 +198,25 @@ export function ResumeDossierView({
       </header>
 
       {/* ── 2. STATUS STRIP (RESUME → STATUS) ── */}
-      <section className="w-full bg-[#0f0f12] border border-zinc-800 rounded-full py-2.5 px-4 sm:px-6 shadow-sm">
+      <section className="w-full bg-[#0f0f12]/80 border border-zinc-800/80 rounded-lg py-3 px-5 sm:px-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            {/* ATS Readiness Score Box */}
-            <div className="flex items-center gap-3 px-3 py-1.5 bg-[#18181b] border border-zinc-800 rounded-full shadow-inner">
-              <span className="text-2xl sm:text-3xl font-bold tracking-tight leading-none text-white font-mono">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            {/* ATS Readiness Score (Typography-Led, not pill inside pill) */}
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl sm:text-4xl font-bold tracking-tight leading-none text-white font-mono">
                 {atsScore}%
               </span>
-              <div className="flex flex-col pr-0.5">
+              <div className="flex flex-col">
                 <span className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider">
                   ATS Readiness
                 </span>
-                <span className="text-[11px] text-white font-semibold">
+                <span className="text-xs text-zinc-200 font-semibold">
                   {atsScore >= 75 ? "Strong alignment" : atsScore >= 50 ? "Moderate alignment" : "Needs alignment"}
                 </span>
               </div>
             </div>
 
-            <div className="hidden sm:block w-px h-6 bg-zinc-800" />
+            <div className="hidden sm:block w-px h-7 bg-zinc-800" />
 
             {/* Primary Target Role */}
             <div className="flex flex-col space-y-0.5">
@@ -225,21 +227,21 @@ export function ResumeDossierView({
                 <span className="text-xs sm:text-sm font-medium text-white">
                   {activeVariant?.targetCompanyName || "Stripe"} — {activeVariant?.targetRoleName || "Site Reliability Engineer"}
                 </span>
-                <span className="px-2 py-0.5 bg-[#18181b] border border-zinc-800 font-mono text-[10px] text-zinc-400 rounded-full">
+                <span className="px-1.5 py-0.5 bg-zinc-800/80 border border-zinc-700/60 font-mono text-[10px] text-zinc-300 rounded-sm">
                   L4
                 </span>
               </div>
             </div>
 
-            <div className="hidden md:block w-px h-6 bg-zinc-800" />
+            <div className="hidden md:block w-px h-7 bg-zinc-800" />
 
             {/* Last Reparsed */}
             <div className="flex flex-col space-y-0.5">
               <span className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider">
                 Last Reparsed
               </span>
-              <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-[#121316] border border-zinc-800 rounded-full text-zinc-300 font-mono text-[11px]">
-                <span className="material-symbols-outlined text-[13px] text-zinc-400">schedule</span>
+              <div className="flex items-center gap-1.5 text-zinc-300 font-mono text-xs">
+                <span className="material-symbols-outlined text-[14px] text-zinc-400">schedule</span>
                 <span>Today at 09:15 AM</span>
               </div>
             </div>
@@ -251,7 +253,7 @@ export function ResumeDossierView({
               <a
                 href={`/api/student/resume/variants/${activeVariant.id}/export?format=txt`}
                 download
-                className="px-3.5 py-1.5 bg-[#18181b] hover:bg-[#202025] border border-zinc-800 text-zinc-300 hover:text-white text-xs font-medium rounded-full transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-1.5 bg-[#18181b] hover:bg-[#202025] border border-zinc-800 text-zinc-300 hover:text-white text-xs font-medium rounded-md transition-colors flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[15px]">file_download</span>
                 <span>Download PDF</span>
@@ -259,7 +261,7 @@ export function ResumeDossierView({
             )}
             <Link
               href={activeVariant ? `/resume/builder?variantId=${activeVariant.id}` : "/resume/builder"}
-              className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black text-xs font-semibold rounded-md transition-colors flex items-center gap-1.5 shadow-sm"
             >
               <span>Improve Resume</span>
               <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
@@ -278,14 +280,14 @@ export function ResumeDossierView({
               <h2 className="text-sm font-semibold text-white">
                 Resume Document
               </h2>
-              <span className="text-[10px] font-mono text-zinc-400 bg-[#121316] border border-zinc-800 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-mono text-zinc-500">
                 LaTeX v3.14 · 1 Page Standard
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Link
                 href={activeVariant ? `/resume/builder?variantId=${activeVariant.id}` : "/resume/builder"}
-                className="px-3 py-1 bg-[#121316] hover:bg-[#18181b] border border-zinc-800 text-zinc-300 hover:text-white text-[11px] font-mono rounded-full transition-colors flex items-center gap-1.5"
+                className="px-2.5 py-1 bg-[#121316] hover:bg-[#18181b] border border-zinc-800 text-zinc-300 hover:text-white text-[11px] font-mono rounded-md transition-colors flex items-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[13px]">edit</span>
                 <span>Edit in Builder</span>
@@ -295,7 +297,7 @@ export function ResumeDossierView({
                   href={`/api/student/resume/variants/${activeVariant.id}/export?format=txt`}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1 bg-[#121316] hover:bg-[#18181b] border border-zinc-800 text-zinc-300 hover:text-white text-[11px] font-mono rounded-full transition-colors flex items-center gap-1.5"
+                  className="px-2.5 py-1 bg-[#121316] hover:bg-[#18181b] border border-zinc-800 text-zinc-300 hover:text-white text-[11px] font-mono rounded-md transition-colors flex items-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-[13px]">code</span>
                   <span>Raw TeX</span>
@@ -305,7 +307,7 @@ export function ResumeDossierView({
           </div>
 
           {/* Rendered Resume Sheet Container (Realistic high-contrast technical paper sheet) */}
-          <div className="relative w-full bg-[#f8f9fa] text-[#121315] p-5 sm:p-7 rounded-xl shadow-xl overflow-hidden font-sans selection:bg-[#121315] selection:text-white border border-[#e5e7eb]">
+          <div className="relative w-full bg-[#f8f9fa] text-[#121315] p-5 sm:p-7 rounded-lg shadow-lg overflow-hidden font-sans selection:bg-[#121315] selection:text-white border border-[#e5e7eb]">
             {/* Architectural Grid Line Texture */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[radial-gradient(#121315_1px,transparent_1px)] [background-size:16px_16px]" />
 
@@ -315,7 +317,7 @@ export function ResumeDossierView({
                 <span className="text-lg sm:text-xl font-bold tracking-tight text-[#090a0c] uppercase">
                   {activeVariant?.structured.header.name || "ALEXANDER CHEN"}
                 </span>
-                <span className="text-[11px] font-mono text-[#4b5563] px-2 py-0.5 bg-[#e5e7eb] rounded-full">
+                <span className="text-[11px] font-mono text-[#4b5563] px-2 py-0.5 bg-[#e5e7eb] rounded-sm">
                   {activeVariant?.structured.header.links[0] || "alexchen.systems · github.com/alx-chen"}
                 </span>
               </div>
@@ -357,7 +359,7 @@ export function ResumeDossierView({
                         <li key={bIdx}>
                           <span>{bullet}</span>
                           {bIdx === 1 && (
-                            <span className="inline-flex items-center ml-1.5 px-1.5 py-0.5 bg-[#18181b] text-white text-[9px] rounded-full leading-none align-middle font-sans border border-[#27272a]">
+                            <span className="inline-flex items-center ml-1.5 px-1.5 py-0.5 bg-[#18181b] text-white text-[9px] rounded-sm leading-none align-middle font-sans border border-[#27272a]">
                               <span className="w-1 h-1 rounded-full bg-white mr-1" />
                               Gap: Missing metrics
                             </span>
@@ -387,7 +389,7 @@ export function ResumeDossierView({
                         <span className="underline decoration-dotted decoration-[#71717a] decoration-2 underline-offset-4 cursor-pointer hover:bg-[#e4e4e7]/60 transition-colors p-0.5 rounded">
                           Architected tiered block-storage scrubber daemon, minimizing corrupted fragment recovery intervals.
                         </span>
-                        <span className="inline-flex items-center ml-1.5 px-1.5 py-0.5 bg-[#18181b] text-white text-[9px] rounded-full leading-none align-middle font-sans border border-[#27272a]">
+                        <span className="inline-flex items-center ml-1.5 px-1.5 py-0.5 bg-[#18181b] text-white text-[9px] rounded-sm leading-none align-middle font-sans border border-[#27272a]">
                           <span className="w-1 h-1 rounded-full bg-white mr-1" />
                           Gap: Missing metrics
                         </span>
@@ -451,60 +453,60 @@ export function ResumeDossierView({
 
         {/* RIGHT COLUMN: THE FOCUSED DIAGNOSIS (STATUS → PROBLEM → ACTION) */}
         <section className="lg:col-span-5 flex flex-col space-y-3.5">
-          {/* Card 1: Resume Analysis */}
-          <div className="bg-[#0f0f12] border border-zinc-800 rounded-xl p-4 space-y-3.5 shadow-sm">
-            <div className="flex items-center justify-between">
+          {/* Section 1: Resume Analysis */}
+          <div className="bg-[#0f0f12]/80 border border-zinc-800/80 rounded-lg p-4 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-800/60">
               <h2 className="text-sm font-semibold text-white">
                 Resume Analysis
               </h2>
-              <span className="text-[10px] font-mono text-zinc-400 bg-[#18181b] border border-zinc-800 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-mono text-zinc-400">
                 Target: {activeVariant?.targetCompanyName || "Stripe"} L4
               </span>
             </div>
 
-            {/* WHAT IS STRONG */}
-            <div className="space-y-1.5">
+            {/* WHAT IS STRONG (Clean Editorial List instead of nested cards) */}
+            <div className="space-y-2">
               <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">
                 What is strong
               </span>
-              <div className="space-y-1.5">
-                <div className="flex items-start gap-2.5 p-2 px-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+              <div className="divide-y divide-zinc-800/40">
+                <div className="flex items-start gap-2.5 py-2 first:pt-0">
                   <span className="material-symbols-outlined text-[15px] text-white mt-0.5 shrink-0">
                     check_circle
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-[11.5px] font-semibold text-white">
+                    <span className="text-xs font-medium text-white">
                       Distributed systems depth &amp; core primitives
                     </span>
-                    <span className="text-[10.5px] text-zinc-400 mt-0.5 leading-normal">
+                    <span className="text-[11px] text-zinc-400 mt-0.5 leading-normal">
                       High-density Go, Rust, eBPF, and consensus mechanisms found throughout.
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5 p-2 px-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+                <div className="flex items-start gap-2.5 py-2">
                   <span className="material-symbols-outlined text-[15px] text-white mt-0.5 shrink-0">
                     check_circle
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-[11.5px] font-semibold text-white">
+                    <span className="text-xs font-medium text-white">
                       Clean ATS format hygiene
                     </span>
-                    <span className="text-[10.5px] text-zinc-400 mt-0.5 leading-normal">
+                    <span className="text-[11px] text-zinc-400 mt-0.5 leading-normal">
                       100% parseable standard single-column layout, zero table traps or unreadable vectors.
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2.5 p-2 px-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+                <div className="flex items-start gap-2.5 py-2 last:pb-0">
                   <span className="material-symbols-outlined text-[15px] text-white mt-0.5 shrink-0">
                     check_circle
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-[11.5px] font-semibold text-white">
+                    <span className="text-xs font-medium text-white">
                       Systems architecture scope
                     </span>
-                    <span className="text-[10.5px] text-zinc-400 mt-0.5 leading-normal">
+                    <span className="text-[11px] text-zinc-400 mt-0.5 leading-normal">
                       Demonstrates real multi-region ownership with measurable blast-radius management.
                     </span>
                   </div>
@@ -513,31 +515,31 @@ export function ResumeDossierView({
             </div>
 
             {/* NEEDS ATTENTION */}
-            <div className="space-y-1.5">
+            <div className="space-y-2 pt-2 border-t border-zinc-800/50">
               <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">
                 Needs attention
               </span>
-              <div className="space-y-1.5">
-                <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg space-y-1">
-                  <div className="flex items-center gap-2 text-white text-[11.5px] font-semibold">
+              <div className="space-y-2.5">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-white text-xs font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                     <span>Missing quantifiable business impact</span>
                   </div>
-                  <p className="text-[10.5px] text-zinc-400 pl-3 leading-normal">
+                  <p className="text-[11px] text-zinc-400 pl-3.5 leading-normal">
                     Experience bullet #2 (ScaleMesh block-storage scrubber) describes the action but lacks peak write IOPS or latency percentile numbers.
                   </p>
                 </div>
 
-                <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg space-y-1">
-                  <div className="flex items-center gap-2 text-white text-[11.5px] font-semibold">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-white text-xs font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                     <span>Missing target keywords for {activeVariant?.targetCompanyName || "Stripe"} SRE</span>
                   </div>
-                  <div className="flex flex-wrap gap-1 pl-3 pt-0.5">
+                  <div className="flex flex-wrap gap-1.5 pl-3.5 pt-0.5">
                     {["LSM-trees", "WAL (Write-Ahead Log)", "BGP Anycast"].map((kw) => (
                       <span
                         key={kw}
-                        className="px-2 py-0.5 bg-[#1e1e24] border border-zinc-800 text-zinc-300 font-mono text-[9.5px] rounded-full"
+                        className="px-2 py-0.5 bg-zinc-850 border border-zinc-750 text-zinc-300 font-mono text-[10px] rounded-sm"
                       >
                         {kw}
                       </span>
@@ -548,28 +550,28 @@ export function ResumeDossierView({
             </div>
 
             {/* RECOMMENDED NEXT ACTION BOX */}
-            <div className="p-3 bg-[#18181b] border border-zinc-800 rounded-xl space-y-2">
+            <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-md space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
                   Recommended Next Action
                 </span>
-                <span className="px-1.5 py-0.5 bg-white/10 border border-white/20 text-[9.5px] font-mono font-bold text-white rounded-full">
+                <span className="px-1.5 py-0.5 bg-white/10 border border-white/20 text-[10px] font-mono font-bold text-white rounded-sm">
                   +6% Potential Gain
                 </span>
               </div>
-              <p className="text-[11px] text-white leading-normal">
+              <p className="text-xs text-zinc-200 leading-normal">
                 Add peak write IOPS &amp; latency percentiles to Distributed Storage project to satisfy Stripe&apos;s high-scale database telemetry bar.
               </p>
               <div className="flex items-center gap-2 pt-0.5">
                 <Link
                   href={activeVariant ? `/resume/builder?variantId=${activeVariant.id}` : "/resume/builder"}
-                  className="flex-1 px-3 py-1.5 bg-white hover:bg-zinc-200 text-black text-[11px] font-semibold rounded-full transition-colors text-center shadow-sm"
+                  className="flex-1 px-3 py-1.5 bg-white hover:bg-zinc-200 text-black text-xs font-semibold rounded-md transition-colors text-center shadow-sm"
                 >
                   Auto-Apply AI Revision
                 </Link>
                 <Link
                   href={activeVariant ? `/resume/builder?variantId=${activeVariant.id}` : "/resume/builder"}
-                  className="px-3 py-1.5 bg-[#121316] hover:bg-[#1a1a20] border border-zinc-800 text-zinc-300 hover:text-white text-[11px] font-medium rounded-full transition-colors"
+                  className="px-3 py-1.5 bg-[#121316] hover:bg-[#1a1a20] border border-zinc-800 text-zinc-300 hover:text-white text-xs font-medium rounded-md transition-colors"
                 >
                   Edit Bullet
                 </Link>
@@ -577,61 +579,61 @@ export function ResumeDossierView({
             </div>
           </div>
 
-          {/* Card 2: Target Alignment */}
-          <div className="bg-[#0f0f12] border border-zinc-800 rounded-xl p-4 space-y-3 shadow-sm">
-            <div className="flex items-center justify-between">
+          {/* Section 2: Target Alignment */}
+          <div className="bg-[#0f0f12]/80 border border-zinc-800/80 rounded-lg p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-800/60">
               <h3 className="text-xs font-semibold text-white">
                 Target Alignment
               </h3>
-              <span className="text-[9.5px] font-mono text-zinc-400 bg-[#18181b] border border-zinc-800 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-mono text-zinc-500">
                 Market Benchmark
               </span>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="divide-y divide-zinc-800/40">
               {/* Stripe */}
-              <div className="flex items-center justify-between py-1.5 px-3 bg-[#15151a] border border-zinc-800/80 rounded-full">
+              <div className="flex items-center justify-between py-2">
                 <div className="flex flex-col">
-                  <span className="text-[11.5px] font-semibold text-white">Stripe</span>
-                  <span className="text-[9.5px] font-mono text-zinc-400">Site Reliability Engineer (L4)</span>
+                  <span className="text-xs font-medium text-white">Stripe</span>
+                  <span className="text-[10px] font-mono text-zinc-400">Site Reliability Engineer (L4)</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-white rounded-full" style={{ width: "84%" }} />
+                  <div className="w-16 h-1.5 bg-zinc-800 rounded-sm overflow-hidden">
+                    <div className="h-full bg-white rounded-sm" style={{ width: "84%" }} />
                   </div>
-                  <span className="font-mono text-[11px] text-white font-bold w-7 text-right">
+                  <span className="font-mono text-xs text-white font-bold w-8 text-right">
                     84%
                   </span>
                 </div>
               </div>
 
               {/* Datadog */}
-              <div className="flex items-center justify-between py-1.5 px-3 bg-[#15151a] border border-zinc-800/80 rounded-full">
+              <div className="flex items-center justify-between py-2">
                 <div className="flex flex-col">
-                  <span className="text-[11.5px] font-semibold text-white">Datadog</span>
-                  <span className="text-[9.5px] font-mono text-zinc-400">Distributed Systems Core</span>
+                  <span className="text-xs font-medium text-white">Datadog</span>
+                  <span className="text-[10px] font-mono text-zinc-400">Distributed Systems Core</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-zinc-400 rounded-full" style={{ width: "81%" }} />
+                  <div className="w-16 h-1.5 bg-zinc-800 rounded-sm overflow-hidden">
+                    <div className="h-full bg-zinc-400 rounded-sm" style={{ width: "81%" }} />
                   </div>
-                  <span className="font-mono text-[11px] text-zinc-400 font-bold w-7 text-right">
+                  <span className="font-mono text-xs text-zinc-400 font-bold w-8 text-right">
                     81%
                   </span>
                 </div>
               </div>
 
               {/* Snowflake */}
-              <div className="flex items-center justify-between py-1.5 px-3 bg-[#15151a] border border-zinc-800/80 rounded-full">
+              <div className="flex items-center justify-between py-2">
                 <div className="flex flex-col">
-                  <span className="text-[11.5px] font-semibold text-white">Snowflake</span>
-                  <span className="text-[9.5px] font-mono text-zinc-400">Core Query Execution Engine</span>
+                  <span className="text-xs font-medium text-white">Snowflake</span>
+                  <span className="text-[10px] font-mono text-zinc-400">Core Query Execution Engine</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-zinc-600 rounded-full" style={{ width: "72%" }} />
+                  <div className="w-16 h-1.5 bg-zinc-800 rounded-sm overflow-hidden">
+                    <div className="h-full bg-zinc-600 rounded-sm" style={{ width: "72%" }} />
                   </div>
-                  <span className="font-mono text-[11px] text-zinc-400 font-bold w-7 text-right">
+                  <span className="font-mono text-xs text-zinc-400 font-bold w-8 text-right">
                     72%
                   </span>
                 </div>
@@ -639,8 +641,8 @@ export function ResumeDossierView({
             </div>
           </div>
 
-          {/* Card 3: ATS Technical Breakdown & Methodology Accordion */}
-          <div className="bg-[#0f0f12] border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+          {/* Section 3: ATS Technical Breakdown & Methodology Accordion */}
+          <div className="bg-[#0f0f12]/80 border border-zinc-800/80 rounded-lg overflow-hidden shadow-sm">
             <button
               type="button"
               onClick={() => setMethodologyOpen(!methodologyOpen)}
@@ -650,8 +652,8 @@ export function ResumeDossierView({
                 <span className="text-xs font-semibold text-white">
                   ATS Technical Breakdown &amp; Methodology
                 </span>
-                <span className="text-[9.5px] font-mono text-zinc-400 px-1.5 py-0.5 bg-[#18181b] border border-zinc-800 rounded-full">
-                  (Engine Core)
+                <span className="text-[9.5px] font-mono text-zinc-400 px-1.5 py-0.5 bg-zinc-850 border border-zinc-750 rounded-sm">
+                  Engine Core
                 </span>
               </div>
               <span
@@ -666,55 +668,55 @@ export function ResumeDossierView({
             {methodologyOpen && (
               <div className="p-3.5 pt-0.5 space-y-3 border-t border-zinc-800/80">
                 <div className="grid grid-cols-2 gap-2 pt-1.5">
-                  <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800/80 rounded-md">
                     <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider block">
                       Parser Cleanliness
                     </span>
-                    <span className="text-[11.5px] font-mono font-bold text-white mt-0.5 block">
+                    <span className="text-xs font-mono font-bold text-white mt-0.5 block">
                       100% · 0 Errors
                     </span>
                   </div>
 
-                  <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800/80 rounded-md">
                     <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider block">
                       Semantic Vector Cosine
                     </span>
-                    <span className="text-[11.5px] font-mono font-bold text-white mt-0.5 block">
+                    <span className="text-xs font-mono font-bold text-white mt-0.5 block">
                       0.864 / 1.0
                     </span>
                   </div>
 
-                  <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800/80 rounded-md">
                     <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider block">
                       Keyword Freq Ratio
                     </span>
-                    <span className="text-[11.5px] font-mono font-bold text-white mt-0.5 block">
+                    <span className="text-xs font-mono font-bold text-white mt-0.5 block">
                       {analysis?.keywordAnalysis?.matched ?? 14} Match / {analysis?.keywordAnalysis?.missing ?? 3} Miss
                     </span>
                   </div>
 
-                  <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg">
+                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800/80 rounded-md">
                     <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider block">
                       Section Weights
                     </span>
-                    <span className="text-[11.5px] font-mono font-bold text-white mt-0.5 block">
+                    <span className="text-xs font-mono font-bold text-white mt-0.5 block">
                       Exp 60% · Prj 40%
                     </span>
                   </div>
                 </div>
 
                 {/* Version History */}
-                <div className="p-2.5 bg-[#15151a] border border-zinc-800/80 rounded-lg space-y-1">
+                <div className="p-2.5 bg-zinc-900/60 border border-zinc-800/80 rounded-md space-y-1">
                   <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider block">
                     Version History
                   </span>
-                  <div className="flex items-center justify-between text-[11px]">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="text-white font-mono font-medium">v3.2 (Active)</span>
-                    <span className="text-zinc-500 font-mono text-[9.5px]">Current draft with Raft updates</span>
+                    <span className="text-zinc-500 font-mono text-[10px]">Current draft with Raft updates</span>
                   </div>
-                  <div className="flex items-center justify-between text-[11px]">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="text-zinc-400 font-mono">v3.1</span>
-                    <span className="text-zinc-500 font-mono text-[9.5px]">Prior submission to Datadog (Score: 74%)</span>
+                    <span className="text-zinc-500 font-mono text-[10px]">Prior submission to Datadog (Score: 74%)</span>
                   </div>
                 </div>
               </div>
@@ -744,7 +746,7 @@ export function ResumeDossierView({
               <button
                 key={tab.id}
                 onClick={() => setActiveSecondaryTab(activeSecondaryTab === tab.id ? null : tab.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer ${
                   activeSecondaryTab === tab.id
                     ? "bg-white text-black font-semibold"
                     : "bg-[#15151a] hover:bg-[#1c1c22] text-zinc-400 hover:text-white border border-zinc-800"
@@ -759,7 +761,7 @@ export function ResumeDossierView({
 
         {/* Dynamic Tool Drawer */}
         {activeSecondaryTab === "target" && activeVariant && (
-          <div className="p-6 rounded-2xl bg-[#0f0f12] border border-zinc-800">
+          <div className="p-6 rounded-lg bg-[#0f0f12] border border-zinc-800">
             <ResumeTargetSelector
               variantId={activeVariant.id}
               companies={companies}

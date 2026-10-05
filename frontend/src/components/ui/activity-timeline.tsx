@@ -26,7 +26,7 @@ export function ActivityTimeline({
   emptyMessage = "No recent activity recorded yet.",
 }: ActivityTimelineProps) {
   return (
-    <div className="bg-surface-container-low rounded-2xl p-5 border border-outline-variant shadow-md">
+    <div className="bg-surface-container-low rounded-lg p-5 border border-outline-variant shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-[18px] text-text-muted">
@@ -54,9 +54,9 @@ export function ActivityTimeline({
             const rowContent = (
               <div className="relative flex items-start gap-3.5 group">
                 <div
-                  className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 z-10 bg-surface-container-low transition-transform group-hover:scale-105"
+                  className="w-7 h-7 rounded-md bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 z-10 bg-surface-container-low transition-transform group-hover:scale-105"
                 >
-                  <span className="material-symbols-outlined text-[16px]">
+                  <span className="material-symbols-outlined text-[15px]">
                     {item.icon}
                   </span>
                 </div>
@@ -75,7 +75,7 @@ export function ActivityTimeline({
                     </p>
                   )}
                   {item.scoreBadge && (
-                    <span className="inline-block mt-1 text-[10px] font-mono text-white bg-white/10 border border-white/20 px-2 py-0.5 rounded-full">
+                    <span className="inline-block mt-1 text-[10px] font-mono text-white bg-white/10 border border-white/20 px-1.5 py-0.2 rounded-sm">
                       {item.scoreBadge}
                     </span>
                   )}

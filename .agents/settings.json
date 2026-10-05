@@ -1,0 +1,11 @@
+{
+  "hooks": {},
+  "permissions": {
+    "allow": [
+      "read_file(~/Documents/Projects/nexora/.agents/gsd-core/*)",
+      "read_file(~/Documents/Projects/nexora/.agents/agents/gsd-*)",
+      "read_file(~/Documents/Projects/nexora/.agents/skills/gsd-*)",
+      "command(node ~/Documents/Projects/nexora/.agents/hooks/*)"
+    ]
+  }
+}

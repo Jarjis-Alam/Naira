@@ -103,7 +103,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
       {/* Metric Strip: 4 Diagnostic Cards (Monochrome) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Card 1: Completed */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+        <div className="rounded-lg bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
@@ -134,7 +134,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
         </div>
 
         {/* Card 2: Average Score */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+        <div className="rounded-lg bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
@@ -169,7 +169,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
         </div>
 
         {/* Card 3: In Progress */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+        <div className="rounded-lg bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
@@ -202,7 +202,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
         </div>
 
         {/* Card 4: Top Benchmark */}
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
+        <div className="rounded-lg bg-surface-container-low border border-outline-variant p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:border-white/40 transition-colors group">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-xl pointer-events-none group-hover:bg-white/10 transition-all"></div>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-mono uppercase tracking-wider text-text-muted font-semibold">
@@ -235,7 +235,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
 
       {/* Priority Adaptive Drill Spotlight Banner (Monochrome) */}
       {spotlightTest && (
-        <div className="rounded-2xl bg-surface-container-low border border-outline-variant p-6 sm:p-8 relative overflow-hidden shadow-md">
+        <div className="rounded-lg bg-surface-container-low border border-outline-variant p-6 sm:p-8 relative overflow-hidden shadow-md">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-white/10 via-white/5 to-transparent blur-3xl pointer-events-none"></div>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div className="flex flex-col max-w-3xl">
@@ -256,21 +256,21 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
               </p>
               {/* Meta pills */}
               <div className="flex flex-wrap items-center gap-2 mt-4 text-xs font-mono">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-white">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-surface-container border border-outline-variant text-white">
                   <span className="material-symbols-outlined text-[15px] text-text-muted">quiz</span>
                   <span>{spotlightTest.questionCount} Questions</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container border border-outline-variant text-white">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-surface-container border border-outline-variant text-white">
                   <span className="material-symbols-outlined text-[15px] text-text-muted">schedule</span>
                   <span>{spotlightTest.duration} Mins</span>
                 </div>
                 {spotlightTest.difficulty && (
-                  <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-bold uppercase ${difficultyColor[spotlightTest.difficulty]}`}>
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm border text-[11px] font-bold uppercase ${difficultyColor[spotlightTest.difficulty]}`}>
                     <span>{spotlightTest.difficulty} Difficulty</span>
                   </div>
                 )}
                 {spotlightTest.bestScore !== null && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-white/10 border border-white/20 text-white">
                     <span>Best Score: {spotlightTest.bestScore}%</span>
                   </div>
                 )}
@@ -280,7 +280,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
             <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-center gap-2 shrink-0">
               <Link
                 href={`/tests/${spotlightTest.id}`}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 shadow-md transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-md bg-white text-black font-semibold text-xs hover:bg-zinc-200 shadow-sm transition-all"
               >
                 <span>{spotlightTest.status === "in_progress" ? "Resume Test" : "Start Test Now"}</span>
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -293,7 +293,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
         </div>
       )}
 
-      {/* Search + Filter Strip Pill Matrix */}
+      {/* Search + Filter Strip */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-outline-variant">
         {/* Search Input with ⌘K style */}
         <div className="relative flex-1 max-w-md">
@@ -306,11 +306,11 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search diagnostic tests, skills, topics..."
-            className="w-full h-10 bg-surface-container-low border border-outline-variant rounded-full pl-10 pr-4 text-xs text-white placeholder:text-text-muted outline-none focus:border-white/40 transition-colors"
+            className="w-full h-9 bg-surface-container-low border border-outline-variant rounded-md pl-10 pr-4 text-xs text-white placeholder:text-text-muted outline-none focus:border-white/40 transition-colors"
           />
         </div>
 
-        {/* Filter pills */}
+        {/* Filter tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {filters.map((f) => {
             const count = f.value === "all"
@@ -322,14 +322,14 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
               <button
                 key={f.value}
                 onClick={() => setActiveFilter(f.value)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-white text-black shadow-sm"
+                    ? "bg-white text-black shadow-sm font-semibold"
                     : "bg-surface-container hover:bg-surface-container-high text-text-secondary hover:text-white border border-outline-variant"
                 }`}
               >
                 <span>{f.label}</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-sm ${
                   isActive ? "bg-black/20 text-black" : "bg-surface-container-low text-text-muted"
                 }`}>
                   {count}
@@ -390,28 +390,28 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                   {/* Status & Difficulty Badges */}
                   <div className="flex items-center gap-1.5 flex-wrap justify-end">
                     {isBaseline && (
-                      <span className="px-2 py-0.5 rounded-full bg-white/15 border border-white/30 text-white font-mono text-[10px] font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded-sm bg-white/15 border border-white/30 text-white font-mono text-[10px] font-bold uppercase">
                         BASELINE
                       </span>
                     )}
                     {isScheduled && (
-                      <span className="px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-zinc-300 font-mono text-[10px] font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded-sm bg-white/10 border border-white/20 text-zinc-300 font-mono text-[10px] font-bold uppercase">
                         UPCOMING
                       </span>
                     )}
                     {isInProgress && (
-                      <span className="px-2 py-0.5 rounded-full bg-white/15 border border-white/30 text-white font-mono text-[10px] font-bold uppercase flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-sm bg-white/15 border border-white/30 text-white font-mono text-[10px] font-bold uppercase flex items-center gap-1">
                         <span className="w-1 h-1 rounded-full bg-white animate-pulse"></span>
                         IN PROGRESS
                       </span>
                     )}
                     {isClosed && !isCompleted && (
-                      <span className="px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted font-mono text-[10px] font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded-sm bg-surface-container border border-outline-variant text-text-muted font-mono text-[10px] font-bold uppercase">
                         CLOSED
                       </span>
                     )}
                     {test.difficulty && (
-                      <span className={`px-2 py-0.5 rounded-full border text-[10px] font-mono font-bold uppercase ${difficultyColor[test.difficulty] ?? ""}`}>
+                      <span className={`px-2 py-0.5 rounded-sm border text-[10px] font-mono font-bold uppercase ${difficultyColor[test.difficulty] ?? ""}`}>
                         {test.difficulty}
                       </span>
                     )}
@@ -434,11 +434,11 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
 
                   {/* Meta Pills */}
                   <div className="flex items-center gap-2 flex-wrap mb-4 text-[11px] font-mono">
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm bg-surface-container border border-outline-variant text-text-muted">
                       <span className="material-symbols-outlined text-[13px]">schedule</span>
                       {test.duration} MIN
                     </span>
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container border border-outline-variant text-text-muted">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm bg-surface-container border border-outline-variant text-text-muted">
                       <span className="material-symbols-outlined text-[13px]">format_list_numbered</span>
                       {test.questionCount} Q
                     </span>
@@ -477,7 +477,7 @@ export function TestCatalog({ tests }: { tests: TestCatalogItem[] }) {
                   {/* CTA Link */}
                   <Link
                     href={`/tests/${test.id}`}
-                    className={`w-full h-9 flex items-center justify-center gap-2 rounded-full font-semibold text-xs border transition-all ${
+                    className={`w-full h-9 flex items-center justify-center gap-2 rounded-md font-semibold text-xs border transition-all ${
                       isClosed && !isCompleted
                         ? "border-outline-variant bg-surface-container text-text-muted cursor-not-allowed pointer-events-none opacity-60"
                         : isBaseline || (!isCompleted && !isInProgress)
