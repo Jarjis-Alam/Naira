@@ -15,37 +15,6 @@ export interface SendEmailResult {
  * Returns a configured Resend client or null if API key is absent.
  */
 function getResendClient(): Resend | null {
-  if (!process.env.RESEND_API_KEY && typeof window === "undefined") {
-    try {
-      // Fallback for CLI/test runners where Next.js hasn't pre-loaded .env.local
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const fs = require("node:fs");
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const path = require("node:path");
-      const candidates = [
-        path.resolve(process.cwd(), ".env.local"),
-        path.resolve(process.cwd(), "frontend", ".env.local"),
-      ];
-      for (const file of candidates) {
-        if (fs.existsSync(file)) {
-          const lines = fs.readFileSync(file, "utf8").split("\n");
-          for (const line of lines) {
-            const match = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(line);
-            if (!match) continue;
-            const [, key, rawValue] = match;
-            if (process.env[key] === undefined) {
-              const value = rawValue.replace(/^['"]|['"]$/g, "").trim();
-              if (value) process.env[key] = value;
-            }
-          }
-          break;
-        }
-      }
-    } catch {
-      // Ignore in bundled runtime
-    }
-  }
-
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return null;

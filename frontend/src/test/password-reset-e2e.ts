@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { NextRequest } from "next/server";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
@@ -8,6 +10,22 @@ import { POST as forgotPasswordPost } from "@/app/api/auth/forgot-password/route
 import { POST as resetPasswordPost, GET as resetPasswordGet } from "@/app/api/auth/reset-password/route";
 import { sendPasswordResetEmail } from "@/server/email";
 import { checkRateLimit } from "@/lib/rate-limit";
+
+// Load environment variables for standalone test run
+for (const envFile of [path.resolve(process.cwd(), ".env.local"), path.resolve(process.cwd(), "frontend", ".env.local")]) {
+  if (fs.existsSync(envFile)) {
+    for (const line of fs.readFileSync(envFile, "utf8").split("\n")) {
+      const match = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/.exec(line);
+      if (!match) continue;
+      const [, key, rawValue] = match;
+      if (process.env[key] === undefined) {
+        const value = rawValue.replace(/^['"]|['"]$/g, "").trim();
+        if (value) process.env[key] = value;
+      }
+    }
+    break;
+  }
+}
 
 let passed = 0;
 let failed = 0;
